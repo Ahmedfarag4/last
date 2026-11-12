@@ -93,7 +93,7 @@ function GameExperience() {
         finishIntro()
         return
       }
-      if (screen !== 'menu') {
+      if (screen === 'investigation') {
         play('back')
         goToMenu()
       }
@@ -120,10 +120,17 @@ function GameExperience() {
       <main className="relative z-10 flex h-full w-full flex-col items-center justify-start overflow-hidden pt-[max(56px,8.5vh)] sm:justify-center sm:pb-[14vh] sm:pt-0">
         {screen === 'menu' && <MainMenu particlesActive={particlesActive} onSelect={handleSelect} />}
         {screen === 'investigation' && <InvestigationScreen key="investigation" onBack={goToMenu} />}
-        {screen === 'archives' && <ArchivesScreen key="archives" onBack={goToMenu} />}
       </main>
 
       <HudOverlay />
+
+      {screen === 'archives' && (
+        <ArchivesScreen
+          key="archives"
+          onBack={goToMenu}
+          onBeginInvestigation={() => setScreen('investigation')}
+        />
+      )}
 
       {intro === 'playing' && (
         <button
