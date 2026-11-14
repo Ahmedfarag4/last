@@ -14,6 +14,7 @@ import {
   TRAVERSE_DISTANCE,
 } from './archive-data'
 import { BackChip, SourceTag } from './archive-ui'
+import { OPPORTUNITY_TAU_FINAL } from './opportunity-tau-data'
 
 export type SectionId = 'media' | 'signals' | 'notes' | 'traverse'
 
@@ -126,16 +127,18 @@ function MediaSection() {
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <figure className="flex flex-col gap-3">
-        <div key={item.src} className="arc-swap relative aspect-video overflow-hidden rounded-2xl border border-hud/25">
-          <Image src={item.src} alt={item.caption} fill sizes="(min-width: 1024px) 700px, 90vw" className="object-cover" />
+        <div key={item.src} className="arc-swap relative aspect-video overflow-hidden rounded-2xl border border-hud/25 bg-midnight/70">
+          <Image src={item.src} alt={item.caption} fill sizes="(min-width: 1024px) 700px, 90vw" className={item.displayFit === 'contain' ? 'object-contain' : 'object-cover'} />
         </div>
         <figcaption className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-semibold tracking-[0.06em] text-frost">{item.title}</span>
-            <SourceTag kind={item.credit.startsWith('Artistic') ? 'render' : 'fiction'} />
+            <SourceTag kind="history" />
+            <span className="rounded-full border border-hud/30 px-2 py-0.5 text-[10px] tracking-widest text-hud">{item.camera}</span>
           </div>
           <span className="text-sm text-frost/70">{item.caption}</span>
           <span className="text-xs text-frost/45">{item.credit}</span>
+          <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">View original NASA source</a>
         </figcaption>
       </figure>
       <div className="flex flex-col gap-3">
@@ -152,15 +155,12 @@ function MediaSection() {
                   i === index ? 'border-hud' : 'border-hud/15 opacity-60 hover:opacity-100',
                 )}
               >
-                <Image src={m.src} alt="" fill sizes="200px" className="object-cover" />
+                <Image src={m.src} alt="" fill sizes="200px" className="object-contain" />
               </button>
             </li>
           ))}
         </ul>
-        <Unavailable>
-          Original NASA/JPL photographs and panoramas are not bundled in this build. Images shown are artistic
-          renders or fictional environment art.
-        </Unavailable>
+        <p className="text-xs leading-relaxed text-frost/55">Original NASA/JPL mission imagery · 3 Pancam and 2 Navcam images. Titles and captions describe the original image records.</p>
       </div>
     </div>
   )
@@ -257,7 +257,28 @@ function NotesSection() {
           ))}
         </ul>
       </section>
-      <Unavailable>Raw instrument readings and spectra are not included in this build.</Unavailable>
+      <section className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Final Storm · Atmospheric Opacity (880 nm)</h3>
+          <SourceTag kind="history" />
+        </div>
+        <p className="max-w-3xl text-xs leading-relaxed text-frost/65">
+          Direct measurements from the original NASA PDS MER1 Pancam opacity table (Sol 5000–5105).
+          Higher Tau means more dust obscuring the Sun. Missing/non-measurement values are excluded.
+          This series ends at Sol 5105, so it does not measure the final Sol 5111 dust level.
+        </p>
+        <TauChart />
+        <a href="/data/opportunity/scientific/atmospheric-opacity/1tau880_5106_20181207a.tab" download className="w-fit text-xs text-hud underline underline-offset-4">Download original NASA PDS measurements (.tab)</a>
+      </section>
+      <section className="flex flex-col gap-3">
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Solar Energy and Dust Storm</h3>
+        <div className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-hud/25 bg-midnight/50">
+          <Image src="/data/opportunity/scientific/power/Opportunity_Power_vs_Tau_2018.jpg" alt="NASA graphic comparing Opportunity's available solar energy with rising atmospheric opacity during the 2018 dust storm" fill sizes="(min-width: 1024px) 760px, 90vw" className="object-contain" />
+        </div>
+        <p className="text-xs leading-relaxed text-frost/65">NASA's published graphic reports approximately 21 watt-hours of available energy as dust opacity rose dramatically near the final communication. This is a published graphic, not raw battery telemetry.</p>
+        <a href="https://science.nasa.gov/resource/on-mars-light-is-energy/" target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4">NASA image source</a>
+      </section>
+      <Unavailable>Raw rover power telemetry and full instrument spectra are not included in this archive.</Unavailable>
     </div>
   )
 }
@@ -349,5 +370,47 @@ function TraverseSection() {
         </ol>
       </div>
     </div>
+  )
+}
+
+function TauChart() {
+  const valid = OPPORTUNITY_TAU_FINAL
+  const width = 740
+  const height = 230
+  const padding = { left: 48, right: 18, top: 20, bottom: 34 }
+  const xMin = 5000
+  const xMax = 5106
+  const yMax = Math.max(2.5, ...valid.map((p) => p.tau))
+  const x = (sol: number) => padding.left + (sol - xMin) / (xMax - xMin) * (width - padding.left - padding.right)
+  const y = (tau: number) => height - padding.bottom - tau / yMax * (height - padding.top - padding.bottom)
+  // Bin by Sol to avoid plotting all same-day point noise at this scale.
+  const bins = new Map<number, { sum: number; count: number }>()
+  for (const point of valid) {
+    const key = Math.floor(point.sol)
+    const bin = bins.get(key) ?? { sum: 0, count: 0 }
+    bin.sum += point.tau
+    bin.count++
+    bins.set(key, bin)
+  }
+  const points = [...bins].sort((a, b) => a[0] - b[0]).map(([sol, value]) => ({ sol, tau: value.sum / value.count }))
+  const polyline = points.map((point) => `${x(point.sol).toFixed(1)},${y(point.tau).toFixed(1)}`).join(' ')
+  return (
+    <figure className="max-w-3xl rounded-2xl border border-hud/25 bg-midnight/50 p-3">
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="NASA measured atmospheric opacity versus rover sol, from Sol 5000 to Sol 5105" className="block w-full">
+        {[0, 1, 2, 3].filter((v) => v <= yMax).map((v) => (
+          <g key={v}>
+            <line x1={padding.left} x2={width - padding.right} y1={y(v)} y2={y(v)} stroke="rgba(73,215,255,.16)" />
+            <text x={padding.left - 10} y={y(v) + 4} textAnchor="end" fill="#b8c6d3" fontSize="12">{v}</text>
+          </g>
+        ))}
+        {[5000, 5025, 5050, 5075, 5100].map((sol) => (
+          <text key={sol} x={x(sol)} y={height - 12} textAnchor="middle" fill="#b8c6d3" fontSize="12">{sol}</text>
+        ))}
+        <polyline points={polyline} fill="none" stroke="#49d7ff" strokeWidth="2.3" strokeLinejoin="round" strokeLinecap="round" />
+        <circle cx={x(valid[valid.length - 1].sol)} cy={y(valid[valid.length - 1].tau)} r="4" fill="#f2b35d" />
+        <text x={width - padding.right} y="15" textAnchor="end" fill="#f2b35d" fontSize="12">Last observation: Tau {valid[valid.length - 1].tau.toFixed(3)} · Sol {Math.floor(valid[valid.length - 1].sol)}</text>
+      </svg>
+      <figcaption className="mt-2 text-xs text-frost/55">NASA PDS Pancam R8 880 nm · Tau is dimensionless · plotted as daily means; not simulated</figcaption>
+    </figure>
   )
 }
