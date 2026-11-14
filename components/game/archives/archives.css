@@ -102,10 +102,10 @@
   --lift: 0;
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateY(calc(var(--base-ry, 0deg) + var(--tx) * 6deg)) rotateX(calc(var(--ty) * -5deg)) translateZ(calc(var(--lift) * 18px));
+  transform: rotateY(calc(var(--base-ry, 0deg) + var(--tx) * 6deg)) rotateX(calc(var(--ty) * -5deg)) translateZ(calc(var(--lift) * 18px)) scale(calc(1 + var(--lift) * 0.045));
   transition: transform 0.6s var(--ease-cine), filter 0.8s var(--ease-cine), opacity 0.8s var(--ease-cine);
 }
-.arc-card[data-hot='true'] { --lift: 1; }
+.arc-card[data-hot='true'] { --lift: 1; z-index: 1; }
 
 .arc-frame {
   position: absolute;
@@ -132,9 +132,7 @@
   animation: arc-sweep 3.2s linear infinite;
   pointer-events: none;
 }
-.arc-card[data-hot='true'] .arc-frame-sweep,
-.arc-card[data-primary='true'] .arc-frame-sweep { opacity: 1; }
-.arc-card[data-primary='true']:not([data-hot='true']) .arc-frame-sweep { opacity: 0.55; }
+.arc-card[data-active='true'] .arc-frame-sweep { opacity: 1; }
 
 .arc-glass {
   border-radius: 22px;
@@ -167,10 +165,10 @@
   pointer-events: none;
 }
 
-/* Focus (Opportunity selected) */
+/* Focus (selected mission) */
 .arc[data-focus='true'] .arc-camera-focus { transform: scale(1.14) translate3d(0, 3%, 0); }
 .arc-camera-focus { transition: transform 1.1s var(--ease-cine), filter 1.1s var(--ease-cine); }
-.arc[data-focus='true'] .arc-card[data-primary='false'] { opacity: 0.18; filter: blur(2px) brightness(0.5); }
+.arc[data-focus='true'] .arc-card[data-selected='false'] { opacity: 0.18; filter: blur(2px) brightness(0.5); }
 .arc[data-view='dossier'] .arc-camera-focus,
 .arc[data-view='archive'] .arc-camera-focus { filter: brightness(0.45) blur(3px); }
 

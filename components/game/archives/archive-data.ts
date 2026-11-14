@@ -8,8 +8,7 @@ export type Mission = {
   body: string
   image: string
   imageAlt: string
-  locked: boolean
-  blurb?: string
+  featured: boolean
 }
 
 export const MISSIONS: Mission[] = [
@@ -21,7 +20,7 @@ export const MISSIONS: Mission[] = [
     body: 'Mars',
     image: '/images/archives/insight.png',
     imageAlt: 'Artistic render of a stationary lander with round solar arrays on a flat Martian plain',
-    locked: true,
+    featured: false,
   },
   {
     id: 'opportunity',
@@ -31,9 +30,7 @@ export const MISSIONS: Mission[] = [
     body: 'Mars',
     image: '/images/archives/opportunity.png',
     imageAlt: 'Artistic render of a six-wheeled rover on the dusty orange plains of Mars at sunset',
-    locked: false,
-    blurb:
-      'Fourteen years after touching down, the rover’s transmissions fell silent during a planet-wide dust storm. Trace the final signals and reconstruct what it saw in its last days on the plains.',
+    featured: true,
   },
   {
     id: 'apollo',
@@ -43,9 +40,18 @@ export const MISSIONS: Mission[] = [
     body: 'Moon',
     image: '/images/archives/apollo.png',
     imageAlt: 'Artistic render of a lunar module and an astronaut on the grey lunar surface with Earth in the sky',
-    locked: true,
+    featured: false,
   },
 ]
+
+export const MISSION_BLURBS: Record<MissionId, string> = {
+  opportunity:
+    'Fourteen years after touching down, the rover’s transmissions fell silent during a planet-wide dust storm. Trace the final signals and reconstruct what it saw in its last days on the plains.',
+  insight:
+    'A stationary lander that listened to the interior of Mars, recording more than 1,300 marsquakes before dust ended its power supply.',
+  apollo:
+    'The first crewed landing on another world. Retrace the hours Eagle spent on the Sea of Tranquility.',
+}
 
 /** Publicly documented NASA/JPL mission history for the Mars Exploration Rover Opportunity (MER-B). */
 export const OPPORTUNITY_FACTS = [
@@ -176,3 +182,108 @@ export const MEDIA: MediaItem[] = [
     credit: 'Fictional environment art',
   },
 ]
+
+export type Dossier = {
+  index: string
+  facts: { label: string; value: string }[]
+  overview: string
+  objectives: string[]
+  craftTitle: string
+  craft: { label: string; value: string }[]
+  instruments: { name: string; detail: string }[]
+  context: string
+  fiction: string
+  hasArchive: boolean
+}
+
+export const DOSSIERS: Record<MissionId, Dossier> = {
+  opportunity: {
+    index: 'MISSION 01',
+    facts: OPPORTUNITY_FACTS,
+    overview: OPPORTUNITY_OVERVIEW,
+    objectives: OPPORTUNITY_OBJECTIVES,
+    craftTitle: 'Rover',
+    craft: OPPORTUNITY_ROVER,
+    instruments: OPPORTUNITY_INSTRUMENTS,
+    context: OPPORTUNITY_CONTEXT,
+    fiction:
+      'Years after the mission ended, the fictional research station Outpost M-07 detects a faint echo on a frequency once used by the rover. Your investigation begins here.',
+    hasArchive: true,
+  },
+  insight: {
+    index: 'MISSION 02',
+    facts: [
+      { label: 'Launch', value: 'May 5, 2018' },
+      { label: 'Landing', value: 'November 26, 2018' },
+      { label: 'Last communication', value: 'December 15, 2022' },
+      { label: 'Planned mission', value: '1 Mars year' },
+    ],
+    overview:
+      'InSight (Interior Exploration using Seismic Investigations, Geodesy and Heat Transport) launched from Vandenberg Space Force Base aboard an Atlas V — the first interplanetary launch from the U.S. West Coast. It landed on Elysium Planitia and became the first mission dedicated to studying the deep interior of Mars.',
+    objectives: [
+      'Measure seismic activity to determine the size and structure of the Martian crust, mantle, and core.',
+      'Measure the rate of heat flowing out of the planet’s interior.',
+      'Track the wobble of Mars’ rotation to constrain the size and state of its core.',
+      'Understand how rocky planets like Earth and Mars formed and evolved.',
+    ],
+    craftTitle: 'Lander',
+    craft: [
+      { label: 'Type', value: 'Stationary lander' },
+      { label: 'Heritage', value: 'Phoenix lander design' },
+      { label: 'Power', value: 'Two solar arrays' },
+      { label: 'Landing site', value: 'Elysium Planitia' },
+      { label: 'Operated by', value: 'NASA / JPL' },
+      { label: 'Mission end', value: 'Declared Dec 21, 2022' },
+    ],
+    instruments: [
+      { name: 'SEIS', detail: 'Seismometer placed on the surface that recorded more than 1,300 marsquakes.' },
+      { name: 'HP³', detail: 'Self-hammering heat-flow probe, nicknamed “the mole.”' },
+      { name: 'RISE', detail: 'Radio science experiment tracking the planet’s rotational wobble.' },
+      { name: 'TWINS', detail: 'Temperature and wind sensors monitoring local weather.' },
+      { name: 'IDA', detail: 'Robotic arm that deployed instruments onto the ground.' },
+      { name: 'IDC / ICC', detail: 'Arm-mounted and body-mounted cameras for context imaging.' },
+    ],
+    context:
+      'InSight was accompanied by MarCO-A and MarCO-B, the first CubeSats sent into deep space, which relayed its landing data. Its seismic recordings gave scientists the first direct measurements of the Martian core. Dust gradually covered its solar arrays until the lander could no longer communicate.',
+    fiction:
+      'Outpost M-07 picks up a faint pattern resembling InSight’s seismic telemetry, long after the lander went quiet. The source has not been identified.',
+    hasArchive: false,
+  },
+  apollo: {
+    index: 'MISSION 03',
+    facts: [
+      { label: 'Launch', value: 'July 16, 1969' },
+      { label: 'Landing', value: 'July 20, 1969' },
+      { label: 'Lunar liftoff', value: 'July 21, 1969' },
+      { label: 'Splashdown', value: 'July 24, 1969' },
+    ],
+    overview:
+      'Apollo 11 launched from Kennedy Space Center aboard a Saturn V rocket. The Lunar Module Eagle touched down in the Sea of Tranquility, and Neil Armstrong and Buzz Aldrin became the first people to walk on the Moon while Michael Collins orbited in the Command Module Columbia.',
+    objectives: [
+      'Perform a crewed lunar landing and return the crew safely to Earth.',
+      'Collect samples of lunar rock and soil.',
+      'Deploy surface experiments at the landing site.',
+      'Photograph the landing area and the lunar surface.',
+    ],
+    craftTitle: 'Spacecraft',
+    craft: [
+      { label: 'Launch vehicle', value: 'Saturn V' },
+      { label: 'Lunar Module', value: 'Eagle' },
+      { label: 'Command Module', value: 'Columbia' },
+      { label: 'Crew', value: 'Armstrong, Aldrin, Collins' },
+      { label: 'Operated by', value: 'NASA' },
+      { label: 'Surface samples', value: '21.5 kg returned' },
+    ],
+    instruments: [
+      { name: 'Passive Seismic Experiment', detail: 'Seismometer that detected moonquakes and impacts.' },
+      { name: 'Laser Ranging Retroreflector', detail: 'Mirror array still used to measure the Earth–Moon distance.' },
+      { name: 'Solar Wind Composition', detail: 'Aluminum foil sheet that captured particles from the solar wind.' },
+      { name: 'Sample containers', detail: 'Sealed boxes that returned lunar rock and soil to Earth.' },
+    ],
+    context:
+      'Apollo 11 fulfilled the goal set by President John F. Kennedy in 1961 of landing a person on the Moon and returning them safely before the end of the decade. Armstrong and Aldrin spent about two and a half hours outside the Lunar Module.',
+    fiction:
+      'A fragment of voice-loop audio, timestamped to Tranquility Base, surfaces in Outpost M-07’s signal buffer. Nobody knows how it got there.',
+    hasArchive: false,
+  },
+}

@@ -2,15 +2,17 @@
 
 import type { CSSProperties, KeyboardEvent } from 'react'
 import type { SoundName } from '@/lib/audio'
+import { languageAttrs, type Dictionary } from '@/lib/i18n'
 import { GameTitle } from './game-title'
 import { OrbitalCapsuleButton } from './orbital-capsule-button'
 import { OrbitalRing } from './orbital-ring'
+import { useGameSettings } from './settings-provider'
 
 export type MenuAction = 'start' | 'archives' | 'settings' | 'about'
 
 const ITEMS: {
   id: MenuAction
-  label: string
+  labelKey: keyof Dictionary
   tone: 'amber' | 'cyan'
   emphasis: 'primary' | 'secondary'
   sound: SoundName
@@ -21,7 +23,7 @@ const ITEMS: {
 }[] = [
   {
     id: 'start',
-    label: 'Start Investigation',
+    labelKey: 'menuStart',
     tone: 'amber',
     emphasis: 'primary',
     sound: 'start',
@@ -32,7 +34,7 @@ const ITEMS: {
   },
   {
     id: 'archives',
-    label: 'Mission Archives',
+    labelKey: 'menuArchives',
     tone: 'cyan',
     emphasis: 'secondary',
     sound: 'archives',
@@ -43,7 +45,7 @@ const ITEMS: {
   },
   {
     id: 'settings',
-    label: 'Settings',
+    labelKey: 'menuSettings',
     tone: 'cyan',
     emphasis: 'secondary',
     sound: 'settings',
@@ -54,7 +56,7 @@ const ITEMS: {
   },
   {
     id: 'about',
-    label: 'About / Credits',
+    labelKey: 'menuAbout',
     tone: 'cyan',
     emphasis: 'secondary',
     sound: 'click',
@@ -71,6 +73,7 @@ type MainMenuProps = {
 }
 
 export function MainMenu({ particlesActive, onSelect }: MainMenuProps) {
+  const { settings, t } = useGameSettings()
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
     const buttons = Array.from(
@@ -84,12 +87,12 @@ export function MainMenu({ particlesActive, onSelect }: MainMenuProps) {
   }
 
   return (
-    <div className="parallax-near relative flex flex-col items-center">
+    <div {...languageAttrs(settings.language)} className="parallax-near relative flex flex-col items-center">
       <OrbitalRing className="pointer-events-none absolute left-1/2 top-[47%] aspect-square w-[min(80vh,96vw)] -translate-x-1/2 -translate-y-1/2" />
 
       <GameTitle />
 
-      <nav aria-label="Main menu" onKeyDown={handleKeyDown} className="mt-[4.4vh]">
+      <nav aria-label={t.menuNav} onKeyDown={handleKeyDown} className="mt-[4.4vh]">
         <ul className="flex flex-col items-center gap-[clamp(12px,2.6vh,26px)]">
           {ITEMS.map((item, i) => (
             <li
@@ -104,7 +107,7 @@ export function MainMenu({ particlesActive, onSelect }: MainMenuProps) {
             >
               <OrbitalCapsuleButton
                 data-menu-item
-                label={item.label}
+                label={t[item.labelKey]}
                 tone={item.tone}
                 emphasis={item.emphasis}
                 sound={item.sound}

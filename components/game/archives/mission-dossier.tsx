@@ -3,23 +3,20 @@
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import { OrbitalCapsuleButton } from '../orbital-capsule-button'
-import {
-  OPPORTUNITY_CONTEXT,
-  OPPORTUNITY_FACTS,
-  OPPORTUNITY_INSTRUMENTS,
-  OPPORTUNITY_OBJECTIVES,
-  OPPORTUNITY_OVERVIEW,
-  OPPORTUNITY_ROVER,
-} from './archive-data'
+import { DOSSIERS, MISSIONS, type MissionId } from './archive-data'
 import { BackChip, SourceTag } from './archive-ui'
 
 type MissionDossierProps = {
+  missionId: MissionId
   onBack: () => void
   onExplore: () => void
   onBegin: () => void
+  onReadManga?: () => void
 }
 
-export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierProps) {
+export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadManga }: MissionDossierProps) {
+  const mission = MISSIONS.find((m) => m.id === missionId) ?? MISSIONS[0]
+  const dossier = DOSSIERS[mission.id]
   const headingRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => headingRef.current?.focus(), [])
 
@@ -31,15 +28,15 @@ export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierPro
     >
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-ember/20 px-5 py-3 sm:px-7">
         <BackChip label="Archives" onClick={onBack} />
-        <p className="text-[10px] font-semibold tracking-[0.32em] text-ember">MISSION 01 · DOSSIER</p>
+        <p className="text-[10px] font-semibold tracking-[0.32em] text-ember">{dossier.index} · DOSSIER</p>
       </header>
 
       <div className="arc-scroll grid min-h-0 flex-1 gap-6 overflow-y-auto p-5 sm:p-7 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div className="flex flex-col gap-4">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-ember/30">
             <Image
-              src="/images/archives/opportunity.png"
-              alt="Artistic render of a six-wheeled rover on the plains of Mars"
+              src={mission.image}
+              alt={mission.imageAlt}
               fill
               sizes="(min-width: 768px) 440px, 90vw"
               className="object-cover"
@@ -55,12 +52,14 @@ export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierPro
               tabIndex={-1}
               className="font-display text-[clamp(24px,4vw,40px)] uppercase leading-none tracking-[0.08em] text-frost outline-none"
             >
-              Opportunity
+              {mission.name}
             </h2>
-            <p className="mt-2 text-sm italic tracking-[0.18em] text-hud">Meridiani Planum · Mars</p>
+            <p className="mt-2 text-sm italic tracking-[0.18em] text-hud">
+              {mission.site} · {mission.body}
+            </p>
           </div>
           <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-hud/20 bg-hud/15">
-            {OPPORTUNITY_FACTS.map((f) => (
+            {dossier.facts.map((f) => (
               <div key={f.label} className="bg-navy/85 p-3">
                 <dt className="text-[9px] font-semibold uppercase tracking-[0.24em] text-hud/75">{f.label}</dt>
                 <dd className="mt-1 text-sm font-semibold text-frost">{f.value}</dd>
@@ -68,14 +67,16 @@ export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierPro
             ))}
           </dl>
           <div className="flex flex-col gap-3 pt-1">
-            <OrbitalCapsuleButton
-              label="Explore Archive"
-              sound="archives"
-              width="100%"
-              height="50px"
-              phase={0.6}
-              onActivate={onExplore}
-            />
+            {dossier.hasArchive && (
+              <OrbitalCapsuleButton
+                label="Explore Archive"
+                sound="archives"
+                width="100%"
+                height="50px"
+                phase={0.6}
+                onActivate={onExplore}
+              />
+            )}
             <OrbitalCapsuleButton
               label="Begin Investigation"
               tone="amber"
@@ -86,17 +87,27 @@ export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierPro
               phase={0.15}
               onActivate={onBegin}
             />
+            {mission.id === 'opportunity' && onReadManga && (
+              <OrbitalCapsuleButton
+                label="Read Manga"
+                sound="archives"
+                width="100%"
+                height="50px"
+                phase={0.35}
+                onActivate={onReadManga}
+              />
+            )}
           </div>
         </div>
 
         <div className="flex flex-col gap-6 text-sm leading-relaxed text-frost/85">
           <DossierBlock title="Mission overview" source="history">
-            <p className="text-pretty">{OPPORTUNITY_OVERVIEW}</p>
+            <p className="text-pretty">{dossier.overview}</p>
           </DossierBlock>
 
           <DossierBlock title="Mission objectives" source="history">
             <ul className="flex flex-col gap-2">
-              {OPPORTUNITY_OBJECTIVES.map((o) => (
+              {dossier.objectives.map((o) => (
                 <li key={o} className="flex gap-3">
                   <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-ember" />
                   <span>{o}</span>
@@ -105,9 +116,9 @@ export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierPro
             </ul>
           </DossierBlock>
 
-          <DossierBlock title="Rover" source="history">
+          <DossierBlock title={dossier.craftTitle} source="history">
             <dl className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
-              {OPPORTUNITY_ROVER.map((r) => (
+              {dossier.craft.map((r) => (
                 <div key={r.label}>
                   <dt className="text-[10px] uppercase tracking-[0.2em] text-frost/50">{r.label}</dt>
                   <dd className="text-frost">{r.value}</dd>
@@ -118,7 +129,7 @@ export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierPro
 
           <DossierBlock title="Instruments" source="history">
             <ul className="grid gap-2 sm:grid-cols-2">
-              {OPPORTUNITY_INSTRUMENTS.map((i) => (
+              {dossier.instruments.map((i) => (
                 <li key={i.name} className="rounded-xl border border-hud/15 bg-midnight/50 p-3">
                   <p className="font-semibold tracking-[0.06em] text-frost">{i.name}</p>
                   <p className="mt-0.5 text-xs text-frost/65">{i.detail}</p>
@@ -128,14 +139,11 @@ export function MissionDossier({ onBack, onExplore, onBegin }: MissionDossierPro
           </DossierBlock>
 
           <DossierBlock title="Historical context" source="history">
-            <p className="text-pretty">{OPPORTUNITY_CONTEXT}</p>
+            <p className="text-pretty">{dossier.context}</p>
           </DossierBlock>
 
           <DossierBlock title="The Last Signal" source="fiction">
-            <p className="text-pretty">
-              Years after the mission ended, the fictional research station Outpost M-07 detects a faint echo on a
-              frequency once used by the rover. Your investigation begins here.
-            </p>
+            <p className="text-pretty">{dossier.fiction}</p>
           </DossierBlock>
         </div>
       </div>

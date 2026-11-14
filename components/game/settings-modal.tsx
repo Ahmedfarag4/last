@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useId, useSyncExternalStore } from 'react'
+import { LANGUAGES } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { HoloDialog } from './holo-dialog'
 import { useGameSettings } from './settings-provider'
@@ -100,16 +101,47 @@ function Switch({
 }
 
 export function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { settings, update, play } = useGameSettings()
+  const { settings, update, play, t } = useGameSettings()
   const { isFullscreen, supported, toggle } = useFullscreen()
   const volumeId = useId()
   const volumePercent = Math.round(settings.volume * 100)
 
   return (
-    <HoloDialog open={open} onClose={onClose} eyebrow="SYSTEM CONFIGURATION" title="SETTINGS">
-      <SettingRow label="Sound effects" description="Spacecraft interface audio.">
+    <HoloDialog open={open} onClose={onClose} eyebrow={t.settingsEyebrow} title={t.settingsTitle}>
+      <SettingRow label={t.language} description={t.languageDesc}>
+        <div role="radiogroup" aria-label={t.language} className="flex shrink-0 rounded-full border border-hud/25 bg-navy/60 p-1">
+          {LANGUAGES.map((lang) => {
+            const selected = settings.language === lang.id
+            return (
+              <button
+                key={lang.id}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                lang={lang.id}
+                onClick={() => {
+                  if (selected) return
+                  update({ language: lang.id })
+                  play('click')
+                }}
+                className={cn(
+                  'rounded-full px-3.5 py-1 text-xs font-semibold transition-colors',
+                  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud',
+                  selected
+                    ? 'bg-hud/20 text-frost shadow-[0_0_10px_rgba(73,215,255,0.35)]'
+                    : 'text-frost/60 hover:text-frost',
+                )}
+              >
+                {lang.label}
+              </button>
+            )
+          })}
+        </div>
+      </SettingRow>
+
+      <SettingRow label={t.soundEffects} description={t.soundEffectsDesc}>
         <Switch
-          label="Sound effects"
+          label={t.soundEffects}
           checked={!settings.muted}
           onChange={(on) => {
             update({ muted: !on })
@@ -118,9 +150,10 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
         />
       </SettingRow>
 
-      <SettingRow label="SFX volume" description={`${volumePercent}%`} htmlFor={volumeId}>
+      <SettingRow label={t.sfxVolume} description={`${volumePercent}%`} htmlFor={volumeId}>
         <input
           id={volumeId}
+          dir="ltr"
           type="range"
           min={0}
           max={100}
@@ -135,9 +168,9 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
         />
       </SettingRow>
 
-      <SettingRow label="Reduced motion" description="Pauses ambient animation and particles.">
+      <SettingRow label={t.reducedMotion} description={t.reducedMotionDesc}>
         <Switch
-          label="Reduced motion"
+          label={t.reducedMotion}
           checked={settings.reducedMotion}
           onChange={(value) => {
             update({ reducedMotion: value })
@@ -147,11 +180,11 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
       </SettingRow>
 
       <SettingRow
-        label="Fullscreen"
-        description={supported ? 'Immersive full-screen display.' : 'Unavailable in this view.'}
+        label={t.fullscreen}
+        description={supported ? t.fullscreenDesc : t.fullscreenUnavailable}
       >
         <Switch
-          label="Fullscreen"
+          label={t.fullscreen}
           checked={isFullscreen}
           disabled={!supported}
           onChange={() => {
@@ -161,7 +194,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
         />
       </SettingRow>
 
-      <p className="mt-4 text-xs text-frost/50">Preferences are saved on this device.</p>
+      <p className="mt-4 text-xs text-frost/50">{t.savedOnDevice}</p>
     </HoloDialog>
   )
 }

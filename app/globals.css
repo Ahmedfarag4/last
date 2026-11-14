@@ -73,6 +73,20 @@
   }
 }
 
+/* ---------- Arabic localization ---------- */
+
+[lang='ar'],
+[lang='ar'] *:not([lang='en'], [lang='en'] *) {
+  letter-spacing: 0 !important;
+  font-style: normal !important;
+}
+[lang='ar'] {
+  font-family: var(--font-arabic), var(--font-sans);
+}
+[lang='ar'] .font-sans:not([lang='en'], [lang='en'] *) {
+  font-family: var(--font-arabic), var(--font-sans);
+}
+
 /* ---------- Intro choreography ---------- */
 
 @keyframes intro-fade {
