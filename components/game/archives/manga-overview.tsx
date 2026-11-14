@@ -9,11 +9,12 @@ import { OPPORTUNITY_MANGA, pageCount } from './manga-data'
 
 type MangaOverviewProps = {
   onBack: () => void
+  onRead: (page: number) => void
 }
 
-export function MangaOverview({ onBack }: MangaOverviewProps) {
+export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
   const manga = OPPORTUNITY_MANGA
-  const ready = manga.assetsUploaded
+  const ready = manga.pagesAvailable
   const headingRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => headingRef.current?.focus(), [])
 
@@ -58,7 +59,7 @@ export function MangaOverview({ onBack }: MangaOverviewProps) {
                 phase={0.15}
                 disabled={!ready}
                 aria-describedby={ready ? undefined : 'manga-status'}
-                onActivate={() => {}}
+                onActivate={() => onRead(1)}
               />
               <OrbitalCapsuleButton
                 label="Back to Dossier"
@@ -88,11 +89,14 @@ export function MangaOverview({ onBack }: MangaOverviewProps) {
             </div>
             <ol className="grid gap-3 sm:grid-cols-2">
               {manga.chapters.map((c, i) => (
-                <li
-                  key={c.number}
-                  className="arc-swap flex items-center gap-4 rounded-xl border border-hud/20 bg-midnight/50 p-4 transition-colors hover:border-hud/50"
-                  style={{ animationDelay: `${0.08 * i}s` }}
-                >
+                <li key={c.number} className="arc-swap" style={{ animationDelay: `${0.08 * i}s` }}>
+                  <button
+                    type="button"
+                    disabled={!ready}
+                    onClick={() => onRead(c.firstPage)}
+                    aria-label={`Read Chapter ${c.number}, pages ${c.firstPage} to ${c.lastPage}`}
+                    className="flex w-full items-center gap-4 rounded-xl border border-hud/20 bg-midnight/50 p-4 text-left transition-colors hover:enabled:border-hud/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud disabled:cursor-not-allowed"
+                  >
                   <span className="font-display text-3xl leading-none text-hud/80">{String(c.number).padStart(2, '0')}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold tracking-[0.12em] text-frost uppercase">Chapter {c.number}</p>
@@ -109,6 +113,7 @@ export function MangaOverview({ onBack }: MangaOverviewProps) {
                   >
                     {ready ? 'Ready' : 'Not uploaded'}
                   </span>
+                  </button>
                 </li>
               ))}
             </ol>
@@ -123,7 +128,7 @@ export function MangaOverview({ onBack }: MangaOverviewProps) {
             <ChevronDown aria-hidden className="size-4 text-frost/60 transition-transform group-open:rotate-180" />
           </summary>
           <div className="px-5 pb-5">
-            <SummaryImage ready={ready} />
+            <SummaryImage ready={manga.summaryUploaded} />
           </div>
         </details>
       </div>
