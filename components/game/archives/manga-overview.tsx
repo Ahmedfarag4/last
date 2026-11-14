@@ -77,6 +77,18 @@ export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
             )}
           </div>
 
+          <details className="group rounded-2xl border border-hud/20 bg-midnight/40">
+            <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 outline-none focus-visible:ring-2 focus-visible:ring-hud/60 [&::-webkit-details-marker]:hidden">
+              <BookOpen aria-hidden className="size-4 text-hud" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ember">Story Summary</span>
+              <span aria-hidden className="h-px flex-1 bg-ember/20" />
+              <ChevronDown aria-hidden className="size-4 text-frost/60 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="px-5 pb-5">
+              <SummaryImage ready={manga.summaryUploaded} />
+            </div>
+          </details>
+
           <section aria-labelledby="chapters-heading" className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <h3 id="chapters-heading" className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ember">
@@ -119,18 +131,6 @@ export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
             </ol>
           </section>
         </div>
-
-        <details className="group rounded-2xl border border-hud/20 bg-midnight/40 md:col-span-2">
-          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 outline-none focus-visible:ring-2 focus-visible:ring-hud/60 [&::-webkit-details-marker]:hidden">
-            <BookOpen aria-hidden className="size-4 text-hud" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ember">Story Summary</span>
-            <span aria-hidden className="h-px flex-1 bg-ember/20" />
-            <ChevronDown aria-hidden className="size-4 text-frost/60 transition-transform group-open:rotate-180" />
-          </summary>
-          <div className="px-5 pb-5">
-            <SummaryImage ready={manga.summaryUploaded} />
-          </div>
-        </details>
       </div>
     </section>
   )
@@ -159,23 +159,28 @@ function CoverArt() {
 }
 
 function SummaryImage({ ready }: { ready: boolean }) {
-  return (
-    <div className="relative mx-auto aspect-[4/3] max-w-2xl overflow-hidden rounded-2xl border border-hud/30 bg-midnight/60">
-      {ready ? (
+  if (ready) {
+    return (
+      <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-hud/30 bg-midnight/60">
         <Image
           src={OPPORTUNITY_MANGA.summaryImage}
-          alt="Story summary of Opportunity — The Journey Beyond 90 Days"
-          fill
-          sizes="(min-width: 768px) 440px, 90vw"
-          className="object-cover"
+          alt="Story summary comic of Opportunity: the NASA team celebrates fifteen years on Mars, the rover finds layered rocks and Martian blueberries, explores Endurance Crater, covers more than 45 kilometers, endures the 2018 dust storm, and leaves a lasting scientific legacy"
+          width={1254}
+          height={1254}
+          quality={95}
+          sizes="(min-width: 1152px) 620px, (min-width: 768px) 55vw, 90vw"
+          className="h-auto w-full object-contain"
         />
-      ) : (
-        <div className="flex h-full flex-col items-center justify-center gap-3 border border-dashed border-hud/25 p-6 text-center">
-          <ImageOff aria-hidden className="size-8 text-hud/60" />
-          <p className="text-[11px] font-semibold tracking-[0.3em] text-frost/80 uppercase">Story summary</p>
-          <p className="text-[10px] tracking-[0.24em] text-ember uppercase">Not uploaded yet</p>
-        </div>
-      )}
+      </div>
+    )
+  }
+  return (
+    <div className="relative mx-auto aspect-[4/3] max-w-2xl overflow-hidden rounded-2xl border border-hud/30 bg-midnight/60">
+      <div className="flex h-full flex-col items-center justify-center gap-3 border border-dashed border-hud/25 p-6 text-center">
+        <ImageOff aria-hidden className="size-8 text-hud/60" />
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-frost/80 uppercase">Story summary</p>
+        <p className="text-[10px] tracking-[0.24em] text-ember uppercase">Not uploaded yet</p>
+      </div>
       <span className="absolute left-2 top-2 inline-flex items-center gap-1.5 rounded-full bg-navy/80 px-2.5 py-1 text-[9px] tracking-[0.2em] text-frost/70">
         <BookOpen aria-hidden className="size-3" />
         STORY SUMMARY

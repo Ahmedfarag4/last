@@ -19,8 +19,7 @@ export const OPPORTUNITY_MANGA = {
   coverHeight: 1264,
   summaryImage: `${MANGA_ASSET_ROOT}/summary.jpg`,
   pagesAvailable: true,
-  // Flip to true once the story summary image is uploaded.
-  summaryUploaded: false,
+  summaryUploaded: true,
   chapters: [
     { number: 1, firstPage: 1, lastPage: 8, pdf: chapterPdf(1) },
     { number: 2, firstPage: 9, lastPage: 21, pdf: chapterPdf(2) },
