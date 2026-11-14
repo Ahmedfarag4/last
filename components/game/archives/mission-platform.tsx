@@ -132,22 +132,6 @@ export function MissionPlatform({ mission, featured, selected, delay, baseRotate
           <span aria-hidden className="arc-frame-sweep" />
         </div>
       </div>
-
-      <div aria-hidden className="arc-pad relative -mt-2 h-0 w-[118%]" style={{ '--d': `${delay - 0.5}s` } as CSSProperties}>
-        <span
-          className="arc-pad-ring aspect-square w-full"
-          style={{
-            background: `radial-gradient(closest-side, ${active ? 'rgba(255,154,61,0.28)' : 'rgba(73,215,255,0.16)'}, transparent 70%)`,
-            border: `2px solid ${active ? 'rgba(255,170,80,0.75)' : 'rgba(73,215,255,0.5)'}`,
-            boxShadow: `0 0 ${active ? 60 : 34}px ${active ? 'rgba(255,154,61,0.7)' : 'rgba(73,215,255,0.45)'}, inset 0 0 40px ${active ? 'rgba(255,154,61,0.4)' : 'rgba(73,215,255,0.25)'}`,
-            transition: 'box-shadow 0.6s ease, border-color 0.6s ease, background 0.6s ease',
-          }}
-        />
-        <span
-          className="arc-pad-ring aspect-square w-[78%]"
-          style={{ border: `1px solid ${active ? 'rgba(255,200,140,0.5)' : 'rgba(73,215,255,0.35)'}` }}
-        />
-      </div>
     </div>
   )
 }

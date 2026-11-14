@@ -177,17 +177,6 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
       )}
 
       <div aria-hidden className="arc-blackout pointer-events-none absolute inset-0 z-30 bg-[#04080e]" />
-
-      {intro && !calm && (
-        <button
-          type="button"
-          onClick={() => setIntro(false)}
-          className="arc-rise absolute bottom-[clamp(80px,14vh,120px)] right-5 z-40 rounded-full border border-hud/40 bg-navy/70 px-5 py-2 text-[11px] font-semibold tracking-[0.3em] text-frost/85 backdrop-blur-sm transition-colors hover:border-hud hover:text-frost focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
-          style={{ '--d': '0.3s' } as React.CSSProperties}
-        >
-          SKIP INTRO
-        </button>
-      )}
     </div>
   )
 }
