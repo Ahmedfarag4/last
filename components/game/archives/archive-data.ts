@@ -160,26 +160,57 @@ export type MediaItem = {
   title: string
   caption: string
   credit: string
+  camera: 'Pancam' | 'Navcam'
+  sourceUrl: string
+  displayFit?: 'contain'
 }
 
+/** Original NASA mission imagery uploaded to public/data/opportunity/images. */
 export const MEDIA: MediaItem[] = [
   {
-    src: '/images/archives/opportunity.png',
-    title: 'Rover on the plains',
-    caption: 'An interpretive scene of a Mars Exploration Rover on Meridiani Planum at sunset.',
-    credit: 'Artistic render, not a NASA photograph',
+    src: '/data/opportunity/images/PIA-22908-LegacyPan-ANNOTATED-NASA-1.jpg',
+    title: 'Opportunity’s Final Panorama',
+    caption: 'Annotated panorama of Perseverance Valley assembled from Pancam images recorded during the rover’s final weeks on Mars in 2018.',
+    credit: 'NASA / JPL-Caltech / Cornell / ASU · PIA22908',
+    camera: 'Pancam',
+    sourceUrl: 'https://science.nasa.gov/resource/opportunity-rovers-final-mars-images/',
+    displayFit: 'contain',
   },
   {
-    src: '/images/archives/chamber.png',
-    title: 'Outpost M-07 archive vault',
-    caption: 'The fictional research chamber where the investigation takes place.',
-    credit: 'Fictional environment art',
+    src: '/data/opportunity/images/42559_PIA22929_PANCAMSOL5111_1P581919922EFFD2FCP2682L8M1.jpg',
+    title: 'Final Downlinked Pancam Frame',
+    caption: 'A dark, incomplete frame from Opportunity’s last communication on June 10, 2018 (Sol 5111). The missing image area is part of the received frame.',
+    credit: 'NASA / JPL-Caltech / Cornell · PIA22929',
+    camera: 'Pancam',
+    sourceUrl: 'https://science.nasa.gov/resource/opportunitys-last-message/',
+    displayFit: 'contain',
   },
   {
-    src: '/images/mars-outpost-bg.png',
-    title: 'Outpost exterior',
-    caption: 'Fictional Mars outpost used as the game’s main setting.',
-    credit: 'Fictional environment art',
+    src: '/data/opportunity/images/PIA22930.jpg',
+    title: 'Last Images of the Sun',
+    caption: 'Two small Pancam frames of the Sun through the dust-filled Martian sky, used to estimate atmospheric opacity near the end of the mission. Original downlinked resolution: 224 × 96 pixels.',
+    credit: 'NASA / JPL-Caltech / Cornell · PIA22930',
+    camera: 'Pancam',
+    sourceUrl: 'https://science.nasa.gov/photojournal/last-images-opportunity-took/',
+    displayFit: 'contain',
+  },
+  {
+    src: '/data/opportunity/images/8846_PIA21725_SOL4793-ncam-full2.jpg',
+    title: 'Looking Back Uphill',
+    caption: 'Navcam view looking back uphill after Opportunity entered Perseverance Valley on Sol 4793 (July 18, 2017); part of the rover’s deck is visible in the foreground.',
+    credit: 'NASA / JPL-Caltech · PIA21725',
+    camera: 'Navcam',
+    sourceUrl: 'https://science.nasa.gov/resource/view-back-uphill-after-entering-perseverance-valley/',
+    displayFit: 'contain',
+  },
+  {
+    src: '/data/opportunity/images/22508_PIA23246-800w.jpg',
+    title: 'Tracks in Perseverance Valley',
+    caption: 'Navcam view of the terrain and wheel tracks in Perseverance Valley, documenting Opportunity’s traverse before the 2018 dust storm.',
+    credit: 'NASA / JPL-Caltech · PIA23246',
+    camera: 'Navcam',
+    sourceUrl: 'https://science.nasa.gov/resource/opportunitys-tracks-in-perseverance-valley/',
+    displayFit: 'contain',
   },
 ]
 
