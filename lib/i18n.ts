@@ -59,6 +59,40 @@ const en = {
   readerLoading: 'Loading chapter…',
   readerError: 'This chapter could not be loaded. Check your connection and try again.',
   readerRetry: 'Retry',
+  readerCompleteEyebrow: 'TRANSMISSION COMPLETE',
+  readerCompleteTitle: 'You finished the story',
+  readerCompleteBody: 'All 4 chapters and 40 pages of Opportunity have been read. Your progress is saved on this device.',
+  readerReadAgain: 'Read Again',
+  readerBackToOverview: 'Back to Overview',
+
+  mangaBackDossier: 'Dossier',
+  mangaArchiveTag: 'MRV-B · ILLUSTRATED ARCHIVE',
+  mangaEyebrow: 'READ MANGA',
+  mangaSubtitle: 'The Journey Beyond 90 Days',
+  mangaIntro:
+    'Built to survive 90 Martian days, the Opportunity rover kept driving for nearly fifteen years. This illustrated story follows its journey across Meridiani Planum, from its first landing to the final transmission.',
+  mangaStart: 'Start Reading',
+  mangaContinue: 'Continue Reading',
+  mangaBackToDossier: 'Back to Dossier',
+  mangaNotUploaded: 'Manga pages not uploaded yet',
+  mangaSavedAt: 'Saved at',
+  mangaFinished: 'Story finished',
+  mangaSummary: 'Story Summary',
+  mangaSummaryAlt:
+    'Story summary comic of Opportunity: the NASA team celebrates fifteen years on Mars, the rover finds layered rocks and Martian blueberries, explores Endurance Crater, covers more than 45 kilometers, endures the 2018 dust storm, and leaves a lasting scientific legacy',
+  mangaSummaryMissing: 'Not uploaded yet',
+  mangaChapters: 'Chapters',
+  mangaPages: 'Pages',
+  mangaPagesLower: 'pages',
+  mangaReadChapter: 'Read Chapter',
+  mangaPagesRange: 'pages',
+  mangaTo: 'to',
+  mangaReady: 'Ready',
+  mangaCompleted: 'Completed',
+  mangaNotUploadedShort: 'Not uploaded',
+  mangaCoverAlt:
+    'Cover artwork for Opportunity: The Journey Beyond 90 Days — the Opportunity rover on Mars beneath Earth, a rocket launch, and an approaching dust storm',
+  mangaOfficialCover: 'Official Cover',
 }
 
 export type Dictionary = typeof en
@@ -117,6 +151,40 @@ const ar: Dictionary = {
   readerLoading: 'جارٍ تحميل الفصل…',
   readerError: 'تعذّر تحميل هذا الفصل. تحقّق من اتصالك وحاول مرة أخرى.',
   readerRetry: 'إعادة المحاولة',
+  readerCompleteEyebrow: 'اكتمل البث',
+  readerCompleteTitle: 'لقد أنهيت القصة',
+  readerCompleteBody: 'قرأت جميع الفصول الأربعة والصفحات الأربعين من «أوبورتيونيتي». تقدّمك محفوظ على هذا الجهاز.',
+  readerReadAgain: 'اقرأ مجددًا',
+  readerBackToOverview: 'العودة إلى النظرة العامة',
+
+  mangaBackDossier: 'الملف',
+  mangaArchiveTag: 'MRV-B · أرشيف مصوّر',
+  mangaEyebrow: 'اقرأ المانجا',
+  mangaSubtitle: 'الرحلة إلى ما بعد 90 يومًا',
+  mangaIntro:
+    'صُمّمت مركبة أوبورتيونيتي لتصمد 90 يومًا مريخيًا، لكنها واصلت السير قرابة خمسة عشر عامًا. تتبّع هذه القصة المصوّرة رحلتها عبر سهل ميريدياني، من هبوطها الأول حتى البث الأخير.',
+  mangaStart: 'ابدأ القراءة',
+  mangaContinue: 'تابع القراءة',
+  mangaBackToDossier: 'العودة إلى الملف',
+  mangaNotUploaded: 'لم تُرفع صفحات المانجا بعد',
+  mangaSavedAt: 'محفوظ عند',
+  mangaFinished: 'اكتملت القصة',
+  mangaSummary: 'ملخّص القصة',
+  mangaSummaryAlt:
+    'قصة مصوّرة تلخّص رحلة أوبورتيونيتي: فريق ناسا يحتفل بخمسة عشر عامًا على المريخ، والمركبة تكتشف صخورًا طبقية و«توت المريخ»، وتستكشف فوهة إنديورانس، وتقطع أكثر من 45 كيلومترًا، وتصمد أمام العاصفة الترابية عام 2018، وتترك إرثًا علميًا خالدًا',
+  mangaSummaryMissing: 'لم يُرفع بعد',
+  mangaChapters: 'الفصول',
+  mangaPages: 'الصفحات',
+  mangaPagesLower: 'صفحة',
+  mangaReadChapter: 'اقرأ الفصل',
+  mangaPagesRange: 'الصفحات',
+  mangaTo: 'إلى',
+  mangaReady: 'جاهز',
+  mangaCompleted: 'مكتمل',
+  mangaNotUploadedShort: 'غير مرفوع',
+  mangaCoverAlt:
+    'غلاف «أوبورتيونيتي: الرحلة إلى ما بعد 90 يومًا» — مركبة أوبورتيونيتي على المريخ تحت الأرض، وإطلاق صاروخ، وعاصفة ترابية تقترب',
+  mangaOfficialCover: 'الغلاف الرسمي',
 }
 
 export const DICTIONARIES: Record<Language, Dictionary> = { en, ar }

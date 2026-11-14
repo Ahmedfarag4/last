@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist'
-import { ChevronLeft, ChevronRight, Expand, LoaderCircle, Minimize, RotateCcw, TriangleAlert, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Expand, Flag, LoaderCircle, Minimize, RotateCcw, TriangleAlert, ZoomIn, ZoomOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { languageAttrs } from '@/lib/i18n'
 import { useGameSettings } from '../settings-provider'
 import { BackChip } from './archive-ui'
 import { OPPORTUNITY_MANGA, TOTAL_PAGES, chapterForPage, type MangaChapter } from './manga-data'
+import { markMangaFinished, saveMangaPage } from './manga-progress'
 
 const ZOOM_LEVELS = [1, 1.25, 1.5, 2, 2.5, 3]
 const MAX_DPR = 2
@@ -52,6 +53,7 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
   const [size, setSize] = useState({ w: 0, h: 0 })
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [canFullscreen, setCanFullscreen] = useState(false)
+  const [finished, setFinished] = useState(false)
 
   const rootRef = useRef<HTMLElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -62,11 +64,20 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
   const zoom = ZOOM_LEVELS[zoomIndex]
 
   const goTo = useCallback((next: number) => {
+    setFinished(false)
     setPage(Math.min(Math.max(next, 1), TOTAL_PAGES))
     viewportRef.current?.scrollTo({ top: 0, left: 0 })
   }, [])
-  const next = useCallback(() => goTo(page + 1), [goTo, page])
-  const prev = useCallback(() => goTo(page - 1), [goTo, page])
+  const finish = useCallback(() => {
+    markMangaFinished()
+    setFinished(true)
+  }, [])
+  const next = useCallback(() => (page >= TOTAL_PAGES ? finish() : goTo(page + 1)), [finish, goTo, page])
+  const prev = useCallback(() => (finished ? setFinished(false) : goTo(page - 1)), [finished, goTo, page])
+
+  useEffect(() => {
+    saveMangaPage(page)
+  }, [page])
   const zoomIn = useCallback(() => setZoomIndex((i) => Math.min(i + 1, ZOOM_LEVELS.length - 1)), [])
   const zoomOut = useCallback(() => setZoomIndex((i) => Math.max(i - 1, 0)), [])
 
@@ -221,6 +232,42 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
           </div>
         )}
 
+        {finished && (
+          <div
+            role="dialog"
+            aria-modal="false"
+            aria-labelledby="manga-complete-title"
+            className="arc-panel-in absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-midnight/90 p-6 text-center backdrop-blur-sm"
+          >
+            <Flag aria-hidden className="size-8 text-ember" />
+            <p className="text-[10px] font-semibold tracking-[0.32em] text-hud">{t.readerCompleteEyebrow}</p>
+            <h2
+              id="manga-complete-title"
+              className="font-display text-[clamp(22px,3.5vw,36px)] uppercase leading-none tracking-[0.08em] text-frost"
+            >
+              {t.readerCompleteTitle}
+            </h2>
+            <p className="max-w-md text-pretty text-sm leading-relaxed text-frost/80">{t.readerCompleteBody}</p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => goTo(1)}
+                className="inline-flex items-center gap-2 rounded-full border border-ember/50 px-4 py-1.5 text-[11px] font-semibold tracking-[0.22em] text-ember uppercase transition-colors hover:border-ember hover:text-frost focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
+              >
+                <RotateCcw aria-hidden className="size-3.5" />
+                {t.readerReadAgain}
+              </button>
+              <button
+                type="button"
+                onClick={onBack}
+                className="inline-flex items-center gap-2 rounded-full border border-hud/40 px-4 py-1.5 text-[11px] font-semibold tracking-[0.22em] text-frost/85 uppercase transition-colors hover:border-hud hover:text-frost focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
+              >
+                {t.readerBackToOverview}
+              </button>
+            </div>
+          </div>
+        )}
+
         {status === 'error' && (
           <div role="alert" className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
             <TriangleAlert aria-hidden className="size-8 text-ember" />
@@ -238,7 +285,7 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
       </div>
 
       <footer dir="ltr" className="flex items-center justify-between gap-2 border-t border-hud/20 px-3 py-3 sm:px-6">
-        <NavButton label={t.readerPrev} onClick={prev} disabled={page <= 1}>
+        <NavButton label={t.readerPrev} onClick={prev} disabled={page <= 1 && !finished}>
           <ChevronLeft aria-hidden className="size-5" />
           <span className="hidden sm:inline">{t.readerPrev}</span>
         </NavButton>
@@ -269,7 +316,7 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
           </ToolButton>
         </div>
 
-        <NavButton label={t.readerNext} onClick={next} disabled={page >= TOTAL_PAGES} primary>
+        <NavButton label={t.readerNext} onClick={next} disabled={finished} primary>
           <span className="hidden sm:inline">{t.readerNext}</span>
           <ChevronRight aria-hidden className="size-5" />
         </NavButton>
