@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "record_type": "mission_metadata_extracted_from_nasa_webpage_pdf",
+  "mission": {
+    "name": "Mars Exploration Rover Opportunity",
+    "short_name": "Opportunity",
+    "designation": "MER-B",
+    "type": "Mars rover",
+    "operator": "NASA / Jet Propulsion Laboratory",
+    "destination": "Martian surface",
+    "launch": {"date": "2003-07-07", "launch_vehicle": "Delta 7925H (no. D299)", "launch_site": "Cape Canaveral, Florida, SLC-17B"},
+    "landing": {"date": "2004-01-24", "region": "Meridiani Planum", "crater": "Eagle crater", "latitude_degrees_south": 1.9483, "longitude_degrees_east": 354.47417},
+    "last_communication_date": "2018-06-10",
+    "mission_end_declared_date": "2019-02-13",
+    "final_region": "Perseverance Valley, Endeavour crater",
+    "final_odometry_km": 45.16,
+    "mission_status": "Ended; rover inactive on Mars",
+    "primary_science_objective": "Search for and examine rocks and soils for evidence of past water activity and past conditions that could have supported life"
+  },
+  "scientific_instruments": [
+    {"name": "Panoramic Camera Assembly", "abbreviation": "Pancam", "purpose": "Panoramic imaging"},
+    {"name": "Navigation Cameras", "abbreviation": "Navcam", "purpose": "Navigation and stereo terrain imaging"},
+    {"name": "Miniature Thermal Emission Spectrometer", "abbreviation": "Mini-TES", "purpose": "Remote thermal emission spectroscopy"},
+    {"name": "Mössbauer Spectrometer", "abbreviation": "MB", "purpose": "Iron-bearing mineral investigation"},
+    {"name": "Alpha Particle X-ray Spectrometer", "abbreviation": "APXS", "purpose": "Elemental analysis"},
+    {"name": "Magnet / magnetic dust collectors", "purpose": "Magnetic properties of Martian dust"},
+    {"name": "Microscopic Imager", "abbreviation": "MI", "purpose": "Close-up imaging of rock and soil texture"},
+    {"name": "Rock Abrasion Tool", "abbreviation": "RAT", "purpose": "Abrade rock surfaces for examination"}
+  ],
+  "mission_events": [
+    {"date": "2003-07-07", "event": "Launch"},
+    {"date": "2004-01-24", "event": "Landing in Eagle crater, Meridiani Planum"},
+    {"date": "2007-07", "event": "Severe Martian dust storms reduced solar power and temporarily stopped science activities", "date_precision": "month"},
+    {"date": "2011-08-09", "event": "Arrival at Endeavour crater"},
+    {"date": "2017", "event": "Investigation of Perseverance Valley began", "date_precision": "year"},
+    {"date": "2018-06-10", "event": "Last signal detected during planet-wide dust storm"},
+    {"date": "2019-02-13", "event": "NASA declared mission complete"}
+  ],
+  "final_storm": {
+    "period": "2018",
+    "character": "Mars-wide dust storm",
+    "documented_effect": "Reduced sunlight reaching Opportunity's solar panels and reduced available power",
+    "last_signal_date": "2018-06-10",
+    "limitations": [
+      "This source does not supply a calibrated atmospheric optical depth (tau) time series.",
+      "This source does not supply raw rover power telemetry or the final signal packet.",
+      "No specific hardware failure beyond the documented power-loss context is established by this source alone."
+    ]
+  },
+  "source": {
+    "publisher": "NASA Science",
+    "url": "https://science.nasa.gov/mission/mer-opportunity/",
+    "source_type": "User-saved print-to-PDF copy of NASA mission webpage",
+    "uploaded_filename": "pdf5.pdf",
+    "pdf_pages": 21,
+    "page_references": {
+      "mission_overview": [1, 2],
+      "mission_and_spacecraft_details": [3, 4],
+      "key_dates": [5, 6],
+      "landing_and_location": [6, 7],
+      "dust_storm_2007": [9],
+      "final_storm_and_last_signal": [14],
+      "additional_source_links": [15]
+    },
+    "relationship_to_space_apps": "NASA Science Opportunity mission page reached through the Spirit & Opportunity resource linked on the 2026 NASA Space Apps challenge Resources page; link traversal reported by user in conversation"
+  },
+  "data_collection_status": {
+    "mission_metadata": "collected",
+    "pancam_images": "not_collected",
+    "navcam_images": "not_collected",
+    "atmospheric_opacity_time_series": "not_collected",
+    "power_or_signal_telemetry": "not_collected",
+    "note": "This JSON is a derived metadata record, not an original raw NASA telemetry dataset."
+  }
+}
