@@ -11,6 +11,9 @@ export const OPPORTUNITY_MANGA = {
   subtitle: 'The Journey Beyond 90 Days',
   intro:
     'Built to survive 90 Martian days, the Opportunity rover kept driving for nearly fifteen years. This illustrated story follows its journey across Meridiani Planum, from its first landing to the final transmission.',
+  coverImage: `${MANGA_ASSET_ROOT}/cover.jpg`,
+  coverWidth: 843,
+  coverHeight: 1264,
   summaryImage: `${MANGA_ASSET_ROOT}/summary.jpg`,
   // Flip to true in Phase 2 once the summary image and page files are uploaded.
   assetsUploaded: false,

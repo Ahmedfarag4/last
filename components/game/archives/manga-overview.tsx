@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
-import { BookOpen, ImageOff } from 'lucide-react'
+import { BookOpen, ChevronDown, ImageOff } from 'lucide-react'
 import { OrbitalCapsuleButton } from '../orbital-capsule-button'
 import { BackChip } from './archive-ui'
 import { OPPORTUNITY_MANGA, pageCount } from './manga-data'
@@ -28,37 +28,8 @@ export function MangaOverview({ onBack }: MangaOverviewProps) {
         <p className="text-[10px] font-semibold tracking-[0.32em] text-hud">MRV-B · ILLUSTRATED ARCHIVE</p>
       </header>
 
-      <div className="arc-scroll grid min-h-0 flex-1 gap-6 overflow-y-auto p-5 sm:p-7 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <div className="flex flex-col gap-4">
-          <SummaryImage ready={ready} />
-          <div className="flex flex-col gap-3 pt-1">
-            <OrbitalCapsuleButton
-              label="Start Reading"
-              tone="amber"
-              emphasis="primary"
-              sound="start"
-              width="100%"
-              height="50px"
-              phase={0.15}
-              disabled={!ready}
-              aria-describedby={ready ? undefined : 'manga-status'}
-              onActivate={() => {}}
-            />
-            <OrbitalCapsuleButton
-              label="Back to Dossier"
-              sound="back"
-              width="100%"
-              height="50px"
-              phase={0.6}
-              onActivate={onBack}
-            />
-            {!ready && (
-              <p id="manga-status" className="text-center text-[10px] tracking-[0.24em] text-ember/90 uppercase">
-                Manga pages not uploaded yet
-              </p>
-            )}
-          </div>
-        </div>
+      <div className="arc-scroll grid min-h-0 flex-1 content-start gap-6 overflow-y-auto p-5 sm:p-7 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <CoverArt />
 
         <div className="flex flex-col gap-6">
           <div>
@@ -73,6 +44,36 @@ export function MangaOverview({ onBack }: MangaOverviewProps) {
             </h2>
             <p className="mt-2 text-sm italic tracking-[0.18em] text-hud">{manga.subtitle}</p>
             <p className="mt-4 text-pretty text-sm leading-relaxed text-frost/85">{manga.intro}</p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <OrbitalCapsuleButton
+                label="Start Reading"
+                tone="amber"
+                emphasis="primary"
+                sound="start"
+                width="100%"
+                height="50px"
+                phase={0.15}
+                disabled={!ready}
+                aria-describedby={ready ? undefined : 'manga-status'}
+                onActivate={() => {}}
+              />
+              <OrbitalCapsuleButton
+                label="Back to Dossier"
+                sound="back"
+                width="100%"
+                height="50px"
+                phase={0.6}
+                onActivate={onBack}
+              />
+            </div>
+            {!ready && (
+              <p id="manga-status" className="text-center text-[10px] tracking-[0.24em] text-ember/90 uppercase">
+                Manga pages not uploaded yet
+              </p>
+            )}
           </div>
 
           <section aria-labelledby="chapters-heading" className="flex flex-col gap-3">
@@ -113,14 +114,48 @@ export function MangaOverview({ onBack }: MangaOverviewProps) {
             </ol>
           </section>
         </div>
+
+        <details className="group rounded-2xl border border-hud/20 bg-midnight/40 md:col-span-2">
+          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 outline-none focus-visible:ring-2 focus-visible:ring-hud/60 [&::-webkit-details-marker]:hidden">
+            <BookOpen aria-hidden className="size-4 text-hud" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ember">Story Summary</span>
+            <span aria-hidden className="h-px flex-1 bg-ember/20" />
+            <ChevronDown aria-hidden className="size-4 text-frost/60 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="px-5 pb-5">
+            <SummaryImage ready={ready} />
+          </div>
+        </details>
       </div>
     </section>
   )
 }
 
+function CoverArt() {
+  const { coverImage, coverWidth, coverHeight, title, subtitle } = OPPORTUNITY_MANGA
+  return (
+    <figure className="mx-auto w-full max-w-sm md:max-w-none">
+      <div className="relative overflow-hidden rounded-2xl border border-hud/30 bg-midnight/70 p-2 shadow-[0_0_40px_-12px_rgba(73,215,255,0.45)]">
+        <Image
+          src={coverImage}
+          alt={`Cover artwork for ${title}: ${subtitle} — the Opportunity rover on Mars beneath Earth, a rocket launch, and an approaching dust storm`}
+          width={coverWidth}
+          height={coverHeight}
+          priority
+          sizes="(min-width: 1152px) 440px, (min-width: 768px) 40vw, 384px"
+          className="h-auto w-full rounded-xl object-contain"
+        />
+      </div>
+      <figcaption className="mt-2 text-center text-[9px] tracking-[0.28em] text-frost/55 uppercase">
+        Official Cover
+      </figcaption>
+    </figure>
+  )
+}
+
 function SummaryImage({ ready }: { ready: boolean }) {
   return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-hud/30 bg-midnight/60">
+    <div className="relative mx-auto aspect-[4/3] max-w-2xl overflow-hidden rounded-2xl border border-hud/30 bg-midnight/60">
       {ready ? (
         <Image
           src={OPPORTUNITY_MANGA.summaryImage}
