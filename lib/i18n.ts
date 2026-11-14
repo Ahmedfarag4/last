@@ -44,6 +44,21 @@ const en = {
   creditInspiration: 'Inspiration',
   creditAudioEntry: 'Interface sounds synthesized in real time with the Web Audio API',
   creditInspirationEntry: 'The real-world Mars Exploration Rover missions and the people who operated them',
+
+  readerTitle: 'Manga Reader',
+  readerBack: 'Manga Overview',
+  readerChapter: 'Chapter',
+  readerChapterSelect: 'Select chapter',
+  readerPage: 'Page',
+  readerPrev: 'Previous',
+  readerNext: 'Next',
+  readerZoomIn: 'Zoom in',
+  readerZoomOut: 'Zoom out',
+  readerFit: 'Fit page to screen',
+  readerExitFullscreen: 'Exit fullscreen',
+  readerLoading: 'Loading chapter…',
+  readerError: 'This chapter could not be loaded. Check your connection and try again.',
+  readerRetry: 'Retry',
 }
 
 export type Dictionary = typeof en
@@ -87,6 +102,21 @@ const ar: Dictionary = {
   creditInspiration: 'الإلهام',
   creditAudioEntry: 'أصوات الواجهة مُولَّدة لحظيًا باستخدام Web Audio API',
   creditInspirationEntry: 'مهمات مركبات استكشاف المريخ الحقيقية والأشخاص الذين قاموا بتشغيلها',
+
+  readerTitle: 'قارئ المانجا',
+  readerBack: 'نظرة عامة على المانجا',
+  readerChapter: 'الفصل',
+  readerChapterSelect: 'اختر الفصل',
+  readerPage: 'الصفحة',
+  readerPrev: 'السابق',
+  readerNext: 'التالي',
+  readerZoomIn: 'تكبير',
+  readerZoomOut: 'تصغير',
+  readerFit: 'ملاءمة الصفحة للشاشة',
+  readerExitFullscreen: 'الخروج من ملء الشاشة',
+  readerLoading: 'جارٍ تحميل الفصل…',
+  readerError: 'تعذّر تحميل هذا الفصل. تحقّق من اتصالك وحاول مرة أخرى.',
+  readerRetry: 'إعادة المحاولة',
 }
 
 export const DICTIONARIES: Record<Language, Dictionary> = { en, ar }
