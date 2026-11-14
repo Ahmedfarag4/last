@@ -14,7 +14,6 @@ import {
   TRAVERSE_DISTANCE,
 } from './archive-data'
 import { BackChip, SourceTag } from './archive-ui'
-import { OPPORTUNITY_TAU_FINAL } from './opportunity-tau-data'
 
 export type SectionId = 'media' | 'signals' | 'notes' | 'traverse'
 
@@ -127,18 +126,16 @@ function MediaSection() {
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <figure className="flex flex-col gap-3">
-        <div key={item.src} className="arc-swap relative aspect-video overflow-hidden rounded-2xl border border-hud/25 bg-midnight/70">
-          <Image src={item.src} alt={item.caption} fill sizes="(min-width: 1024px) 700px, 90vw" className={item.displayFit === 'contain' ? 'object-contain' : 'object-cover'} />
+        <div key={item.src} className="arc-swap relative aspect-video overflow-hidden rounded-2xl border border-hud/25">
+          <Image src={item.src} alt={item.caption} fill sizes="(min-width: 1024px) 700px, 90vw" className="object-cover" />
         </div>
         <figcaption className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-semibold tracking-[0.06em] text-frost">{item.title}</span>
-            <SourceTag kind="history" />
-            <span className="rounded-full border border-hud/30 px-2 py-0.5 text-[10px] tracking-widest text-hud">{item.camera}</span>
+            <SourceTag kind={item.credit.startsWith('Artistic') ? 'render' : 'fiction'} />
           </div>
           <span className="text-sm text-frost/70">{item.caption}</span>
           <span className="text-xs text-frost/45">{item.credit}</span>
-          <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">View original NASA source</a>
         </figcaption>
       </figure>
       <div className="flex flex-col gap-3">
@@ -155,12 +152,15 @@ function MediaSection() {
                   i === index ? 'border-hud' : 'border-hud/15 opacity-60 hover:opacity-100',
                 )}
               >
-                <Image src={m.src} alt="" fill sizes="200px" className="object-contain" />
+                <Image src={m.src} alt="" fill sizes="200px" className="object-cover" />
               </button>
             </li>
           ))}
         </ul>
-        <p className="text-xs leading-relaxed text-frost/55">Original NASA/JPL mission imagery · 3 Pancam and 2 Navcam images. Titles and captions describe the original image records.</p>
+        <Unavailable>
+          Original NASA/JPL photographs and panoramas are not bundled in this build. Images shown are artistic
+          renders or fictional environment art.
+        </Unavailable>
       </div>
     </div>
   )
@@ -204,16 +204,6 @@ function SignalSection() {
         </div>
         <h3 className="font-display text-xl tracking-[0.06em] text-frost">{log.title}</h3>
         <p className="text-sm leading-relaxed text-frost/80">{log.body}</p>
-        {log.sourceUrl && (
-          <a
-            href={log.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost focus-visible:outline-2 focus-visible:outline-hud"
-          >
-            View official source: {log.sourceLabel ?? 'NASA/JPL'}
-          </a>
-        )}
         <div aria-hidden className="mt-auto flex h-10 items-end gap-[3px] pt-4">
           {Array.from({ length: 40 }, (_, i) => (
             <span
@@ -267,73 +257,58 @@ function NotesSection() {
           ))}
         </ul>
       </section>
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Final Storm · Atmospheric Opacity (880 nm)</h3>
-          <SourceTag kind="history" />
-        </div>
-        <p className="max-w-3xl text-xs leading-relaxed text-frost/65">
-          Direct measurements from the original NASA PDS MER1 Pancam opacity table (Sol 5000–5105).
-          Higher Tau means more dust obscuring the Sun. Missing/non-measurement values are excluded.
-          This series ends at Sol 5105, so it does not measure the final Sol 5111 dust level.
-        </p>
-        <TauChart />
-        <a href="/data/opportunity/scientific/atmospheric-opacity/1tau880_5106_20181207a.tab" download className="w-fit text-xs text-hud underline underline-offset-4">Download original NASA PDS measurements (.tab)</a>
-      </section>
-      <section className="flex flex-col gap-3">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Solar Energy and Dust Storm</h3>
-        <div className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-hud/25 bg-midnight/50">
-          <Image src="/data/opportunity/scientific/power/Opportunity_Power_vs_Tau_2018.jpg" alt="NASA graphic comparing Opportunity's available solar energy with rising atmospheric opacity during the 2018 dust storm" fill sizes="(min-width: 1024px) 760px, 90vw" className="object-contain" />
-        </div>
-        <p className="text-xs leading-relaxed text-frost/65">NASA's published graphic reports approximately 21 watt-hours of available energy as dust opacity rose dramatically near the final communication. This is a published graphic, not raw battery telemetry.</p>
-        <a href="https://science.nasa.gov/resource/on-mars-light-is-energy/" target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4">NASA image source</a>
-      </section>
-      <Unavailable>Raw rover power telemetry and full instrument spectra are not included in this archive.</Unavailable>
+      <Unavailable>Raw instrument readings and spectra are not included in this build.</Unavailable>
     </div>
   )
 }
 
-/** NASA/JPL PIA23178, published 2019-04-25. This is an actual mapped route,
- * not an interactive georeferenced path. The stop list is an independent index. */
-const NASA_TRAVERSE_IMAGE =
-  'https://d2pn8kiwq2w21t.cloudfront.net/original_images/jpegPIA23178.jpg'
-const NASA_TRAVERSE_SOURCE =
-  'https://www.jpl.nasa.gov/images/pia23178-opportunitys-final-traverse-map/'
+const ROUTE = [
+  { x: 40, y: 40 },
+  { x: 70, y: 62 },
+  { x: 110, y: 90 },
+  { x: 175, y: 128 },
+  { x: 300, y: 188 },
+  { x: 318, y: 222 },
+]
 
 function TraverseSection() {
   const [active, setActive] = useState(0)
-  const [mapError, setMapError] = useState(false)
   const stop = TRAVERSE[active]
+  const d = ROUTE.map((p, i) => `${i ? 'L' : 'M'} ${p.x} ${p.y}`).join(' ')
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-2">
-        <figure className="overflow-hidden rounded-2xl border border-hud/25 bg-midnight/70">
-          {!mapError ? (
-            <img
-              src={NASA_TRAVERSE_IMAGE}
-              alt="NASA/JPL Opportunity final traverse map PIA23178: mapped yellow rover route from Eagle Crater to Perseverance Valley"
-              width={2667}
-              height={2058}
-              loading="lazy"
-              onError={() => setMapError(true)}
-              className="block h-auto w-full object-contain"
-            />
-          ) : (
-            <div className="flex min-h-60 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-frost/75">
-              NASA map image could not be loaded.
-              <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="text-hud underline underline-offset-4">Open NASA's official traverse map</a>
-            </div>
-          )}
-          <figcaption className="border-t border-hud/15 px-3 py-2 text-xs leading-relaxed text-frost/65">
-            Actual Opportunity traverse map · NASA/JPL-Caltech/MSSS · PIA23178 (2019)
-          </figcaption>
-        </figure>
-        <p className="text-[11px] leading-relaxed text-frost/55">
-          The yellow route is from NASA's mapped orbital imagery. The station list is a separate historical index, not geolocated clickable markers.
-        </p>
-        <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">
-          View official NASA image and description
-        </a>
+        <div className="relative overflow-hidden rounded-2xl border border-hud/25 bg-[radial-gradient(circle_at_30%_30%,rgba(255,154,61,0.12),transparent_60%),#0a1420]">
+          <svg viewBox="0 0 360 260" className="block w-full" role="group" aria-label="Schematic traverse route">
+            <defs>
+              <pattern id="arc-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(73,215,255,0.08)" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="360" height="260" fill="url(#arc-grid)" />
+            <path d={d} fill="none" stroke="rgba(242,179,93,0.25)" strokeWidth="6" strokeLinecap="round" />
+            <path d={d} fill="none" stroke="#f2b35d" strokeWidth="1.6" strokeDasharray="4 4" />
+            {ROUTE.map((p, i) => (
+              <g
+                key={i}
+                role="button"
+                tabIndex={0}
+                aria-label={TRAVERSE[i].site}
+                aria-pressed={i === active}
+                onClick={() => setActive(i)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setActive(i))}
+                className="cursor-pointer outline-none [&:focus-visible>circle:first-child]:stroke-frost"
+              >
+                <circle cx={p.x} cy={p.y} r={i === active ? 9 : 6} fill="rgba(73,215,255,0.15)" stroke="#49d7ff" strokeWidth="1.2" />
+                <circle cx={p.x} cy={p.y} r="2.5" fill={i === active ? '#fff3de' : '#49d7ff'} />
+                <text x={p.x + 12} y={p.y + 4} fill="rgba(234,244,255,0.75)" fontSize="9" letterSpacing="1">
+                  {TRAVERSE[i].site}
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
+        <p className="text-[11px] text-frost/45">Schematic only. Not to scale and not based on orbital mapping data.</p>
       </div>
       <div className="flex flex-col gap-4">
         <article key={active} aria-live="polite" className="arc-swap rounded-2xl border border-hud/20 bg-midnight/50 p-5">
@@ -374,47 +349,5 @@ function TraverseSection() {
         </ol>
       </div>
     </div>
-  )
-}
-
-function TauChart() {
-  const valid = OPPORTUNITY_TAU_FINAL
-  const width = 740
-  const height = 230
-  const padding = { left: 48, right: 18, top: 20, bottom: 34 }
-  const xMin = 5000
-  const xMax = 5106
-  const yMax = Math.max(2.5, ...valid.map((p) => p.tau))
-  const x = (sol: number) => padding.left + (sol - xMin) / (xMax - xMin) * (width - padding.left - padding.right)
-  const y = (tau: number) => height - padding.bottom - tau / yMax * (height - padding.top - padding.bottom)
-  // Bin by Sol to avoid plotting all same-day point noise at this scale.
-  const bins = new Map<number, { sum: number; count: number }>()
-  for (const point of valid) {
-    const key = Math.floor(point.sol)
-    const bin = bins.get(key) ?? { sum: 0, count: 0 }
-    bin.sum += point.tau
-    bin.count++
-    bins.set(key, bin)
-  }
-  const points = [...bins].sort((a, b) => a[0] - b[0]).map(([sol, value]) => ({ sol, tau: value.sum / value.count }))
-  const polyline = points.map((point) => `${x(point.sol).toFixed(1)},${y(point.tau).toFixed(1)}`).join(' ')
-  return (
-    <figure className="max-w-3xl rounded-2xl border border-hud/25 bg-midnight/50 p-3">
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="NASA measured atmospheric opacity versus rover sol, from Sol 5000 to Sol 5105" className="block w-full">
-        {[0, 1, 2, 3].filter((v) => v <= yMax).map((v) => (
-          <g key={v}>
-            <line x1={padding.left} x2={width - padding.right} y1={y(v)} y2={y(v)} stroke="rgba(73,215,255,.16)" />
-            <text x={padding.left - 10} y={y(v) + 4} textAnchor="end" fill="#b8c6d3" fontSize="12">{v}</text>
-          </g>
-        ))}
-        {[5000, 5025, 5050, 5075, 5100].map((sol) => (
-          <text key={sol} x={x(sol)} y={height - 12} textAnchor="middle" fill="#b8c6d3" fontSize="12">{sol}</text>
-        ))}
-        <polyline points={polyline} fill="none" stroke="#49d7ff" strokeWidth="2.3" strokeLinejoin="round" strokeLinecap="round" />
-        <circle cx={x(valid[valid.length - 1].sol)} cy={y(valid[valid.length - 1].tau)} r="4" fill="#f2b35d" />
-        <text x={width - padding.right} y="15" textAnchor="end" fill="#f2b35d" fontSize="12">Last observation: Tau {valid[valid.length - 1].tau.toFixed(3)} · Sol {Math.floor(valid[valid.length - 1].sol)}</text>
-      </svg>
-      <figcaption className="mt-2 text-xs text-frost/55">NASA PDS Pancam R8 880 nm · Tau is dimensionless · plotted as daily means; not simulated</figcaption>
-    </figure>
   )
 }
