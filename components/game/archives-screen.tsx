@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { OrbitalCapsuleButton } from './orbital-capsule-button'
 import { useGameSettings } from './settings-provider'
 import { ArchiveEnvironment } from './archives/archive-environment'
-import { MISSIONS } from './archives/archive-data'
+import { MISSIONS, type MissionId } from './archives/archive-data'
 import { MissionDossier } from './archives/mission-dossier'
 import { MissionPlatform } from './archives/mission-platform'
 import { ScientificArchive, type SectionId } from './archives/scientific-archive'
@@ -30,6 +30,7 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
   const [focus, setFocus] = useState(false)
   const [section, setSection] = useState<SectionId | null>(null)
   const [mobileIndex, setMobileIndex] = useState(1)
+  const [selectedId, setSelectedId] = useState<MissionId | null>(null)
   const focusTimer = useRef<number>(0)
 
   useEffect(() => {
@@ -40,7 +41,8 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
 
   useEffect(() => () => window.clearTimeout(focusTimer.current), [])
 
-  const openDossier = useCallback(() => {
+  const openDossier = useCallback((id: MissionId) => {
+    setSelectedId(id)
     setFocus(true)
     window.clearTimeout(focusTimer.current)
     focusTimer.current = window.setTimeout(() => setView('dossier'), calm ? 0 : FOCUS_MS)
@@ -49,6 +51,7 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
   const backToSelect = useCallback(() => {
     setView('select')
     setFocus(false)
+    setSelectedId(null)
   }, [])
 
   const goBack = useCallback(() => {
@@ -111,22 +114,22 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
 
             <div className="arc-stage relative flex min-h-0 flex-1 items-center justify-center gap-[clamp(16px,3vw,56px)] px-4 pb-[clamp(20px,5vh,56px)]">
               {MISSIONS.map((m, i) => {
-                const primary = !m.locked
                 const rotate = i === 0 ? 14 : i === 2 ? -14 : 0
                 return (
                   <MissionPlatform
                     key={m.id}
                     mission={m}
-                    primary={primary}
+                    featured={m.featured}
+                    selected={selectedId === m.id}
                     calm={calm}
-                    delay={primary ? 2.3 : i === 0 ? 2.7 : 3}
+                    delay={m.featured ? 2.3 : i === 0 ? 2.7 : 3}
                     baseRotate={rotate}
                     onBegin={() => {
                       play('archives')
-                      openDossier()
+                      openDossier(m.id)
                     }}
                     className={cn(
-                      primary ? 'w-[min(86vw,360px)] md:w-[min(34vw,46vh,440px)]' : 'w-[min(86vw,340px)] md:w-[min(22vw,36vh,300px)]',
+                      m.featured ? 'w-[min(86vw,360px)] md:w-[min(34vw,46vh,440px)]' : 'w-[min(86vw,340px)] md:w-[min(22vw,36vh,300px)]',
                       i === mobileIndex ? 'flex' : 'hidden',
                       'md:flex',
                     )}
@@ -145,6 +148,7 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
         <div className="absolute inset-0 z-20 flex p-3 sm:p-6 lg:p-10">
           {view === 'dossier' && (
             <MissionDossier
+              missionId={selectedId ?? 'opportunity'}
               onBack={backToSelect}
               onExplore={() => setView('archive')}
               onBegin={onBeginInvestigation}
@@ -263,7 +267,7 @@ function ArchiveBottomBar({ onBack }: { onBack: () => void }) {
         </div>
         <div>
           <p className="text-[11px] font-semibold tracking-[0.3em] text-frost">ARCHIVE STATUS</p>
-          <p className="text-[9px] tracking-[0.24em] text-hud/80">1 / 3 AVAILABLE</p>
+          <p className="text-[9px] tracking-[0.24em] text-hud/80">{MISSIONS.length} / {MISSIONS.length} AVAILABLE</p>
         </div>
       </div>
     </div>

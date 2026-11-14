@@ -2,6 +2,8 @@
 
 import { useEffect, useId, useRef } from 'react'
 import { X } from 'lucide-react'
+import { languageAttrs } from '@/lib/i18n'
+import { useGameSettings } from './settings-provider'
 
 type HoloDialogProps = {
   open: boolean
@@ -14,6 +16,7 @@ type HoloDialogProps = {
 export function HoloDialog({ open, onClose, eyebrow, title, children }: HoloDialogProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const titleId = useId()
+  const { settings, t } = useGameSettings()
 
   useEffect(() => {
     const dialog = ref.current
@@ -25,6 +28,7 @@ export function HoloDialog({ open, onClose, eyebrow, title, children }: HoloDial
   return (
     <dialog
       ref={ref}
+      {...languageAttrs(settings.language)}
       aria-labelledby={titleId}
       onClose={onClose}
       onClick={(e) => {
@@ -46,7 +50,7 @@ export function HoloDialog({ open, onClose, eyebrow, title, children }: HoloDial
           <button
             type="button"
             onClick={() => ref.current?.close()}
-            aria-label="Close"
+            aria-label={t.close}
             className="rounded-full border border-hud/30 p-2 text-frost/80 transition-colors hover:border-hud/70 hover:text-frost focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
           >
             <X aria-hidden className="size-4" />

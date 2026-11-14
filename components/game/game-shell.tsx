@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { languageAttrs } from '@/lib/i18n'
 import { AboutModal } from './about-modal'
 import { ArchivesScreen } from './archives-screen'
 import { CinematicEnvironment } from './cinematic-environment'
@@ -57,7 +58,7 @@ function useParallax(rootRef: React.RefObject<HTMLElement | null>, enabled: bool
 }
 
 function GameExperience() {
-  const { settings, ready, play } = useGameSettings()
+  const { settings, ready, play, t } = useGameSettings()
   const [screen, setScreen] = useState<Screen>('menu')
   const [modal, setModal] = useState<Modal>(null)
   const [intro, setIntro] = useState<'playing' | 'complete'>('playing')
@@ -135,11 +136,12 @@ function GameExperience() {
       {intro === 'playing' && (
         <button
           type="button"
+          {...languageAttrs(settings.language)}
           onClick={finishIntro}
           className="intro-el absolute bottom-20 left-1/2 z-30 -translate-x-1/2 rounded-full border border-hud/40 bg-navy/60 px-5 py-2 text-[11px] font-semibold tracking-[0.3em] text-frost/85 backdrop-blur-sm transition-colors hover:border-hud hover:text-frost focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud sm:bottom-10"
           style={{ '--intro-anim': 'intro-fade', '--intro-delay': '0.4s' } as React.CSSProperties}
         >
-          SKIP INTRO
+          {t.skipIntro}
         </button>
       )}
 
