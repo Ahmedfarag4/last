@@ -204,6 +204,16 @@ function SignalSection() {
         </div>
         <h3 className="font-display text-xl tracking-[0.06em] text-frost">{log.title}</h3>
         <p className="text-sm leading-relaxed text-frost/80">{log.body}</p>
+        {log.sourceUrl && (
+          <a
+            href={log.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost focus-visible:outline-2 focus-visible:outline-hud"
+          >
+            View official source: {log.sourceLabel ?? 'NASA/JPL'}
+          </a>
+        )}
         <div aria-hidden className="mt-auto flex h-10 items-end gap-[3px] pt-4">
           {Array.from({ length: 40 }, (_, i) => (
             <span
