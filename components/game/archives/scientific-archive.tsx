@@ -283,53 +283,47 @@ function NotesSection() {
   )
 }
 
-const ROUTE = [
-  { x: 40, y: 40 },
-  { x: 70, y: 62 },
-  { x: 110, y: 90 },
-  { x: 175, y: 128 },
-  { x: 300, y: 188 },
-  { x: 318, y: 222 },
-]
+/** NASA/JPL PIA23178, published 2019-04-25. This is an actual mapped route,
+ * not an interactive georeferenced path. The stop list is an independent index. */
+const NASA_TRAVERSE_IMAGE =
+  'https://d2pn8kiwq2w21t.cloudfront.net/original_images/jpegPIA23178.jpg'
+const NASA_TRAVERSE_SOURCE =
+  'https://www.jpl.nasa.gov/images/pia23178-opportunitys-final-traverse-map/'
 
 function TraverseSection() {
   const [active, setActive] = useState(0)
+  const [mapError, setMapError] = useState(false)
   const stop = TRAVERSE[active]
-  const d = ROUTE.map((p, i) => `${i ? 'L' : 'M'} ${p.x} ${p.y}`).join(' ')
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-2">
-        <div className="relative overflow-hidden rounded-2xl border border-hud/25 bg-[radial-gradient(circle_at_30%_30%,rgba(255,154,61,0.12),transparent_60%),#0a1420]">
-          <svg viewBox="0 0 360 260" className="block w-full" role="group" aria-label="Schematic traverse route">
-            <defs>
-              <pattern id="arc-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(73,215,255,0.08)" strokeWidth="1" />
-              </pattern>
-            </defs>
-            <rect width="360" height="260" fill="url(#arc-grid)" />
-            <path d={d} fill="none" stroke="rgba(242,179,93,0.25)" strokeWidth="6" strokeLinecap="round" />
-            <path d={d} fill="none" stroke="#f2b35d" strokeWidth="1.6" strokeDasharray="4 4" />
-            {ROUTE.map((p, i) => (
-              <g
-                key={i}
-                role="button"
-                tabIndex={0}
-                aria-label={TRAVERSE[i].site}
-                aria-pressed={i === active}
-                onClick={() => setActive(i)}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setActive(i))}
-                className="cursor-pointer outline-none [&:focus-visible>circle:first-child]:stroke-frost"
-              >
-                <circle cx={p.x} cy={p.y} r={i === active ? 9 : 6} fill="rgba(73,215,255,0.15)" stroke="#49d7ff" strokeWidth="1.2" />
-                <circle cx={p.x} cy={p.y} r="2.5" fill={i === active ? '#fff3de' : '#49d7ff'} />
-                <text x={p.x + 12} y={p.y + 4} fill="rgba(234,244,255,0.75)" fontSize="9" letterSpacing="1">
-                  {TRAVERSE[i].site}
-                </text>
-              </g>
-            ))}
-          </svg>
-        </div>
-        <p className="text-[11px] text-frost/45">Schematic only. Not to scale and not based on orbital mapping data.</p>
+        <figure className="overflow-hidden rounded-2xl border border-hud/25 bg-midnight/70">
+          {!mapError ? (
+            <img
+              src={NASA_TRAVERSE_IMAGE}
+              alt="NASA/JPL Opportunity final traverse map PIA23178: mapped yellow rover route from Eagle Crater to Perseverance Valley"
+              width={2667}
+              height={2058}
+              loading="lazy"
+              onError={() => setMapError(true)}
+              className="block h-auto w-full object-contain"
+            />
+          ) : (
+            <div className="flex min-h-60 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-frost/75">
+              NASA map image could not be loaded.
+              <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="text-hud underline underline-offset-4">Open NASA's official traverse map</a>
+            </div>
+          )}
+          <figcaption className="border-t border-hud/15 px-3 py-2 text-xs leading-relaxed text-frost/65">
+            Actual Opportunity traverse map · NASA/JPL-Caltech/MSSS · PIA23178 (2019)
+          </figcaption>
+        </figure>
+        <p className="text-[11px] leading-relaxed text-frost/55">
+          The yellow route is from NASA's mapped orbital imagery. The station list is a separate historical index, not geolocated clickable markers.
+        </p>
+        <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">
+          View official NASA image and description
+        </a>
       </div>
       <div className="flex flex-col gap-4">
         <article key={active} aria-live="polite" className="arc-swap rounded-2xl border border-hud/20 bg-midnight/50 p-5">
