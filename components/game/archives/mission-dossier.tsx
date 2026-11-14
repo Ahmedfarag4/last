@@ -11,9 +11,10 @@ type MissionDossierProps = {
   onBack: () => void
   onExplore: () => void
   onBegin: () => void
+  onReadManga?: () => void
 }
 
-export function MissionDossier({ missionId, onBack, onExplore, onBegin }: MissionDossierProps) {
+export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadManga }: MissionDossierProps) {
   const mission = MISSIONS.find((m) => m.id === missionId) ?? MISSIONS[0]
   const dossier = DOSSIERS[mission.id]
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -86,6 +87,16 @@ export function MissionDossier({ missionId, onBack, onExplore, onBegin }: Missio
               phase={0.15}
               onActivate={onBegin}
             />
+            {mission.id === 'opportunity' && onReadManga && (
+              <OrbitalCapsuleButton
+                label="Read Manga"
+                sound="archives"
+                width="100%"
+                height="50px"
+                phase={0.35}
+                onActivate={onReadManga}
+              />
+            )}
           </div>
         </div>
 

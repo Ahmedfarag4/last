@@ -8,11 +8,12 @@ import { useGameSettings } from './settings-provider'
 import { ArchiveEnvironment } from './archives/archive-environment'
 import { MISSIONS, type MissionId } from './archives/archive-data'
 import { MissionDossier } from './archives/mission-dossier'
+import { MangaOverview } from './archives/manga-overview'
 import { MissionPlatform } from './archives/mission-platform'
 import { ScientificArchive, type SectionId } from './archives/scientific-archive'
 import './archives/archives.css'
 
-type View = 'select' | 'dossier' | 'archive'
+type View = 'select' | 'dossier' | 'archive' | 'manga'
 
 const INTRO_MS = 4600
 const FOCUS_MS = 950
@@ -58,7 +59,8 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
     if (view === 'archive') {
       if (section) setSection(null)
       else setView('dossier')
-    } else if (view === 'dossier') backToSelect()
+    } else if (view === 'manga') setView('dossier')
+    else if (view === 'dossier') backToSelect()
     else onBack()
   }, [view, section, backToSelect, onBack])
 
@@ -152,8 +154,10 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
               onBack={backToSelect}
               onExplore={() => setView('archive')}
               onBegin={onBeginInvestigation}
+              onReadManga={() => setView('manga')}
             />
           )}
+          {view === 'manga' && <MangaOverview onBack={() => setView('dossier')} />}
           {view === 'archive' && (
             <ScientificArchive section={section} onSection={setSection} onBack={() => setView('dossier')} />
           )}
