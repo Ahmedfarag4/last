@@ -5,6 +5,7 @@ import { APOLLO_ORDER, APOLLO_RECORDS, type ApolloId } from './apollo-archive-da
 import seismicSummary from './apollo11-seismic-summary.json'
 import type { SectionId } from './scientific-archive'
 import { SourceTag } from './archive-ui'
+import { Apollo12SolarWindChart } from './apollo12-solar-wind-chart'
 
 export function ApolloArchiveSection({ section }: { section: SectionId }) {
   const [mission, setMission] = useState<ApolloId>('apollo11')
@@ -107,6 +108,7 @@ export function ApolloArchiveSection({ section }: { section: SectionId }) {
               <p className="mt-3 text-[11px] text-frost/50">Instrument sampling: {seismicSummary.samplingRateHz} Hz. This is an aggregate metadata view; no artificial seismic waveform is drawn.</p>
             </div>
           )}
+          {mission === 'apollo12' && <Apollo12SolarWindChart />}
           {mission === 'apollo12' && (
             <div className="rounded-2xl border border-hud/25 bg-midnight/60 p-5">
               <h4 className="font-display text-lg tracking-wider text-ember">APOLLO 12 / ORIGINAL DATA FILES</h4>
