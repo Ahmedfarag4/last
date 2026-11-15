@@ -1,7 +1,22 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Exo_2, Michroma, Noto_Kufi_Arabic } from 'next/font/google'
+import { Barlow_Condensed, Exo_2, Michroma, Noto_Kufi_Arabic, Source_Serif_4 } from 'next/font/google'
 import './globals.css'
+
+const barlow = Barlow_Condensed({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-barlow',
+  display: 'swap',
+})
+
+const sourceSerif = Source_Serif_4({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-source-serif',
+  display: 'swap',
+})
 
 const michroma = Michroma({
   subsets: ['latin'],
@@ -50,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${michroma.variable} ${exo.variable} ${kufi.variable}`}>
+    <html lang="en" className={`${michroma.variable} ${exo.variable} ${kufi.variable} ${barlow.variable} ${sourceSerif.variable}`}>
       <body className="font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
