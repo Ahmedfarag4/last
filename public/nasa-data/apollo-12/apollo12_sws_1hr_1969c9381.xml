@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1N00.sch"
+  schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1" 
+    xmlns:pds="http://pds.nasa.gov/pds4/pds/v1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1N00.xsd">
+  <Identification_Area>
+    <logical_identifier>urn:nasa:pds:a12sws_solar_wind_28s_1hr:data:apollo12_sws_1hr_1969c9381</logical_identifier>
+    <version_id>1.0</version_id>
+    <title>Apollo 12 Lunar Surface Experiments Package Solar Wind Spectrometer 1-Hour-Average ASCII Data Bundle: apollo12_sws_1hr_1969c9381.tab</title>
+    <information_model_version>1.23.0.0</information_model_version>
+    <product_class>Product_Observational</product_class>
+    <Citation_Information>
+      <publication_year>2025</publication_year>
+      <description>This is the hourly-averaged data from the     
+        Apollo 12 Solar Wind  Spectrometer instrument, reformatted by NSSDC for  
+        easier access and use.</description>
+    </Citation_Information>
+    <Modification_History>
+      <Modification_Detail>
+        <modification_date>2025-09-26</modification_date>
+        <version_id>1.0</version_id>
+        <description>Initial version.</description>
+      </Modification_Detail>
+    </Modification_History>
+  </Identification_Area>
+  <Observation_Area>
+    <Time_Coordinates>
+      <start_date_time>1969-11-19T19:30:00Z</start_date_time>
+      <stop_date_time>1969-12-31T23:30:00Z</stop_date_time>
+    </Time_Coordinates>
+    <Investigation_Area>
+      <name>Apollo 12</name>
+      <type>Mission</type>
+      <Internal_Reference>
+        <lid_reference>urn:nasa:pds:context:investigation:mission.apollo_12</lid_reference>
+        <reference_type>data_to_investigation</reference_type>
+      </Internal_Reference>
+    </Investigation_Area>
+    <Observing_System>
+      <Observing_System_Component>
+        <name>The Apollo 12 Lunar Surface Experiments Package</name>
+        <type>Host</type>
+        <Internal_Reference>
+          <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.a12a</lid_reference>
+          <reference_type>is_instrument_host</reference_type>
+        </Internal_Reference>
+      </Observing_System_Component>
+      <Observing_System_Component>
+        <name>Apollo 12 Lunar Surface Experiments Package Solar Wind Spectrometer</name>
+        <type>Instrument</type>
+        <Internal_Reference>
+          <lid_reference>urn:nasa:pds:context:instrument:sws.a12a</lid_reference>
+          <reference_type>is_instrument</reference_type>
+        </Internal_Reference>
+      </Observing_System_Component>
+    </Observing_System>
+    <Target_Identification>
+      <name>Moon</name>
+      <type>Satellite</type>
+      <Internal_Reference>
+        <lid_reference>urn:nasa:pds:context:target:satellite.earth.moon</lid_reference>
+        <reference_type>data_to_target</reference_type>
+      </Internal_Reference>
+    </Target_Identification>
+  </Observation_Area>
+  <File_Area_Observational>
+    <File>
+      <file_name>apollo12_sws_1hr_1969c9381.tab</file_name>
+      <creation_date_time>2007-04-23T14:03:56</creation_date_time>
+    </File>
+    <Header>
+      <offset unit="byte">0</offset>
+      <object_length unit="byte">784</object_length>
+      <parsing_standard_id>7-Bit ASCII Text</parsing_standard_id>
+    </Header>
+    <Table_Character>
+      <local_identifier>TABLE</local_identifier>
+      <offset unit="byte">784</offset>
+      <records>668</records>
+      <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+      <Record_Character>
+        <fields>54</fields>
+        <groups>0</groups>
+        <record_length unit="byte">392</record_length>
+        <Field_Character>
+          <name>EPOCH</name>
+          <field_number>1</field_number>
+          <field_location unit="byte">1</field_location>
+          <data_type>ASCII_Date_Time_YMD</data_type>
+          <field_length unit="byte">19</field_length>
+          <description>Universal Time</description>
+        </Field_Character>
+        <Field_Character>
+          <name>JULIAN_DATE</name>
+          <field_number>2</field_number>
+          <field_location unit="byte">22</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">13</field_length>
+          <description>Julian date for the universal time in         
+            column 1</description>
+        </Field_Character>
+        <Field_Character>
+          <name>NSPECTRA_1</name>
+          <field_number>3</field_number>
+          <field_location unit="byte">37</field_location>
+          <data_type>ASCII_Integer</data_type>
+          <field_length unit="byte">3</field_length>
+          <description>No. of spectra in set 1</description>
+          <Special_Constants>
+            <missing_constant>-99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_1</name>
+          <field_number>4</field_number>
+          <field_location unit="byte">42</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>/cm**3</unit>
+          <description>Hour-Average Proton Density 1.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_1</name>
+          <field_number>5</field_number>
+          <field_location unit="byte">49</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>Alpha to Proton Ratio 1</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_1</name>
+          <field_number>6</field_number>
+          <field_location unit="byte">56</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Proton Bulk Speed 1.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_1</name>
+          <field_number>7</field_number>
+          <field_location unit="byte">64</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Thermal Velocity 1.</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_1</name>
+          <field_number>8</field_number>
+          <field_location unit="byte">71</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degrees</unit>
+          <description>Angle of flow toward ecliptic east 1, in solar
+            ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_1</name>
+          <field_number>9</field_number>
+          <field_location unit="byte">78</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degree</unit>
+          <description>Angle of flow toward ecliptic north 1, in     
+            solar ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_DEV_1</name>
+          <field_number>10</field_number>
+          <field_location unit="byte">85</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>/cm**3</unit>
+          <description>RMS Deviation of Proton Density 1.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_DEV_1</name>
+          <field_number>11</field_number>
+          <field_location unit="byte">91</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>RMS Deviation of Alpha-Proton Ratio 1</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_DEV_1</name>
+          <field_number>12</field_number>
+          <field_location unit="byte">98</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Avg Proton Bulk Speed 1.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_DEV_1</name>
+          <field_number>13</field_number>
+          <field_location unit="byte">106</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Average Thermal Velocity 1.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_DEV_1</name>
+          <field_number>14</field_number>
+          <field_location unit="byte">114</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward East 1.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_DEV_1</name>
+          <field_number>15</field_number>
+          <field_location unit="byte">120</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward North 1.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NSPECTRA_2</name>
+          <field_number>16</field_number>
+          <field_location unit="byte">126</field_location>
+          <data_type>ASCII_Integer</data_type>
+          <field_length unit="byte">3</field_length>
+          <description>No. of spectra in set 2</description>
+          <Special_Constants>
+            <missing_constant>-99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_2</name>
+          <field_number>17</field_number>
+          <field_location unit="byte">131</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>/cm**3</unit>
+          <description>Hour-Average Proton Density 2.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_2</name>
+          <field_number>18</field_number>
+          <field_location unit="byte">138</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>Alpha to Proton Ratio 2</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_2</name>
+          <field_number>19</field_number>
+          <field_location unit="byte">145</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Proton Bulk Speed 2.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_2</name>
+          <field_number>20</field_number>
+          <field_location unit="byte">153</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Thermal Velocity 2.</description>
+          <Special_Constants>
+            <missing_constant>-99.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_2</name>
+          <field_number>21</field_number>
+          <field_location unit="byte">160</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degrees</unit>
+          <description>Angle of flow toward ecliptic east 2, in solar
+            ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_2</name>
+          <field_number>22</field_number>
+          <field_location unit="byte">167</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degrees</unit>
+          <description>Angle of flow toward ecliptic north 2, in     
+            solar ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_DEV_2</name>
+          <field_number>23</field_number>
+          <field_location unit="byte">174</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>/cm**3</unit>
+          <description>RMS Deviation of Proton Density 2.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_DEV_2</name>
+          <field_number>24</field_number>
+          <field_location unit="byte">180</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>RMS Deviation of Alpha-Proton Ratio 2</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_DEV_2</name>
+          <field_number>25</field_number>
+          <field_location unit="byte">187</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Avg Proton Bulk Speed 2.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_DEV_2</name>
+          <field_number>26</field_number>
+          <field_location unit="byte">195</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Average Thermal Velocity 2.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_DEV_2</name>
+          <field_number>27</field_number>
+          <field_location unit="byte">203</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward East 2.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_DEV_2</name>
+          <field_number>28</field_number>
+          <field_location unit="byte">209</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward North 2.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NSPECTRA_3</name>
+          <field_number>29</field_number>
+          <field_location unit="byte">215</field_location>
+          <data_type>ASCII_Integer</data_type>
+          <field_length unit="byte">3</field_length>
+          <description>No. of spectra in set 3</description>
+          <Special_Constants>
+            <missing_constant>-99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_3</name>
+          <field_number>30</field_number>
+          <field_location unit="byte">220</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>/cm**3</unit>
+          <description>Hour-Average Proton Density 3.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_3</name>
+          <field_number>31</field_number>
+          <field_location unit="byte">227</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>Alpha to Proton Ratio 3</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_3</name>
+          <field_number>32</field_number>
+          <field_location unit="byte">234</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Proton Bulk Speed 3.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_3</name>
+          <field_number>33</field_number>
+          <field_location unit="byte">242</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Thermal Velocity 3.</description>
+          <Special_Constants>
+            <missing_constant>-99.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_3</name>
+          <field_number>34</field_number>
+          <field_location unit="byte">249</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degrees</unit>
+          <description>Angle of flow toward ecliptic east 3, in solar
+            ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_3</name>
+          <field_number>35</field_number>
+          <field_location unit="byte">256</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degrees</unit>
+          <description>Angle of flow toward ecliptic north 3, in     
+            solar ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_DEV_3</name>
+          <field_number>36</field_number>
+          <field_location unit="byte">263</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>/cm**3</unit>
+          <description>RMS Deviation of Proton Density 3.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_DEV_3</name>
+          <field_number>37</field_number>
+          <field_location unit="byte">269</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>RMS Deviation of Alpha-Proton Ratio 3</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_DEV_3</name>
+          <field_number>38</field_number>
+          <field_location unit="byte">276</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Avg Proton Bulk Speed 3.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_DEV_3</name>
+          <field_number>39</field_number>
+          <field_location unit="byte">284</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Average Thermal Velocity 3.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_DEV_3</name>
+          <field_number>40</field_number>
+          <field_location unit="byte">292</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward East 3.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_DEV_3</name>
+          <field_number>41</field_number>
+          <field_location unit="byte">298</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward North 3.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NSPECTRA_4</name>
+          <field_number>42</field_number>
+          <field_location unit="byte">304</field_location>
+          <data_type>ASCII_Integer</data_type>
+          <field_length unit="byte">3</field_length>
+          <description>No. of spectra in set 4</description>
+          <Special_Constants>
+            <missing_constant>-99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_4</name>
+          <field_number>43</field_number>
+          <field_location unit="byte">309</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>/cm**3</unit>
+          <description>Hour-Average Proton Density 4.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_4</name>
+          <field_number>44</field_number>
+          <field_location unit="byte">316</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>Alpha to Proton Ratio 4</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_4</name>
+          <field_number>45</field_number>
+          <field_location unit="byte">323</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Proton Bulk Speed 4.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_4</name>
+          <field_number>46</field_number>
+          <field_location unit="byte">331</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>km/s</unit>
+          <description>Hour-Average Thermal Velocity 4.</description>
+          <Special_Constants>
+            <missing_constant>-99.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_4</name>
+          <field_number>47</field_number>
+          <field_location unit="byte">338</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degrees</unit>
+          <description>Angle of flow toward ecliptic east 4, in solar
+            ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_4</name>
+          <field_number>48</field_number>
+          <field_location unit="byte">345</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <unit>degrees</unit>
+          <description>Angle of flow toward ecliptic north 4, in     
+            solar ecliptic coordinates.</description>
+          <Special_Constants>
+            <missing_constant>-99.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>DENSITY_DEV_4</name>
+          <field_number>49</field_number>
+          <field_location unit="byte">352</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>/cm**3</unit>
+          <description>RMS Deviation of Proton Density 4.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>AP_RATIO_DEV_4</name>
+          <field_number>50</field_number>
+          <field_location unit="byte">358</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">5</field_length>
+          <description>RMS Deviation of Alpha-Proton Ratio 4</description>
+          <Special_Constants>
+            <missing_constant>-9.99</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VEL_DEV_4</name>
+          <field_number>51</field_number>
+          <field_location unit="byte">365</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Avg Proton Bulk Speed 4.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>VTH_DEV_4</name>
+          <field_number>52</field_number>
+          <field_location unit="byte">373</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">6</field_length>
+          <unit>km/s</unit>
+          <description>RMS Deviation of Average Thermal Velocity 4.</description>
+          <Special_Constants>
+            <missing_constant>-999.0</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>EAST_DEV_4</name>
+          <field_number>53</field_number>
+          <field_location unit="byte">381</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward East 4.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+        <Field_Character>
+          <name>NORTH_DEV_4</name>
+          <field_number>54</field_number>
+          <field_location unit="byte">387</field_location>
+          <data_type>ASCII_Real</data_type>
+          <field_length unit="byte">4</field_length>
+          <unit>degrees</unit>
+          <description>RMS Deviation of Angle Toward North 4.</description>
+          <Special_Constants>
+            <missing_constant>-9.9</missing_constant>
+          </Special_Constants>
+        </Field_Character>
+      </Record_Character>
+    </Table_Character>
+  </File_Area_Observational>
+</Product_Observational>
