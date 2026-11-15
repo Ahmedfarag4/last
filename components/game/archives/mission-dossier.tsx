@@ -91,7 +91,8 @@ export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadMa
   const [currentPage, setCurrentPage] = useState<PageId>('overview')
   const [visitedPages, setVisitedPages] = useState<PageId[]>([])
   const [collectedEvidence, setCollectedEvidence] = useState<EvidenceId[]>([])
-  const [restored, setRestored] = useState(false)
+  const [restoredMissionId, setRestoredMissionId] = useState<MissionId | null>(null)
+  const restored = restoredMissionId === missionId
   const [selectedSignalId, setSelectedSignalId] = useState(SIGNAL_LOGS[0].id)
 
   useEffect(() => {
@@ -103,13 +104,12 @@ export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadMa
   }, [currentPage, restored])
 
   useEffect(() => {
-    setRestored(false)
     const saved = readProgress(missionId)
     setCurrentPage(saved.currentPage)
     setVisitedPages(Array.from(new Set([...saved.visitedPages, saved.currentPage])))
     setCollectedEvidence(saved.collectedEvidence)
     setSelectedSignalId(SIGNAL_LOGS[0].id)
-    setRestored(true)
+    setRestoredMissionId(missionId)
   }, [missionId])
 
   const isComplete = visitedPages.length === PAGES.length && collectedEvidence.length === EVIDENCE_META.length
