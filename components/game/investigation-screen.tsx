@@ -5,6 +5,7 @@ import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react'
 import { ArrowLeft, ArrowRight, FileSearch, RadioTower, ScanEye, X } from 'lucide-react'
 import { useGameSettings } from './settings-provider'
 import { DarkeningSkyPuzzle } from './darkening-sky-puzzle'
+import { LastTransmissionPuzzle } from './last-transmission-puzzle'
 
 type StationId = 'briefing' | 'telemetry' | 'signals' | 'evidence'
 
@@ -32,12 +33,12 @@ const STATIONS: Record<StationId, { name: string; serial: string; title: string;
   signals: {
     name: 'SIGNAL CONSOLE', serial: '03 / COMMUNICATIONS', title: 'THE LAST TRANSMISSION',
     detail: 'The final contact took place on June 10, 2018. NASA continued recovery attempts and announced the end of the mission in February 2019.',
-    objective: 'Investigate the difference between the last received signal and the later recovery attempts. The signal reconstruction puzzle is not yet connected.',
+    objective: 'Investigate the difference between the last received signal and the later recovery attempts. Reconstruct the dated NASA communications records and distinguish actual rover replies from later Earth commands.',
   },
   evidence: {
     name: 'EVIDENCE DESK', serial: '04 / CASE FILE', title: 'CASE RECONSTRUCTION',
     detail: 'Collect scientific evidence and communications records to establish what happened, what is documented, and what remains unknown.',
-    objective: 'Evidence collection and the final diagnosis unlock once the two investigation puzzles are implemented.',
+    objective: 'Collected findings from both investigations are stored here. Final diagnosis and rescue simulation are coming in later stages.',
   },
 }
 
@@ -67,6 +68,7 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   const [hot, setHot] = useState<StationId | null>(null)
   const [camera, setCamera] = useState<StationId>('briefing')
   const [evidenceCollected, setEvidenceCollected] = useState(false)
+  const [signalCollected, setSignalCollected] = useState(false)
   const closeRef = useRef<HTMLButtonElement>(null)
   const lastFocus = useRef<SVGElement | null>(null)
   const station = active ? STATIONS[active] : null
@@ -79,7 +81,7 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   }
 
   useEffect(() => {
-    if (active && active !== 'telemetry') closeRef.current?.focus()
+    if (active && active !== 'telemetry' && active !== 'signals') closeRef.current?.focus()
   }, [active])
 
   useEffect(() => {
@@ -104,7 +106,10 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
     lastFocus.current = target
     play('click')
     if (id === 'evidence') {
-      try { setEvidenceCollected(window.localStorage.getItem('last-signal.opportunity.evidence-01.v1') === 'collected') } catch { setEvidenceCollected(false) }
+      try {
+        setEvidenceCollected(window.localStorage.getItem('last-signal.opportunity.evidence-01.v1') === 'collected')
+        setSignalCollected(window.localStorage.getItem('last-signal.opportunity.evidence-02.v1') === 'collected')
+      } catch { setEvidenceCollected(false); setSignalCollected(false) }
     }
     setActive(id)
   }
@@ -239,8 +244,9 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
       </footer>
 
       {active === 'telemetry' && <DarkeningSkyPuzzle onClose={closeStation} />}
+      {active === 'signals' && <LastTransmissionPuzzle onClose={closeStation} />}
 
-      {station && active !== 'telemetry' && (
+      {station && active !== 'telemetry' && active !== 'signals' && (
         <div id="station-dialog" className="absolute inset-0 z-30 flex items-center justify-center bg-[#020814]/90 p-4 backdrop-blur-xl" role="dialog" aria-modal="true" aria-labelledby="station-title">
           <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-[#49d7ff]/40 bg-[linear-gradient(140deg,#112d40,#061322_70%)] p-5 shadow-[0_0_80px_#49d7ff1b] sm:p-9">
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#49d7ff]/60 to-transparent" />
@@ -267,15 +273,20 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
                   <div className="mt-4 rounded-lg border border-emerald-300/40 bg-emerald-300/10 p-4">
                     <p className="text-sm font-semibold text-emerald-200">✓ EVIDENCE 01 — THE DARKENING SKY</p>
                     <p className="mt-2 text-xs leading-6 text-slate-200">Direct PDS Tau observations through Sol 5105.61, with the unmeasured Sol 5111 gap and NASA's separate Power vs Tau graphic. Dust obscured sunlight, reducing solar power.</p>
-                    <p className="mt-3 text-[11px] text-amber-200">EVIDENCE 02 — SIGNAL CHRONOLOGY / NOT YET COLLECTED</p>
+
                   </div>
                 ) : (
                   <p className="mt-3 text-sm text-slate-300">Evidence 01 not yet collected. Inspect Telemetry to recover the atmospheric record.</p>
                 )}
+                <div className="mt-3 border-t border-[#f2b35d]/20 pt-3">
+                  {signalCollected ? (
+                    <div className="rounded-lg border border-emerald-300/35 bg-emerald-300/10 p-3">
+                      <p className="text-sm font-semibold text-emerald-200">✓ EVIDENCE 02 — THE LAST TRANSMISSION</p>
+                      <p className="mt-2 text-xs leading-6 text-slate-200">NASA’s documented last contact, later recovery attempts, and final mission announcement form the verified communication chronology.</p>
+                    </div>
+                  ) : <p className="text-xs text-amber-200">EVIDENCE 02 — NOT YET COLLECTED. Investigate the Signal Console.</p>}
+                </div>
               </div>
-            )}
-            {active === 'signals' && (
-              <p className="mt-6 rounded-lg border border-[#f2b35d]/25 bg-[#f2b35d]/5 p-3 text-xs leading-relaxed text-[#ffe1a5]">The Last Transmission will be implemented after Puzzle 01 is verified.</p>
             )}
             <button type="button" onClick={closeStation} className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#49d7ff]/60 px-5 py-2.5 text-xs font-semibold tracking-[.1em] hover:bg-[#49d7ff]/10 focus-visible:outline-2 focus-visible:outline-[#49d7ff]">RETURN TO ROOM <ArrowRight aria-hidden className="size-4" /></button>
           </div>
