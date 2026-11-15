@@ -116,8 +116,37 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
         <div className="absolute right-[12%] top-[48%] h-[23%] w-[25%] skew-y-6 rounded-xl border-[5px] border-[#294d62] bg-[linear-gradient(210deg,#0d3145,#03101d_68%)] shadow-[0_18px_28px_#000a,inset_0_0_25px_#2f849322]" />
         <div className="absolute left-[15%] top-[53%] h-[11%] w-[20%] -skew-y-6 rounded border border-[#49d7ff]/30 bg-[repeating-linear-gradient(90deg,#08273a_0px,#08273a_13px,#174a5b_14px,#174a5b_15px)] opacity-70" />
         <div className="absolute right-[15%] top-[53%] h-[11%] w-[20%] skew-y-6 rounded border border-[#49d7ff]/30 bg-[repeating-linear-gradient(90deg,#08273a_0px,#08273a_13px,#174a5b_14px,#174a5b_15px)] opacity-70" />
+        {/* Embedded diagnostic readouts: stylized, not presented as live NASA measurements. */}
+        <div aria-hidden className="absolute left-[15.5%] top-[51.5%] h-[16%] w-[19%] -skew-y-6 overflow-hidden rounded border border-[#46cbed]/30 bg-[#03111e]/85 px-[5%] py-2 shadow-[inset_0_0_24px_#49d7ff24]">
+          <div className="flex items-center justify-between border-b border-[#49d7ff]/20 pb-1 text-[clamp(6px,.65vw,10px)] tracking-[.14em] text-[#90eaff]">
+            <span>ATMOSPHERIC SCAN</span><span className="text-[#f2b35d]">TAU</span>
+          </div>
+          <svg className="mt-2 h-[50%] w-full" viewBox="0 0 160 46" preserveAspectRatio="none" role="img" aria-label="Decorative rising dust trace">
+            <path d="M0 10H160 M0 24H160 M0 38H160" stroke="#49d7ff" strokeOpacity=".14" />
+            <path d="M1 37 L28 34 L50 30 L71 32 L92 24 L116 19 L140 9 L159 5" stroke="#65e2ff" strokeWidth="2" fill="none" vectorEffect="non-scaling-stroke" />
+            <path d="M1 37 L28 34 L50 30 L71 32 L92 24 L116 19 L140 9 L159 5 V46 H1 Z" fill="#49d7ff" fillOpacity=".10" />
+          </svg>
+          <p className="mt-1 font-mono text-[clamp(6px,.65vw,10px)] tracking-[.1em] text-[#b1ccda]">ARCHIVED DATA · PREVIEW</p>
+        </div>
+        <div aria-hidden className="absolute right-[15.5%] top-[51.5%] h-[16%] w-[19%] skew-y-6 overflow-hidden rounded border border-[#46cbed]/30 bg-[#03111e]/85 px-[5%] py-2 shadow-[inset_0_0_24px_#49d7ff24]">
+          <div className="flex items-center justify-between border-b border-[#49d7ff]/20 pb-1 text-[clamp(6px,.65vw,10px)] tracking-[.14em] text-[#90eaff]">
+            <span>COMMS ARRAY</span><span className="text-[#f2b35d]">OFFLINE</span>
+          </div>
+          <svg className="mt-2 h-[50%] w-full" viewBox="0 0 160 46" preserveAspectRatio="none" role="img" aria-label="Decorative signal trace">
+            <path d="M0 23H160" stroke="#49d7ff" strokeOpacity=".25" strokeDasharray="3 5" />
+            <path d="M0 23L18 23L25 14L31 32L38 8L45 37L54 23L75 23L80 19L85 27L91 23H160" stroke="#73dbf0" strokeWidth="1.8" fill="none" vectorEffect="non-scaling-stroke" />
+          </svg>
+          <p className="mt-1 font-mono text-[clamp(6px,.65vw,10px)] tracking-[.1em] text-[#b1ccda]">LAST CONTACT · SOL 5111</p>
+        </div>
         <div className="absolute inset-x-[-10%] bottom-[-22%] h-[52%] rounded-[50%_50%_0_0] border-t-[14px] border-[#1d394e] bg-[repeating-linear-gradient(90deg,#081321_0%,#081321_12%,#0d2434_12.3%,#081321_13%)] shadow-[0_-30px_60px_#010611]" />
         <div className="absolute left-[37%] top-[70%] h-[21%] w-[26%] rounded-[50%_50%_14%_14%] border-[7px] border-[#456273] bg-[radial-gradient(ellipse_at_50%_15%,#153e52,#061322_72%)] shadow-[0_-8px_35px_#f2b35d20,0_14px_50px_#000c]" />
+        <div aria-hidden className="absolute left-[40%] top-[73%] h-[14%] w-[20%] overflow-hidden rounded-[45%_45%_13%_13%] border border-[#f2b35d]/25 bg-[linear-gradient(180deg,#2d4350,#091826)] shadow-[inset_0_8px_28px_#f2b35d11]">
+          <div className="mx-auto mt-[8%] h-[45%] w-[75%] rounded-md border border-[#49d7ff]/30 bg-[#061521] p-2">
+            <div className="flex items-center justify-between gap-1"><span className="h-1.5 w-1/3 bg-[#49d7ff]/40" /><span className="h-1.5 w-1/5 bg-[#f2b35d]/40" /></div>
+            <div className="mt-1.5 h-px w-full bg-[#49d7ff]/25" />
+            <div className="mt-1.5 h-px w-2/3 bg-[#49d7ff]/25" />
+          </div>
+        </div>
         <div className="absolute inset-x-0 bottom-[11%] h-px bg-gradient-to-r from-transparent via-[#f2b35d]/20 to-transparent" />
       </div>
 
@@ -141,9 +170,9 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
           <span className="absolute bottom-1 right-3 inline-flex items-center gap-2 rounded-full border border-[#49d7ff]/35 bg-[#03121e]/90 px-3 py-1.5 text-[10px] font-semibold tracking-[.1em] text-[#cef5ff]"><RadioTower className="size-3.5" /> SIGNALS</span>
         </button>
         <button type="button" onClick={(e) => openStation('evidence', e)}
-          className="group absolute left-[37%] top-[75%] h-[14%] w-[26%] rounded-[50%] border border-transparent transition-colors hover:border-[#f2b35d]/60 hover:bg-[#f2b35d]/10 focus-visible:outline-2 focus-visible:outline-[#f2b35d]"
+          className="group absolute left-[37%] top-[76%] h-[13%] w-[26%] rounded-[50%] border border-transparent transition-colors hover:border-[#f2b35d]/60 hover:bg-[#f2b35d]/10 focus-visible:outline-2 focus-visible:outline-[#f2b35d]"
           aria-label="Open Evidence Desk">
-          <span className="absolute left-1/2 top-[35%] inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-[#f2b35d]/50 bg-[#07131e]/90 px-3 py-1.5 text-[10px] font-semibold tracking-[.1em] text-[#ffe1a5]"><ClipboardList className="size-3.5" /> EVIDENCE DESK</span>
+          <span className="absolute left-1/2 top-[38%] inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-[#f2b35d]/50 bg-[#07131e]/90 px-3 py-1.5 text-[10px] font-semibold tracking-[.1em] text-[#ffe1a5]"><ClipboardList className="size-3.5" /> EVIDENCE DESK</span>
         </button>
       </div>
 
@@ -152,9 +181,9 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
           className="pointer-events-auto inline-flex shrink-0 items-center gap-2 rounded-full border border-[#49d7ff]/40 bg-[#061b2b]/90 px-4 py-2 text-[11px] font-semibold tracking-[.09em] hover:border-[#49d7ff] focus-visible:outline-2 focus-visible:outline-[#49d7ff]">
           <ArrowLeft className="size-4" /> EXIT INVESTIGATION
         </button>
-        <div className="max-w-[56%] text-right">
+        <div className="max-w-[50%] rounded-lg border border-[#49d7ff]/15 bg-[#020814]/75 px-3 py-2 text-right backdrop-blur-sm">
           <p className="text-[9px] font-semibold tracking-[.25em] text-[#6cdffe]">OUTPOST M-07 · MISSION 01</p>
-          <h1 className="mt-1 font-display text-[clamp(11px,1.4vw,16px)] tracking-[.12em]">OPPORTUNITY <span className="hidden sm:inline">/ THE FINAL STORM</span></h1>
+          <h1 className="mt-1 font-display text-[clamp(10px,1.15vw,14px)] leading-tight tracking-[.08em]">OPPORTUNITY <span className="hidden lg:inline">/ THE FINAL STORM</span></h1>
         </div>
       </header>
 

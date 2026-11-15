@@ -131,7 +131,7 @@ function GameExperience() {
         {screen === 'investigation' && <InvestigationScreen key="investigation" onBack={exitInvestigation} />}
       </main>
 
-      <HudOverlay />
+      {screen === 'menu' && <HudOverlay />}
 
       {screen === 'selection' && (
         <MissionSelection
