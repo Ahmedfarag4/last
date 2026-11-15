@@ -4,12 +4,10 @@ import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, LockKeyhole, ScanSearch, X } from 'lucide-react'
 import { OPPORTUNITY_TAU_FINAL } from './archives/opportunity-tau-data'
+import { HolographicReconstruction } from './holographic-reconstruction'
 
 const SAVE_KEY = 'last-signal.opportunity.evidence-01.v1'
-const TASKS = ['INSPECT THE STORM', 'FIND THE MISSING DATA', 'CHECK SOLAR POWER', 'RECONSTRUCT THE CHAIN'] as const
-const CAUSES = ['Reduced sunlight', 'Increased dust opacity', 'Reduced solar power']
-const CORRECT_CHAIN = ['Increased dust opacity', 'Reduced sunlight', 'Reduced solar power']
-type Observation = (typeof OPPORTUNITY_TAU_FINAL)[number]
+const TASKS = ['INSPECT THE STORM', 'FIND THE MISSING DATA', 'CHECK SOLAR POWER', 'REBUILD THE EVIDENCE CORE'] as const
 type Stage = 0 | 1 | 2 | 3
 
 function readSaved() {
@@ -77,7 +75,6 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
   const [sourceOpen, setSourceOpen] = useState(false)
   const [seenGraphic, setSeenGraphic] = useState(false)
   const [showCapture, setShowCapture] = useState(false)
-  const [chain, setChain] = useState(CAUSES)
   const [collected, setCollected] = useState(false)
   useEffect(() => { setCollected(readSaved()) }, [])
   useEffect(() => {
@@ -94,26 +91,13 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
     if (sol >= 5103) setStormFound(true)
   }
   const changeStage = (next: Stage) => { setFeedback(''); setStage(next) }
-  const moveCard = (index: number, delta: -1 | 1) => {
-    const target = index + delta
-    if (target < 0 || target >= chain.length) return
-    const copy = chain.slice()
-    const item = copy[index]
-    copy[index] = copy[target]
-    copy[target] = item
-    setChain(copy)
-    setFeedback('')
-  }
   const finish = () => {
-    if (!chain.every((item, i) => item === CORRECT_CHAIN[i])) {
-      setFeedback('Check the causal order: what blocks the sunlight first?')
-      return
-    }
-    try { window.localStorage.setItem(SAVE_KEY, 'collected') } catch { /* session still completes */ }
+    try { window.localStorage.setItem(SAVE_KEY, 'collected') } catch { /* gameplay still completes without persistent storage */ }
     setCollected(true)
     setShowCapture(true)
     setFeedback('Evidence 01 captured — The Darkening Sky')
   }
+
   return (
     <section className="fixed inset-0 z-50 overflow-y-auto bg-[#020814] text-slate-100" role="dialog" aria-modal="true" aria-label="The Darkening Sky investigation">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-5 sm:px-8">
@@ -208,39 +192,23 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
             </div>
           )}
           {stage === 3 && (
-            <div className="mx-auto max-w-3xl space-y-5">
-              <h3 className="text-xl text-cyan-100">04 / Reconstruct the evidence chain</h3>
-              <p className="text-sm text-slate-300">Arrange these three findings into the most scientifically supported causal order. Use the arrow buttons to move each card.</p>
-              {chain.map((item, i) => (
-                <div key={item} className="flex items-center gap-3 rounded-xl border border-cyan-400/25 bg-[#0a1c2c] p-3">
-                  <span className="w-8 text-center font-mono text-amber-300">{i + 1}</span>
-                  <span className="flex-1 text-sm">{item}</span>
-                  <button type="button" disabled={i === 0} onClick={() => moveCard(i, -1)} className="rounded-lg border border-white/25 px-3 py-2 text-xs disabled:opacity-30" aria-label={'Move ' + item + ' earlier'}>↑</button>
-                  <button type="button" disabled={i === 2} onClick={() => moveCard(i, 1)} className="rounded-lg border border-white/25 px-3 py-2 text-xs disabled:opacity-30" aria-label={'Move ' + item + ' later'}>↓</button>
-                </div>
-              ))}
-              {feedback && <p role="status" className={collected ? 'text-cyan-200' : 'text-amber-300'}>{feedback}</p>}
-              {collected ? (
-                <div className="rounded-xl border border-emerald-400/40 bg-emerald-400/10 p-5">
-                  <CheckCircle2 className="mb-3 text-emerald-300"/>
-                  <p className="font-semibold tracking-wider text-emerald-200">EVIDENCE 01 — THE DARKENING SKY</p>
-                  <p className="mt-2 text-sm text-slate-300">Recorded in your Opportunity case file. Return to the Evidence Desk in Mission Control to inspect the collected artifact.</p>
-                  <button type="button" onClick={onClose} className="mt-5 rounded-full bg-cyan-300 px-5 py-3 text-xs font-bold text-slate-950">RETURN TO INVESTIGATION</button>
-                </div>
-              ) : (
-                <button type="button" onClick={finish} className="rounded-full bg-amber-300 px-6 py-3 text-xs font-bold tracking-wider text-slate-950">CAPTURE EVIDENCE 01</button>
-              )}
-            </div>
+            <HolographicReconstruction
+              onFile={finish}
+              alreadyCollected={collected}
+              onReturn={onClose}
+            />
           )}
         </div>
         {showCapture && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#020814]/95 p-5 backdrop-blur-xl" role="alertdialog" aria-modal="true" aria-label="Evidence captured">
-            <div className="max-w-xl rounded-2xl border border-amber-300/60 bg-[#0a1d2c] p-8 text-center shadow-[0_0_90px_rgba(251,191,36,0.2)]">
-              <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full border border-amber-300/50 bg-amber-300/10"><CheckCircle2 className="size-9 text-amber-300"/></div>
-              <p className="font-mono text-xs tracking-[.35em] text-amber-300">CASE FILE / EVIDENCE SECURED</p>
-              <h3 className="mt-3 text-3xl tracking-wider text-white">THE DARKENING SKY</h3>
-              <p className="mt-4 text-sm leading-6 text-slate-300">The measured rise in dust opacity and NASA's published solar-power context now form Evidence 01. The final Sol 5111 Tau measurement remains unknown in this direct series.</p>
-              <button type="button" onClick={() => {setShowCapture(false);onClose()}} className="mt-7 rounded-full bg-amber-300 px-7 py-3 text-xs font-bold tracking-widest text-slate-950">FILE EVIDENCE AND RETURN</button>
+          <div className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-[#020814]/95 p-5 backdrop-blur-xl" role="alertdialog" aria-modal="true" aria-label="Evidence secured">
+            <div className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-amber-300/60 bg-[radial-gradient(ellipse_at_50%_15%,#274c57_0%,#0a1d2c_58%,#06101b_100%)] p-6 text-center shadow-[0_0_90px_rgba(251,191,36,0.2)] sm:p-9">
+              <div aria-hidden className="pointer-events-none absolute inset-0 opacity-25" style={{backgroundImage:'repeating-linear-gradient(0deg,transparent 0px,transparent 8px,#a6e9ff22 9px,#a6e9ff22 10px)'}} />
+              <div className="relative mx-auto mb-6 flex size-24 items-center justify-center rounded-[1.8rem] border border-amber-300/70 bg-amber-300/10 shadow-[0_0_45px_#f6b95455] motion-safe:animate-pulse"><CheckCircle2 className="size-12 text-amber-200"/></div>
+              <p className="relative font-mono text-xs tracking-[.28em] text-amber-300">MISSION 01 / EVIDENCE CORE FILED</p>
+              <h3 className="relative mt-4 text-2xl tracking-wider text-white sm:text-3xl">THE DARKENING SKY</h3>
+              <p className="relative mt-4 text-sm leading-6 text-slate-300">NASA Pancam opacity readings and a separately published solar-power graphic support the dust → sunlight → solar power chain. There is no direct Sol 5111 Tau reading in this series.</p>
+              <p className="relative mt-3 font-mono text-xs tracking-wider text-emerald-300">EVIDENCE 01 / SAVED TO CASE FILE</p>
+              <button type="button" onClick={() => {setShowCapture(false);onClose()}} className="relative mt-7 rounded-full bg-amber-300 px-7 py-3 text-xs font-bold tracking-widest text-slate-950 hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300">RETURN TO MISSION CONTROL</button>
             </div>
           </div>
         )}
