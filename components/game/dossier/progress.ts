@@ -79,6 +79,21 @@ function subscribe(onChange: () => void) {
   }
 }
 
+/** Start a fresh investigation without resetting archives, manga progress, or settings. */
+export function resetInvestigationProgress(file: MissionFile) {
+  const evidenceKeys = file.items
+    .map((item) => item.externalKey)
+    .filter((key): key is string => Boolean(key))
+  try {
+    window.localStorage.removeItem(storageKey(file.id))
+    for (const key of evidenceKeys) window.localStorage.removeItem(key)
+  } catch {
+    // Storage may be unavailable; notify subscribers to refresh anyway.
+  }
+  cache.delete(file.id)
+  notifyDossierChange()
+}
+
 /** Re-evaluates externally stored evidence (e.g. a puzzle that saved its own key). */
 export function notifyDossierChange() {
   window.dispatchEvent(new Event(CHANGE_EVENT))
