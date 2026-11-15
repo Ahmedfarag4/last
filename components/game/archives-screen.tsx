@@ -11,7 +11,7 @@ import { MissionDossier } from './archives/mission-dossier'
 import { MangaOverview } from './archives/manga-overview'
 import { MangaReader } from './archives/manga-reader'
 import { MANGA_BY_MISSION } from './archives/manga-data'
-import { PendingMangaOverview } from './archives/pending-manga-overview'
+import { ApolloMangaReader } from './archives/apollo-manga-reader'
 import { MissionPlatform } from './archives/mission-platform'
 import { ScientificArchive, type SectionId } from './archives/scientific-archive'
 import './archives/archives.css'
@@ -162,19 +162,20 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
               onReadManga={() => setView('manga')}
             />
           )}
-          {view === 'manga' && (
-            selectedId === 'opportunity' || selectedId === 'insight' ? (
-              <MangaOverview
-                manga={MANGA_BY_MISSION[selectedId]}
-                onBack={() => setView('dossier')}
-                onRead={(page) => {
-                  setReaderPage(page)
-                  setView('reader')
-                }}
-              />
-            ) : (
-              <PendingMangaOverview missionId="apollo" onBack={() => setView('dossier')} />
-            )
+          {view === 'manga' && selectedId && (
+            <MangaOverview
+              manga={MANGA_BY_MISSION[selectedId]}
+              onBack={() => setView('dossier')}
+              onRead={(page) => {
+                setReaderPage(page)
+                setView('reader')
+              }}
+            />
+          )}
+          {view === 'reader' && selectedId === 'apollo' && (
+            <div className="arc-panel-in arc-glass mx-auto h-full w-full max-w-6xl overflow-y-auto">
+              <ApolloMangaReader key={readerPage} initialPage={readerPage} onBack={() => setView('manga')} />
+            </div>
           )}
           {view === 'reader' && (selectedId === 'opportunity' || selectedId === 'insight') && (
             <MangaReader key={selectedId} manga={MANGA_BY_MISSION[selectedId]} initialPage={readerPage} onBack={() => setView('manga')} />
