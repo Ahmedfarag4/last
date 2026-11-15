@@ -69,10 +69,14 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
   const [stage, setStage] = useState<Stage>(0)
   const [range, setRange] = useState<'all' | 'storm'>('storm')
   const [selected, setSelected] = useState(OPPORTUNITY_TAU_FINAL.length - 1)
-  const [answer, setAnswer] = useState('')
+  const [baselineFound, setBaselineFound] = useState(false)
+  const [stormFound, setStormFound] = useState(false)
+  const [gapChoice, setGapChoice] = useState<'measured' | 'missing' | null>(null)
+  const [powerChoice, setPowerChoice] = useState<'higher' | 'lower' | null>(null)
   const [feedback, setFeedback] = useState('')
   const [sourceOpen, setSourceOpen] = useState(false)
   const [seenGraphic, setSeenGraphic] = useState(false)
+  const [showCapture, setShowCapture] = useState(false)
   const [chain, setChain] = useState(CAUSES)
   const [collected, setCollected] = useState(false)
   useEffect(() => { setCollected(readSaved()) }, [])
@@ -83,6 +87,12 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
     window.addEventListener('keydown', onEscape, true)
     return () => window.removeEventListener('keydown', onEscape, true)
   }, [onClose])
+  const inspectReading = (index: number) => {
+    setSelected(index)
+    const sol = OPPORTUNITY_TAU_FINAL[index].sol
+    if (sol >= 5090 && sol <= 5102) setBaselineFound(true)
+    if (sol >= 5103) setStormFound(true)
+  }
   const changeStage = (next: Stage) => { setFeedback(''); setStage(next) }
   const moveCard = (index: number, delta: -1 | 1) => {
     const target = index + delta
@@ -101,6 +111,7 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
     }
     try { window.localStorage.setItem(SAVE_KEY, 'collected') } catch { /* session still completes */ }
     setCollected(true)
+    setShowCapture(true)
     setFeedback('Evidence 01 captured — The Darkening Sky')
   }
   return (
@@ -131,33 +142,51 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
                   <button type="button" onClick={() => setRange('storm')} className={'rounded-lg border px-3 py-2 text-xs ' + (range === 'storm' ? 'border-cyan-300 text-cyan-200' : 'border-white/20')}>FINAL SOLS</button>
                 </div>
               </div>
-              <TauPlot range={range} selected={selected} onSelect={setSelected}/>
+              <TauPlot range={range} selected={selected} onSelect={inspectReading}/>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button type="button" onClick={() => inspectReading(OPPORTUNITY_TAU_FINAL.findIndex(p => p.sol >= 5096))} className={`rounded-xl border p-4 text-left transition-colors ${baselineFound ? 'border-emerald-300/60 bg-emerald-300/10' : 'border-amber-300/40 hover:bg-amber-300/10'}`}>
+                  <span className="block text-[10px] tracking-[.2em] text-amber-200">SCAN 01 · BASELINE</span>
+                  <span className="mt-2 block text-sm">{baselineFound ? 'Recorded — pre-storm baseline secured' : 'Inspect a reading before the abrupt rise'}</span>
+                </button>
+                <button type="button" onClick={() => inspectReading(OPPORTUNITY_TAU_FINAL.length - 1)} className={`rounded-xl border p-4 text-left transition-colors ${stormFound ? 'border-emerald-300/60 bg-emerald-300/10' : 'border-amber-300/40 hover:bg-amber-300/10'}`}>
+                  <span className="block text-[10px] tracking-[.2em] text-amber-200">SCAN 02 · STORM</span>
+                  <span className="mt-2 block text-sm">{stormFound ? 'Recorded — final direct reading secured' : 'Inspect the last available reading'}</span>
+                </button>
+              </div>
               <details className="rounded-xl border border-white/15 p-4" open={sourceOpen} onToggle={e => setSourceOpen(e.currentTarget.open)}>
                 <summary className="cursor-pointer text-sm text-cyan-200">SOURCE INSPECTOR — NASA PDS Pancam 880 nm</summary>
                 <p className="mt-3 text-sm leading-6 text-slate-300">The measurements are imported directly from the project’s existing NASA PDS table extraction. Invalid readings were excluded in the source dataset. This series ends at Sol 5105.61; it contains no direct measurement at Sol 5111.</p>
                 <a className="mt-3 inline-block text-xs text-cyan-300 underline" href="/data/opportunity/scientific/atmospheric-opacity/1tau880_5106_20181207a.tab" target="_blank" rel="noreferrer">Inspect the original PDS .tab file</a>
               </details>
-              <button type="button" onClick={() => changeStage(1)} className="rounded-full bg-cyan-300 px-5 py-3 text-xs font-bold tracking-wider text-slate-950">CONTINUE ANALYSIS <ChevronRight size={16} className="ml-2 inline"/></button>
+              <button type="button" disabled={!baselineFound || !stormFound} onClick={() => changeStage(1)} className="rounded-full bg-cyan-300 px-5 py-3 text-xs font-bold tracking-wider text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">CONTINUE ANALYSIS <ChevronRight size={16} className="ml-2 inline"/></button>
             </div>
           )}
           {stage === 1 && (
-            <div className="mx-auto max-w-3xl space-y-5">
-              <h3 className="text-xl text-cyan-100">02 / What can the dataset actually prove?</h3>
-              <p className="text-sm text-slate-300">Opportunity's last communication was on Sol 5111. Which statement is supported by the direct opacity measurements?</p>
-              {[
-                'Tau was measured as exactly 10.8 on Sol 5111 in this dataset.',
-                'The last direct observation in this series is Sol 5105.61 (Tau 2.259); there is no direct Sol 5111 measurement.',
-                'The rover continued returning opacity samples until February 2019.'
-              ].map((option, i) => (
-                <label key={option} className={'flex cursor-pointer gap-3 rounded-xl border p-4 text-sm ' + (answer === String(i) ? 'border-cyan-300 bg-cyan-300/10' : 'border-white/20')}>
-                  <input type="radio" name="tau-answer" value={i} checked={answer === String(i)} onChange={() => {setAnswer(String(i));setFeedback('')}}/>
-                  {option}
-                </label>
-              ))}
+            <div className="mx-auto max-w-4xl space-y-5">
+              <p className="text-xs tracking-[.22em] text-amber-200">DATA FORENSICS / FIND THE BREAK</p>
+              <h3 className="text-2xl text-cyan-100">When did direct measurements stop?</h3>
+              <p className="text-sm leading-6 text-slate-300">The rover's last contact was Sol 5111. Your scanned dataset stops earlier. Decide whether a reading exists for the last-contact sol — do not confuse NASA's later published estimates with these instrument samples.</p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="rounded-2xl border border-cyan-300/25 bg-[#081a2b] p-5">
+                  <p className="text-[11px] tracking-wider text-cyan-300">PDS LAST DIRECT OBSERVATION</p>
+                  <p className="mt-3 font-mono text-2xl text-white">SOL 5105.610</p>
+                  <p className="mt-2 font-mono text-lg text-amber-200">τ = 2.259 ± 0.049</p>
+                </div>
+                <div className="rounded-2xl border border-amber-300/30 bg-[#211b12] p-5">
+                  <p className="text-[11px] tracking-wider text-amber-300">NASA LAST COMMUNICATION</p>
+                  <p className="mt-3 font-mono text-2xl text-white">SOL 5111</p>
+                  <p className="mt-2 text-sm text-amber-100">June 10, 2018</p>
+                </div>
+              </div>
+              <p className="text-sm font-semibold text-cyan-100">What does the gap between these two records mean?</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button type="button" aria-pressed={gapChoice === 'measured'} onClick={() => {setGapChoice('measured');setFeedback('')}} className={`rounded-xl border p-4 text-left text-sm ${gapChoice === 'measured' ? 'border-amber-300 bg-amber-300/10' : 'border-white/20'}`}>The archive contains a direct Tau reading for Sol 5111.</button>
+                <button type="button" aria-pressed={gapChoice === 'missing'} onClick={() => {setGapChoice('missing');setFeedback('')}} className={`rounded-xl border p-4 text-left text-sm ${gapChoice === 'missing' ? 'border-cyan-300 bg-cyan-300/10' : 'border-white/20'}`}>This PDS series cannot establish the exact Tau at Sol 5111. The final direct reading is earlier.</button>
+              </div>
               {feedback && <p role="status" className="text-amber-300">{feedback}</p>}
               <div className="flex flex-wrap gap-3">
                 <button type="button" onClick={() => changeStage(0)} className="rounded-full border border-white/30 px-5 py-3 text-xs"><ArrowLeft size={14} className="mr-2 inline"/>REVIEW DATA</button>
-                <button type="button" onClick={() => { if (answer === '1') changeStage(2); else setFeedback('Not supported. Revisit the last direct observation and the missing Sol 5111 reading.') }} className="rounded-full bg-cyan-300 px-5 py-3 text-xs font-bold text-slate-950">VERIFY INTERPRETATION</button>
+                <button type="button" disabled={!gapChoice} onClick={() => gapChoice === 'missing' ? changeStage(2) : setFeedback('The PDS series has no Sol 5111 direct measurement. Compare the dates again.')} className="rounded-full bg-cyan-300 px-5 py-3 text-xs font-bold text-slate-950 disabled:opacity-40">CONFIRM DATA GAP</button>
               </div>
             </div>
           )}
@@ -168,9 +197,14 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
               <div className="relative aspect-[1.7] overflow-hidden rounded-xl border border-cyan-300/20 bg-slate-950">
                 <Image src="/data/opportunity/scientific/power/Opportunity_Power_vs_Tau_2018.jpg" alt="NASA published Opportunity power versus atmospheric opacity graphic" fill sizes="(min-width: 768px) 800px, 95vw" className="object-contain"/>
               </div>
-              <button type="button" onClick={() => setSeenGraphic(true)} className="rounded-full border border-cyan-300/50 px-4 py-3 text-xs text-cyan-200"><ScanSearch size={15} className="mr-2 inline"/>I INSPECTED THE NASA GRAPHIC</button>
+              <button type="button" onClick={() => setSeenGraphic(true)} className="rounded-full border border-cyan-300/50 px-4 py-3 text-xs text-cyan-200"><ScanSearch size={15} className="mr-2 inline"/>{seenGraphic ? 'PUBLISHED GRAPHIC EXAMINED' : 'EXAMINE PUBLISHED NASA GRAPHIC'}</button>
+              <p className="text-sm text-slate-200">As dust opacity rises, what happens to available sunlight and solar power?</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button type="button" aria-pressed={powerChoice === 'higher'} onClick={() => setPowerChoice('higher')} className={`rounded-xl border p-4 text-left text-sm ${powerChoice === 'higher' ? 'border-amber-300' : 'border-white/20'}`}>They increase because the dusty atmosphere amplifies sunlight.</button>
+                <button type="button" aria-pressed={powerChoice === 'lower'} onClick={() => setPowerChoice('lower')} className={`rounded-xl border p-4 text-left text-sm ${powerChoice === 'lower' ? 'border-cyan-300 bg-cyan-300/10' : 'border-white/20'}`}>They decrease as dust reduces the sunlight reaching the solar arrays.</button>
+              </div>
               <p className="text-xs text-amber-200">Documented context and direct instrument measurements are separate evidence categories. Do not infer unmeasured rover values from this plot.</p>
-              <button type="button" disabled={!seenGraphic} onClick={() => changeStage(3)} className="rounded-full bg-cyan-300 px-5 py-3 text-xs font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">RECONSTRUCT CAUSE AND EFFECT</button>
+              <button type="button" disabled={!seenGraphic || powerChoice !== 'lower'} onClick={() => changeStage(3)} className="rounded-full bg-cyan-300 px-5 py-3 text-xs font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">RECONSTRUCT CAUSE AND EFFECT</button>
             </div>
           )}
           {stage === 3 && (
@@ -190,7 +224,7 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
                 <div className="rounded-xl border border-emerald-400/40 bg-emerald-400/10 p-5">
                   <CheckCircle2 className="mb-3 text-emerald-300"/>
                   <p className="font-semibold tracking-wider text-emerald-200">EVIDENCE 01 — THE DARKENING SKY</p>
-                  <p className="mt-2 text-sm text-slate-300">Recorded in your Opportunity case file. The evidence persists when local browser storage is available.</p>
+                  <p className="mt-2 text-sm text-slate-300">Recorded in your Opportunity case file. Return to the Evidence Desk in Mission Control to inspect the collected artifact.</p>
                   <button type="button" onClick={onClose} className="mt-5 rounded-full bg-cyan-300 px-5 py-3 text-xs font-bold text-slate-950">RETURN TO INVESTIGATION</button>
                 </div>
               ) : (
@@ -199,6 +233,17 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
             </div>
           )}
         </div>
+        {showCapture && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#020814]/95 p-5 backdrop-blur-xl" role="alertdialog" aria-modal="true" aria-label="Evidence captured">
+            <div className="max-w-xl rounded-2xl border border-amber-300/60 bg-[#0a1d2c] p-8 text-center shadow-[0_0_90px_rgba(251,191,36,0.2)]">
+              <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full border border-amber-300/50 bg-amber-300/10"><CheckCircle2 className="size-9 text-amber-300"/></div>
+              <p className="font-mono text-xs tracking-[.35em] text-amber-300">CASE FILE / EVIDENCE SECURED</p>
+              <h3 className="mt-3 text-3xl tracking-wider text-white">THE DARKENING SKY</h3>
+              <p className="mt-4 text-sm leading-6 text-slate-300">The measured rise in dust opacity and NASA's published solar-power context now form Evidence 01. The final Sol 5111 Tau measurement remains unknown in this direct series.</p>
+              <button type="button" onClick={() => {setShowCapture(false);onClose()}} className="mt-7 rounded-full bg-amber-300 px-7 py-3 text-xs font-bold tracking-widest text-slate-950">FILE EVIDENCE AND RETURN</button>
+            </div>
+          </div>
+        )}
         <footer className="mt-8 flex items-center gap-2 border-t border-white/10 pt-4 text-[11px] text-slate-400">
           <LockKeyhole size={13}/> Historical data ≠ simulated rescue. <span className="ml-auto">MISSION 01 / OPPORTUNITY</span>
         </footer>
