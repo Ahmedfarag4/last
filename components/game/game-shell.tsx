@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AboutModal } from './about-modal'
 import { ArchivesScreen } from './archives-screen'
 import { CinematicEnvironment } from './cinematic-environment'
 import { HudOverlay } from './hud-overlay'
@@ -12,7 +11,7 @@ import { SettingsModal } from './settings-modal'
 import { SettingsProvider, useGameSettings } from './settings-provider'
 
 type Screen = 'menu' | 'selection' | 'investigation' | 'archives'
-type Modal = 'settings' | 'about' | null
+type Modal = 'settings' | null
 type InvestigationOrigin = 'selection' | 'archives'
 
 const PARTICLES_AT_MS = 3700
@@ -114,7 +113,7 @@ function GameExperience() {
   const handleSelect = (action: MenuAction) => {
     if (action === 'start') setScreen('selection')
     else if (action === 'archives') setScreen('archives')
-    else setModal(action)
+    else if (action === 'settings') setModal('settings')
   }
 
   const closeModal = () => {
@@ -155,7 +154,6 @@ function GameExperience() {
       )}
 
       <SettingsModal open={modal === 'settings'} onClose={closeModal} />
-      <AboutModal open={modal === 'about'} onClose={closeModal} />
     </div>
   )
 }
