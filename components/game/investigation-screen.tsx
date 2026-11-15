@@ -14,7 +14,6 @@ type Hotspot = {
   label: string
   shape: Point[]
   anchor: Point
-  width: number
   amber?: boolean
 }
 
@@ -45,10 +44,10 @@ const SCENE_W = 1920
 const SCENE_H = 1080
 
 const HOTSPOTS: Hotspot[] = [
-  { id: 'briefing', label: 'MAIN DISPLAY', shape: [[698, 381], [1220, 381], [1220, 660], [698, 660]], anchor: [960, 700], width: 270 },
-  { id: 'telemetry', label: 'TELEMETRY', shape: [[149, 547], [481, 534], [658, 714], [640, 788], [184, 786], [126, 661]], anchor: [400, 811], width: 210 },
-  { id: 'signals', label: 'SIGNALS', shape: [[1265, 550], [1766, 538], [1796, 685], [1744, 783], [1296, 786], [1254, 707]], anchor: [1510, 811], width: 190 },
-  { id: 'evidence', label: 'EVIDENCE DESK', shape: [[535, 856], [1412, 855], [1420, 991], [1355, 1005], [552, 1004], [520, 969]], anchor: [960, 835], width: 260, amber: true },
+  { id: 'briefing', label: 'MAIN DISPLAY', shape: [[702, 374], [1217, 374], [1218, 663], [700, 663]], anchor: [960, 689] },
+  { id: 'telemetry', label: 'TELEMETRY', shape: [[159, 552], [480, 550], [533, 704], [649, 708], [646, 735], [398, 829], [208, 775], [159, 596]], anchor: [400, 856] },
+  { id: 'signals', label: 'SIGNALS', shape: [[1440, 550], [1762, 552], [1779, 572], [1743, 699], [1790, 710], [1783, 735], [1729, 796], [1274, 736], [1273, 709], [1390, 700]], anchor: [1515, 820] },
+  { id: 'evidence', label: 'EVIDENCE DESK', shape: [[657, 854], [1281, 854], [1413, 987], [520, 987]], anchor: [960, 832], amber: true },
 ]
 
 const CAMERA_POSITIONS: Record<StationId, { label: string; shortLabel: string; zoom: number; x: number; y: number }> = {
@@ -135,14 +134,10 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
         aria-label="Interactive Opportunity Mission Control room"
       >
         <image href="/images/opportunity-mission-control-final.webp" x="0" y="0" width={SCENE_W} height={SCENE_H} preserveAspectRatio="none" aria-hidden="true" />
-        <defs>
-          <filter id="station-glow" x="-12%" y="-12%" width="124%" height="124%">
-            <feGaussianBlur stdDeviation="7" />
-          </filter>
-        </defs>
         {HOTSPOTS.map((spot) => {
           const focused = hot === spot.id
           const color = spot.amber ? '#f2b35d' : '#49d7ff'
+          const labelWidth = spot.label.length * 8 + 30
           return (
             <g
               key={spot.id}
@@ -163,44 +158,35 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
               <polygon
                 points={toPoints(spot.shape)}
                 fill={color}
-                fillOpacity={focused ? 0.13 : 0}
+                fillOpacity={focused ? 0.035 : 0}
                 stroke={color}
-                strokeOpacity={focused ? 0.68 : 0}
-                strokeWidth="9"
-                filter={focused ? 'url(#station-glow)' : undefined}
-                vectorEffect="non-scaling-stroke"
-              />
-              <polygon
-                points={toPoints(spot.shape)}
-                fill="none"
-                stroke={color}
-                strokeOpacity={focused ? 0.95 : 0}
-                strokeWidth="2"
+                strokeOpacity={focused ? 0.88 : 0}
+                strokeWidth="1.6"
                 vectorEffect="non-scaling-stroke"
               />
               {focused && (
                 <g pointerEvents="none">
                   <rect
-                    x={spot.anchor[0] - spot.width / 2}
-                    y={spot.anchor[1] - 23}
-                    width={spot.width}
-                    height="46"
-                    rx="23"
+                    x={spot.anchor[0] - labelWidth / 2}
+                    y={spot.anchor[1] - 18}
+                    width={labelWidth}
+                    height="36"
+                    rx="18"
                     fill="#03111d"
                     fillOpacity="0.96"
                     stroke={color}
-                    strokeOpacity="0.72"
-                    strokeWidth="1.5"
+                    strokeOpacity="0.68"
+                    strokeWidth="1"
                   />
                   <text
                     x={spot.anchor[0]}
-                    y={spot.anchor[1] + 6}
+                    y={spot.anchor[1] + 5}
                     textAnchor="middle"
                     fill={spot.amber ? '#ffe1a5' : '#d9f8ff'}
-                    fontFamily="Arial, sans-serif"
-                    fontSize="18"
+                    fontFamily="var(--font-exo), Arial, sans-serif"
+                    fontSize="14"
                     fontWeight="700"
-                    letterSpacing="2.2"
+                    letterSpacing="1.1"
                   >
                     {spot.label}
                   </text>
