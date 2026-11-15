@@ -66,6 +66,7 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   const [active, setActive] = useState<StationId | null>(null)
   const [hot, setHot] = useState<StationId | null>(null)
   const [camera, setCamera] = useState<StationId>('briefing')
+  const [evidenceCollected, setEvidenceCollected] = useState(false)
   const closeRef = useRef<HTMLButtonElement>(null)
   const lastFocus = useRef<SVGElement | null>(null)
   const station = active ? STATIONS[active] : null
@@ -102,6 +103,9 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   const openStation = (id: StationId, target: SVGElement) => {
     lastFocus.current = target
     play('click')
+    if (id === 'evidence') {
+      try { setEvidenceCollected(window.localStorage.getItem('last-signal.opportunity.evidence-01.v1') === 'collected') } catch { setEvidenceCollected(false) }
+    }
     setActive(id)
   }
 
@@ -256,10 +260,22 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
                 <p className="mt-4 text-sm leading-6 text-[#a1cedd]">{station.objective}</p>
               </div>
             </div>
-            {active !== 'briefing' && (
-              <p className="mt-6 rounded-lg border border-[#f2b35d]/25 bg-[#f2b35d]/5 p-3 text-xs leading-relaxed text-[#ffe1a5]">
-                Console preview only. The playable NASA data puzzles and evidence capture will be integrated in the next milestone.
-              </p>
+            {active === 'evidence' && (
+              <div className="mt-6 rounded-xl border border-[#f2b35d]/35 bg-[#f2b35d]/5 p-4">
+                <p className="text-xs font-bold tracking-[.2em] text-[#f2b35d]">OPPORTUNITY / EVIDENCE INVENTORY</p>
+                {evidenceCollected ? (
+                  <div className="mt-4 rounded-lg border border-emerald-300/40 bg-emerald-300/10 p-4">
+                    <p className="text-sm font-semibold text-emerald-200">✓ EVIDENCE 01 — THE DARKENING SKY</p>
+                    <p className="mt-2 text-xs leading-6 text-slate-200">Direct PDS Tau observations through Sol 5105.61, with the unmeasured Sol 5111 gap and NASA's separate Power vs Tau graphic. Dust obscured sunlight, reducing solar power.</p>
+                    <p className="mt-3 text-[11px] text-amber-200">EVIDENCE 02 — SIGNAL CHRONOLOGY / NOT YET COLLECTED</p>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-slate-300">Evidence 01 not yet collected. Inspect Telemetry to recover the atmospheric record.</p>
+                )}
+              </div>
+            )}
+            {active === 'signals' && (
+              <p className="mt-6 rounded-lg border border-[#f2b35d]/25 bg-[#f2b35d]/5 p-3 text-xs leading-relaxed text-[#ffe1a5]">The Last Transmission will be implemented after Puzzle 01 is verified.</p>
             )}
             <button type="button" onClick={closeStation} className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#49d7ff]/60 px-5 py-2.5 text-xs font-semibold tracking-[.1em] hover:bg-[#49d7ff]/10 focus-visible:outline-2 focus-visible:outline-[#49d7ff]">RETURN TO ROOM <ArrowRight aria-hidden className="size-4" /></button>
           </div>
