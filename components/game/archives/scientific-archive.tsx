@@ -118,7 +118,7 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
             {section === 'traverse' && <TraverseSection />}
           </>
         ) : section ? (
-          <PendingArchiveSection missionId={missionId} section={section} />
+          <PendingArchiveSection missionId={missionId as FutureMission} section={section} />
         ) : null}
       </div>
     </section>
