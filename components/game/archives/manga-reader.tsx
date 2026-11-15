@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { languageAttrs } from '@/lib/i18n'
 import { useGameSettings } from '../settings-provider'
 import { BackChip } from './archive-ui'
-import { OPPORTUNITY_MANGA, TOTAL_PAGES, chapterForPage, type MangaChapter } from './manga-data'
+import { OPPORTUNITY_MANGA, chapterForPage, totalPages, type MangaChapter, type MangaConfig } from './manga-data'
 import { markMangaFinished, saveMangaPage } from './manga-progress'
 
 const ZOOM_LEVELS = [1, 1.25, 1.5, 2, 2.5, 3]
@@ -41,10 +41,13 @@ type Status = 'loading' | 'ready' | 'error'
 type MangaReaderProps = {
   initialPage: number
   onBack: () => void
+  manga?: MangaConfig
 }
 
-export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
+export function MangaReader({ initialPage, onBack, manga = OPPORTUNITY_MANGA }: MangaReaderProps) {
   const { settings, t } = useGameSettings()
+  const TOTAL_PAGES = totalPages(manga)
+  const language = manga.copy?.language ?? settings.language
   const [page, setPage] = useState(() => Math.min(Math.max(initialPage, 1), TOTAL_PAGES))
   const [zoomIndex, setZoomIndex] = useState(0)
   const [doc, setDoc] = useState<{ pdf: string; proxy: PDFDocumentProxy } | null>(null)
@@ -59,7 +62,7 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const chapter = chapterForPage(page)
+  const chapter = chapterForPage(manga, page)
   const localPage = page - chapter.firstPage + 1
   const zoom = ZOOM_LEVELS[zoomIndex]
 
@@ -67,17 +70,17 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
     setFinished(false)
     setPage(Math.min(Math.max(next, 1), TOTAL_PAGES))
     viewportRef.current?.scrollTo({ top: 0, left: 0 })
-  }, [])
+  }, [TOTAL_PAGES])
   const finish = useCallback(() => {
-    markMangaFinished()
+    markMangaFinished(manga)
     setFinished(true)
-  }, [])
+  }, [manga])
   const next = useCallback(() => (page >= TOTAL_PAGES ? finish() : goTo(page + 1)), [finish, goTo, page])
   const prev = useCallback(() => (finished ? setFinished(false) : goTo(page - 1)), [finished, goTo, page])
 
   useEffect(() => {
-    saveMangaPage(page)
-  }, [page])
+    saveMangaPage(manga, page)
+  }, [manga, page])
   const zoomIn = useCallback(() => setZoomIndex((i) => Math.min(i + 1, ZOOM_LEVELS.length - 1)), [])
   const zoomOut = useCallback(() => setZoomIndex((i) => Math.max(i - 1, 0)), [])
 
@@ -169,8 +172,8 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
   return (
     <section
       ref={rootRef}
-      aria-label={`${OPPORTUNITY_MANGA.title} — ${t.readerTitle}`}
-      {...languageAttrs(settings.language)}
+      aria-label={`${manga.title} — ${t.readerTitle}`}
+      {...languageAttrs(language)}
       className="arc-panel-in arc-glass relative mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden [&:fullscreen]:max-w-none [&:fullscreen]:rounded-none [&:fullscreen]:bg-[#04080e]"
       style={{ '--tone': '#49d7ff' } as React.CSSProperties}
     >
@@ -184,12 +187,12 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
             id="manga-chapter"
             value={chapter.number}
             onChange={(e) => {
-              const target = OPPORTUNITY_MANGA.chapters.find((c) => c.number === Number(e.target.value))
+              const target = manga.chapters.find((c) => c.number === Number(e.target.value))
               if (target) goTo(target.firstPage)
             }}
             className="rounded-full border border-hud/35 bg-navy/80 px-3 py-1.5 text-[11px] font-semibold tracking-[0.18em] text-frost uppercase outline-none focus-visible:ring-2 focus-visible:ring-hud/60"
           >
-            {OPPORTUNITY_MANGA.chapters.map((c) => (
+            {manga.chapters.map((c) => (
               <option key={c.number} value={c.number}>
                 {t.readerChapter} {c.number} · {c.firstPage}–{c.lastPage}
               </option>
@@ -217,7 +220,7 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
           <canvas
             ref={canvasRef}
             role="img"
-            aria-label={`${OPPORTUNITY_MANGA.title}, ${t.readerChapter} ${chapter.number}, ${t.readerPage} ${page} / ${TOTAL_PAGES}`}
+            aria-label={`${manga.title}, ${t.readerChapter} ${chapter.number}, ${t.readerPage} ${page} / ${TOTAL_PAGES}`}
             className={cn(
               'm-auto block max-w-none rounded-sm shadow-[0_0_40px_-10px_rgba(73,215,255,0.35)] transition-opacity duration-200',
               status === 'ready' ? 'opacity-100' : 'opacity-0',
@@ -247,7 +250,7 @@ export function MangaReader({ initialPage, onBack }: MangaReaderProps) {
             >
               {t.readerCompleteTitle}
             </h2>
-            <p className="max-w-md text-pretty text-sm leading-relaxed text-frost/80">{t.readerCompleteBody}</p>
+            <p className="max-w-md text-pretty text-sm leading-relaxed text-frost/80">{manga.copy?.completeBody ?? t.readerCompleteBody}</p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               <button
                 type="button"

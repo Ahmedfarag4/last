@@ -199,10 +199,50 @@ export type MediaItem = {
   title: string
   caption: string
   credit: string
-  camera: 'Pancam' | 'Navcam'
+  camera: 'Pancam' | 'Navcam' | 'IDC'
   sourceUrl: string
   displayFit?: 'contain'
 }
+
+/** Original NASA InSight imagery uploaded to public/nasa-data/insight/images. */
+export const INSIGHT_MEDIA: MediaItem[] = [
+  {
+    src: '/nasa-data/insight/images/PIA22876.jpg',
+    title: 'InSight’s First Selfie',
+    caption: 'Mosaic of the lander and its deployed solar arrays at Elysium Planitia, assembled from images taken by the camera on InSight’s robotic arm in December 2018.',
+    credit: 'NASA / JPL-Caltech · PIA22876',
+    camera: 'IDC',
+    sourceUrl: 'https://science.nasa.gov/photojournal/insights-first-selfie/',
+    displayFit: 'contain',
+  },
+  {
+    src: '/nasa-data/insight/images/PIA22977.jpg',
+    title: 'Seismometer Placed on Mars',
+    caption: 'The robotic arm’s grapple above the hexagonal cover of the SEIS seismometer after it was set down on the Martian surface.',
+    credit: 'NASA / JPL-Caltech · PIA22977',
+    camera: 'IDC',
+    sourceUrl: 'https://science.nasa.gov/mission/insight/',
+    displayFit: 'contain',
+  },
+  {
+    src: '/nasa-data/insight/images/PIA23249.jpg',
+    title: 'Robotic Arm Over the Deck',
+    caption: 'InSight’s robotic arm and grapple above the lander deck during instrument operations, with the plains of Elysium Planitia beyond.',
+    credit: 'NASA / JPL-Caltech · PIA23249',
+    camera: 'IDC',
+    sourceUrl: 'https://science.nasa.gov/mission/insight/',
+    displayFit: 'contain',
+  },
+  {
+    src: '/nasa-data/insight/images/PIA25287.jpg',
+    title: 'InSight’s Final Selfie',
+    caption: 'Final selfie mosaic from April 2022 showing dust covering the solar arrays as the lander’s available power declined.',
+    credit: 'NASA / JPL-Caltech · PIA25287',
+    camera: 'IDC',
+    sourceUrl: 'https://science.nasa.gov/photojournal/insights-final-selfie/',
+    displayFit: 'contain',
+  },
+]
 
 /** Original NASA mission imagery uploaded to public/data/opportunity/images. */
 export const MEDIA: MediaItem[] = [

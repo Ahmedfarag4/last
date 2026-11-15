@@ -1,19 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import { Activity, ExternalLink, FileText, Camera, MapPin } from 'lucide-react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { Activity, ExternalLink, FileText, MapPin } from 'lucide-react'
 import type { SectionId } from './scientific-archive'
 import { InsightMeasurements } from './insight-measurements'
-import { InsightMangaReader } from './insight-manga-reader'
 
 const NASA = 'https://science.nasa.gov/mission/insight/'
-const PHOTOS = [
-  { title: 'InSight First Selfie', date: '2018-12', id: 'PIA22876', image: '/nasa-data/insight/images/PIA22876.jpg', detail: 'Early mission panorama of the lander and deployed solar arrays on Mars.', source: 'https://science.nasa.gov/photojournal/insights-first-selfie/' },
-  { title: 'Deployment Close-Up · Robotic Arm', date: '2019', id: 'PIA22977', image: '/nasa-data/insight/images/PIA22977.jpg', detail: 'Instrument handling and deployment operations recorded by InSight on the Martian surface.', source: 'https://science.nasa.gov/mission/insight/' },
-  { title: 'Instrument Deployment on Mars', date: '2019', id: 'PIA23249', image: '/nasa-data/insight/images/PIA23249.jpg', detail: 'A close view of the robotic arm interacting with a scientific instrument on the ground.', source: 'https://science.nasa.gov/mission/insight/' },
-  { title: 'InSight Final Selfie', date: '2022-04', id: 'PIA25287', image: '/nasa-data/insight/images/PIA25287.jpg', detail: 'Dust-coated lander and solar arrays near the end of the mission.', source: 'https://science.nasa.gov/photojournal/insights-final-selfie/' },
-]
 const EVENTS = [
   { date: '2018-05-05', title: 'Launch', detail: 'InSight launched aboard Atlas V from Vandenberg Air Force Base, California.', source: NASA },
   { date: '2018-11-26', title: 'Landing', detail: 'The stationary lander touched down at Elysium Planitia on Mars.', source: NASA },
@@ -36,9 +28,8 @@ const KEY = 'last-signal:insight-evidence:v1'
 function Source({href, children}:{href:string;children:React.ReactNode}) {
   return <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-hud underline underline-offset-4 hover:text-white">{children}<ExternalLink size={12}/></a>
 }
-export function InsightArchiveSection({section}:{section:SectionId}) {
+export function InsightArchiveSection({section,media}:{section:SectionId;media:React.ReactNode}) {
   const [active,setActive] = useState(0)
-  const [missingImages,setMissingImages] = useState<string[]>([])
   const [collected,setCollected] = useState<string[]>([])
   useEffect(()=>{try{const value=JSON.parse(localStorage.getItem(KEY) ?? '[]'); if(Array.isArray(value)) setCollected(value.filter((v):v is string=>typeof v==='string' && EVIDENCE.some(e=>e.id===v)))}catch{/* storage unavailable */}},[])
   function collect(id:string){const next=collected.includes(id)?collected.filter(x=>x!==id):[...collected,id];setCollected(next);try{localStorage.setItem(KEY,JSON.stringify(next))}catch{/* session only */}}
@@ -48,26 +39,7 @@ export function InsightArchiveSection({section}:{section:SectionId}) {
       <h3 className="mt-2 font-display text-2xl tracking-wider">INSIGHT · ELYSIUM PLANITIA</h3>
       <p className="mt-2 text-sm leading-6 text-frost/70">Stationary Mars lander · November 2018 – December 2022 · NASA/JPL-Caltech</p>
     </header>
-    {section==='media' && <InsightMangaReader />}
-    {section==='media' && <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
-      <div className="rounded-2xl border border-hud/25 bg-midnight/60 p-5">
-        <Camera className="text-hud" size={26}/>
-        <h4 className="mt-3 font-display text-xl">{PHOTOS[active].title}</h4>
-        <p className="mt-2 font-mono text-xs text-ember">{PHOTOS[active].id} · {PHOTOS[active].date}</p>
-        <p className="mt-4 text-sm leading-7 text-frost/75">{PHOTOS[active].detail}</p>
-        <div className="relative mt-5 aspect-video overflow-hidden rounded-xl border border-hud/20 bg-[#071c2c]">
-          {!missingImages.includes(PHOTOS[active].id)
-            ? <Image key={PHOTOS[active].image} src={PHOTOS[active].image} alt={PHOTOS[active].detail} fill unoptimized priority sizes="(min-width: 1024px) 720px, 90vw" className="object-contain" onError={()=>setMissingImages(previous=>previous.includes(PHOTOS[active].id)?previous:[...previous,PHOTOS[active].id])} />
-            : <p className="flex h-full items-center justify-center p-4 text-center text-sm text-frost/65">The original NASA image is awaiting upload to the repository. Open its official source below.</p>}
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2"><Source href={PHOTOS[active].image}>Open local image directly</Source><Source href={PHOTOS[active].source}>View original NASA source</Source></div>
-      </div>
-      <div className="flex flex-col gap-2">
-        {PHOTOS.map((p,i)=><button type="button" key={p.id} onClick={()=>setActive(i)} aria-pressed={active===i} className={'rounded-xl border p-4 text-left '+(active===i?'border-hud bg-hud/10':'border-hud/20 hover:border-hud/50')}>
-          <span className="block font-semibold">{p.title}</span><span className="mt-2 block font-mono text-xs text-frost/50">{p.id} / {p.date}</span>
-        </button>)}
-      </div>
-    </div>}
+    {section==='media' && media}
     {section==='signals' && <div className="grid gap-4 md:grid-cols-[1fr_1.25fr]">
       <div className="flex flex-col gap-2">{EVENTS.map((ev,i)=><button key={ev.title} type="button" aria-pressed={active===i} onClick={()=>setActive(i)} className={'rounded-xl border p-3 text-left '+(active===i?'border-hud bg-hud/10':'border-hud/20 hover:border-hud/50')}><span className="block font-mono text-xs text-ember">{ev.date}</span><span className="mt-1 block text-sm">{ev.title}</span></button>)}</div>
       <article className="rounded-2xl border border-hud/20 bg-midnight/60 p-5"><Activity className="text-hud" size={25}/><p className="mt-4 font-mono text-xs text-ember">{EVENTS[Math.min(active,EVENTS.length-1)].date}</p><h4 className="mt-3 font-display text-xl">{EVENTS[Math.min(active,EVENTS.length-1)].title}</h4><p className="mt-4 text-sm leading-7 text-frost/75">{EVENTS[Math.min(active,EVENTS.length-1)].detail}</p><div className="mt-4"><Source href={EVENTS[Math.min(active,EVENTS.length-1)].source}>Official NASA mission record</Source></div><p className="mt-4 text-xs text-frost/50">Documented timeline — not an original audio transmission.</p></article>
