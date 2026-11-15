@@ -10,6 +10,7 @@ import { MISSIONS, type MissionId } from './archives/archive-data'
 import { MissionDossier } from './archives/mission-dossier'
 import { MangaOverview } from './archives/manga-overview'
 import { MangaReader } from './archives/manga-reader'
+import { PendingMangaOverview } from './archives/pending-manga-overview'
 import { MissionPlatform } from './archives/mission-platform'
 import { ScientificArchive, type SectionId } from './archives/scientific-archive'
 import './archives/archives.css'
@@ -161,17 +162,21 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
             />
           )}
           {view === 'manga' && (
-            <MangaOverview
-              onBack={() => setView('dossier')}
-              onRead={(page) => {
-                setReaderPage(page)
-                setView('reader')
-              }}
-            />
+            selectedId === 'opportunity' ? (
+              <MangaOverview
+                onBack={() => setView('dossier')}
+                onRead={(page) => {
+                  setReaderPage(page)
+                  setView('reader')
+                }}
+              />
+            ) : (
+              <PendingMangaOverview missionId={selectedId === 'apollo' ? 'apollo' : 'insight'} onBack={() => setView('dossier')} />
+            )
           )}
-          {view === 'reader' && <MangaReader initialPage={readerPage} onBack={() => setView('manga')} />}
+          {view === 'reader' && selectedId === 'opportunity' && <MangaReader initialPage={readerPage} onBack={() => setView('manga')} />}
           {view === 'archive' && (
-            <ScientificArchive section={section} onSection={setSection} onBack={() => setView('dossier')} />
+            <ScientificArchive missionId={selectedId ?? 'opportunity'} section={section} onSection={setSection} onBack={() => setView('dossier')} />
           )}
         </div>
       )}
