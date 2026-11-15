@@ -10,6 +10,7 @@ import { MISSIONS, type MissionId } from './archives/archive-data'
 import { MissionDossier } from './archives/mission-dossier'
 import { MangaOverview } from './archives/manga-overview'
 import { MangaReader } from './archives/manga-reader'
+import { MANGA_BY_MISSION } from './archives/manga-data'
 import { PendingMangaOverview } from './archives/pending-manga-overview'
 import { MissionPlatform } from './archives/mission-platform'
 import { ScientificArchive, type SectionId } from './archives/scientific-archive'
@@ -162,8 +163,9 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
             />
           )}
           {view === 'manga' && (
-            selectedId === 'opportunity' ? (
+            selectedId === 'opportunity' || selectedId === 'insight' ? (
               <MangaOverview
+                manga={MANGA_BY_MISSION[selectedId]}
                 onBack={() => setView('dossier')}
                 onRead={(page) => {
                   setReaderPage(page)
@@ -171,10 +173,12 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
                 }}
               />
             ) : (
-              <PendingMangaOverview missionId={selectedId === 'apollo' ? 'apollo' : 'insight'} onBack={() => setView('dossier')} />
+              <PendingMangaOverview missionId="apollo" onBack={() => setView('dossier')} />
             )
           )}
-          {view === 'reader' && selectedId === 'opportunity' && <MangaReader initialPage={readerPage} onBack={() => setView('manga')} />}
+          {view === 'reader' && (selectedId === 'opportunity' || selectedId === 'insight') && (
+            <MangaReader key={selectedId} manga={MANGA_BY_MISSION[selectedId]} initialPage={readerPage} onBack={() => setView('manga')} />
+          )}
           {view === 'archive' && (
             <ScientificArchive missionId={selectedId ?? 'opportunity'} section={section} onSection={setSection} onBack={() => setView('dossier')} />
           )}

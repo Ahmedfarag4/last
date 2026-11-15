@@ -7,18 +7,20 @@ import { languageAttrs } from '@/lib/i18n'
 import { OrbitalCapsuleButton } from '../orbital-capsule-button'
 import { useGameSettings } from '../settings-provider'
 import { BackChip } from './archive-ui'
-import { OPPORTUNITY_MANGA, TOTAL_PAGES, pageCount } from './manga-data'
+import { OPPORTUNITY_MANGA, pageCount, totalPages, type MangaConfig } from './manga-data'
 import { useMangaProgress } from './manga-progress'
 
 type MangaOverviewProps = {
   onBack: () => void
   onRead: (page: number) => void
+  manga?: MangaConfig
 }
 
-export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
+export function MangaOverview({ onBack, onRead, manga = OPPORTUNITY_MANGA }: MangaOverviewProps) {
   const { settings, t } = useGameSettings()
-  const progress = useMangaProgress()
-  const manga = OPPORTUNITY_MANGA
+  const progress = useMangaProgress(manga)
+  const copy = manga.copy
+  const language = copy?.language ?? settings.language
   const ready = manga.pagesAvailable
   const headingRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => headingRef.current?.focus(), [])
@@ -26,17 +28,17 @@ export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
   return (
     <section
       aria-labelledby="manga-title"
-      {...languageAttrs(settings.language)}
+      {...languageAttrs(language)}
       className="arc-panel-in arc-glass relative mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden"
       style={{ '--tone': '#49d7ff' } as React.CSSProperties}
     >
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-hud/20 px-5 py-3 sm:px-7">
         <BackChip label={t.mangaBackDossier} onClick={onBack} />
-        <p className="text-[10px] font-semibold tracking-[0.32em] text-hud">{t.mangaArchiveTag}</p>
+        <p className="text-[10px] font-semibold tracking-[0.32em] text-hud">{copy?.archiveTag ?? t.mangaArchiveTag}</p>
       </header>
 
       <div className="arc-scroll grid min-h-0 flex-1 content-start gap-6 overflow-y-auto p-5 sm:p-7 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <CoverArt alt={t.mangaCoverAlt} caption={t.mangaOfficialCover} />
+        <CoverArt manga={manga} alt={copy?.coverAlt ?? t.mangaCoverAlt} caption={copy?.coverCaption ?? t.mangaOfficialCover} />
 
         <div className="flex flex-col gap-6">
           <div>
@@ -49,8 +51,8 @@ export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
             >
               {manga.title}
             </h2>
-            <p className="mt-2 text-sm italic tracking-[0.18em] text-hud">{t.mangaSubtitle}</p>
-            <p className="mt-4 text-pretty text-sm leading-relaxed text-frost/85">{t.mangaIntro}</p>
+            <p className="mt-2 text-sm italic tracking-[0.18em] text-hud">{copy ? manga.subtitle : t.mangaSubtitle}</p>
+            <p className="mt-4 text-pretty text-sm leading-relaxed text-frost/85">{copy ? manga.intro : t.mangaIntro}</p>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -93,7 +95,7 @@ export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
                   {progress.finished ? `${t.mangaFinished} · ` : ''}
                   {t.mangaSavedAt} {t.readerChapter} {progress.chapter} ·{' '}
                   <span dir="ltr">
-                    {t.readerPage} {progress.page} / {TOTAL_PAGES}
+                    {t.readerPage} {progress.page} / {totalPages(manga)}
                   </span>
                 </p>
               </>
@@ -113,7 +115,7 @@ export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
               <ChevronDown aria-hidden className="size-4 text-frost/60 transition-transform group-open:rotate-180" />
             </summary>
             <div className="px-5 pb-5">
-              <SummaryImage ready={manga.summaryUploaded} alt={t.mangaSummaryAlt} title={t.mangaSummary} missing={t.mangaSummaryMissing} />
+              <SummaryImage manga={manga} ready={manga.summaryUploaded} alt={copy?.summaryAlt ?? t.mangaSummaryAlt} title={t.mangaSummary} missing={t.mangaSummaryMissing} />
             </div>
           </details>
 
@@ -167,8 +169,8 @@ export function MangaOverview({ onBack, onRead }: MangaOverviewProps) {
   )
 }
 
-function CoverArt({ alt, caption }: { alt: string; caption: string }) {
-  const { coverImage, coverWidth, coverHeight } = OPPORTUNITY_MANGA
+function CoverArt({ manga, alt, caption }: { manga: MangaConfig; alt: string; caption: string }) {
+  const { coverImage, coverWidth, coverHeight } = manga
   return (
     <figure className="mx-auto w-full max-w-sm md:max-w-none">
       <div className="relative overflow-hidden rounded-2xl border border-hud/30 bg-midnight/70 p-2 shadow-[0_0_40px_-12px_rgba(73,215,255,0.45)]">
@@ -189,15 +191,27 @@ function CoverArt({ alt, caption }: { alt: string; caption: string }) {
   )
 }
 
-function SummaryImage({ ready, alt, title, missing }: { ready: boolean; alt: string; title: string; missing: string }) {
+function SummaryImage({
+  manga,
+  ready,
+  alt,
+  title,
+  missing,
+}: {
+  manga: MangaConfig
+  ready: boolean
+  alt: string
+  title: string
+  missing: string
+}) {
   if (ready) {
     return (
       <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-hud/30 bg-midnight/60">
         <Image
-          src={OPPORTUNITY_MANGA.summaryImage}
+          src={manga.summaryImage}
           alt={alt}
-          width={1254}
-          height={1254}
+          width={manga.summaryWidth}
+          height={manga.summaryHeight}
           quality={95}
           sizes="(min-width: 1152px) 620px, (min-width: 768px) 55vw, 90vw"
           className="h-auto w-full object-contain"

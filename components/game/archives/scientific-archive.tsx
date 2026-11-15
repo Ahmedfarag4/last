@@ -6,7 +6,9 @@ import { Activity, Images, Map as MapIcon, NotebookPen, type LucideIcon } from '
 import { cn } from '@/lib/utils'
 import { useGameSettings } from '../settings-provider'
 import {
+  INSIGHT_MEDIA,
   MEDIA,
+  type MediaItem,
   type MissionId,
   OPPORTUNITY_INSTRUMENTS,
   OPPORTUNITY_OBJECTIVES,
@@ -122,7 +124,11 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
         ) : missionId === 'apollo' && section ? (
           <ApolloArchiveSection section={section} />
         ) : missionId === 'insight' && section ? (
-          <InsightArchiveSection key={section} section={section} />
+          <InsightArchiveSection
+            key={section}
+            section={section}
+            media={<MediaSection items={INSIGHT_MEDIA} note="Original NASA/JPL InSight mission imagery · 4 images from the Instrument Deployment Camera on the lander’s robotic arm. Titles and captions describe the original image records." />}
+          />
         ) : section ? (
           <PendingArchiveSection missionId={missionId as FutureMission} section={section} />
         ) : null}
@@ -188,9 +194,11 @@ function Unavailable({ children }: { children: React.ReactNode }) {
   )
 }
 
-function MediaSection() {
+const OPPORTUNITY_MEDIA_NOTE = 'Original NASA/JPL mission imagery · 3 Pancam and 2 Navcam images. Titles and captions describe the original image records.'
+
+function MediaSection({ items = MEDIA, note = OPPORTUNITY_MEDIA_NOTE }: { items?: MediaItem[]; note?: string }) {
   const [index, setIndex] = useState(0)
-  const item = MEDIA[index]
+  const item = items[index]
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <figure className="flex flex-col gap-3">
@@ -210,7 +218,7 @@ function MediaSection() {
       </figure>
       <div className="flex flex-col gap-3">
         <ul className="grid grid-cols-3 gap-2 lg:grid-cols-1" aria-label="Media items">
-          {MEDIA.map((m, i) => (
+          {items.map((m, i) => (
             <li key={m.src}>
               <button
                 type="button"
@@ -227,7 +235,7 @@ function MediaSection() {
             </li>
           ))}
         </ul>
-        <p className="text-xs leading-relaxed text-frost/55">Original NASA/JPL mission imagery · 3 Pancam and 2 Navcam images. Titles and captions describe the original image records.</p>
+        <p className="text-xs leading-relaxed text-frost/55">{note}</p>
       </div>
     </div>
   )
