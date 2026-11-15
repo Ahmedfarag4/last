@@ -23,8 +23,6 @@ export function ApolloMangaReader() {
   const [index,setIndex]=useState(0)
   const [ready,setReady]=useState(false)
   const [failed,setFailed]=useState<string[]>([])
-  const [summaryLanguage,setSummaryLanguage]=useState<'en'|'ar'>('en')
-  const [summaryFailed,setSummaryFailed]=useState(false)
   useEffect(()=>{
     try {const saved=Number(localStorage.getItem(KEY));if(Number.isInteger(saved)&&saved>=0&&saved<TOTAL)setIndex(saved)}catch{/* optional */}
     setReady(true)
@@ -33,7 +31,7 @@ export function ApolloMangaReader() {
   const ch=activeChapter(index)
   const chapterPage=index-startOf(ch)
   const src=`${ROOT}/chapter-${String(ch+1).padStart(2,'0')}/page-${String(chapterPage+1).padStart(2,'0')}.webp`
-  const summarySrc=`${ROOT}/summary-${summaryLanguage}.webp`
+  const summarySrc=`${ROOT}/summary-en.webp`
   return <section className="rounded-2xl border border-hud/30 bg-[#061623] p-4 sm:p-5" aria-label="Apollo 11 English manga">
     <p className="font-mono text-[10px] tracking-[.2em] text-ember">APOLLO 11 / VISUAL STORY / ENGLISH</p>
     <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
@@ -43,6 +41,12 @@ export function ApolloMangaReader() {
       </div>
       <BookOpen size={25} className="text-hud"/>
     </div>
+    <details className="mt-4 rounded-xl border border-hud/25 bg-[#03101b] p-3">
+      <summary className="cursor-pointer text-sm font-semibold text-hud">View Apollo 11 · Illustrated Overview</summary>
+      <a href={summarySrc} target="_blank" rel="noopener noreferrer" className="mt-3 block" aria-label="Open English Apollo 11 illustrated overview at full size">
+        <img src={summarySrc} alt="Apollo 11 illustrated overview in English" loading="lazy" className="mx-auto max-h-[64vh] max-w-full rounded-lg object-contain" />
+      </a>
+    </details>
     <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4" role="group" aria-label="Choose a manga chapter">
       {CHAPTERS.map((chapter,i)=><button type="button" key={i} aria-pressed={ch===i} onClick={()=>setIndex(startOf(i))}
         className={'rounded-xl border p-3 text-left text-xs transition-colors focus-visible:outline-2 focus-visible:outline-hud '+(ch===i?'border-hud bg-hud/15 text-hud':'border-hud/25 text-frost/70 hover:border-hud/60')}>
@@ -68,15 +72,6 @@ export function ApolloMangaReader() {
       <a href={src} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-hud underline underline-offset-4"><Maximize2 size={13}/> Full size</a>
       <button type="button" disabled={index===TOTAL-1} onClick={()=>setIndex(n=>clamp(n+1))} className="inline-flex items-center gap-1 rounded-full border border-hud/40 px-4 py-2 text-xs text-frost disabled:opacity-30">Next <ChevronRight size={16}/></button>
     </div>
-    <details className="mt-5 rounded-xl border border-hud/25 p-3">
-      <summary className="cursor-pointer text-sm font-semibold text-hud">Apollo 11 · Illustrated Story Summary</summary>
-      <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Summary language">
-        <button type="button" aria-pressed={summaryLanguage==='en'} onClick={()=>{setSummaryLanguage('en');setSummaryFailed(false)}} className={'rounded-full border px-3 py-1 text-xs '+(summaryLanguage==='en'?'border-hud text-hud':'border-hud/30 text-frost/60')}>English</button>
-        <button type="button" aria-pressed={summaryLanguage==='ar'} onClick={()=>{setSummaryLanguage('ar');setSummaryFailed(false)}} className={'rounded-full border px-3 py-1 text-xs '+(summaryLanguage==='ar'?'border-hud text-hud':'border-hud/30 text-frost/60')}>العربية</button>
-      </div>
-      {summaryFailed?<p className="mt-3 text-xs text-frost/65">The summary image has not been uploaded yet.</p>
-        :<a href={summarySrc} target="_blank" rel="noopener noreferrer" className="mt-3 block"><img key={summarySrc} src={summarySrc} alt={`Apollo story illustrated summary (${summaryLanguage==='en'?'English':'Arabic'})`} loading="lazy" className="mx-auto max-h-[70vh] max-w-full rounded-lg object-contain" onError={()=>setSummaryFailed(true)}/></a>}
-    </details>
     <p className="mt-4 text-xs leading-5 text-frost/50">Project-provided manga illustrations; these are narrative artwork, not original NASA photographs or historical primary documents. The supplied PDF set has inconsistent printed page labels, so reader order follows the provided chapter material.</p>
   </section>
 }
