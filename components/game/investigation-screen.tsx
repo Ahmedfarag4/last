@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react'
 import { ArrowLeft, ArrowRight, BatteryCharging, FileSearch, RadioTower, ScanEye, X } from 'lucide-react'
 import { useGameSettings } from './settings-provider'
+import { DarkeningSkyPuzzle } from './darkening-sky-puzzle'
 
 type StationId = 'briefing' | 'telemetry' | 'signals' | 'evidence'
 
@@ -77,7 +78,7 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   }
 
   useEffect(() => {
-    if (active) closeRef.current?.focus()
+    if (active && active !== 'telemetry') closeRef.current?.focus()
   }, [active])
 
   useEffect(() => {
@@ -233,7 +234,9 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
         <p className="w-[38%] text-right text-[max(8px,0.55cqw)] tracking-[.16em] text-[#f2b35d]/90">SELECT A CONSOLE TO BEGIN</p>
       </footer>
 
-      {station && (
+      {active === 'telemetry' && <DarkeningSkyPuzzle onClose={closeStation} />}
+
+      {station && active !== 'telemetry' && (
         <div id="station-dialog" className="absolute inset-0 z-30 flex items-center justify-center bg-[#020814]/90 p-4 backdrop-blur-xl" role="dialog" aria-modal="true" aria-labelledby="station-title">
           <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-[#49d7ff]/40 bg-[linear-gradient(140deg,#112d40,#061322_70%)] p-5 shadow-[0_0_80px_#49d7ff1b] sm:p-9">
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#49d7ff]/60 to-transparent" />
