@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { Activity, Camera, ChevronLeft, ChevronRight, ExternalLink, NotebookPen } from 'lucide-react'
+import { Activity, Camera, ExternalLink, NotebookPen } from 'lucide-react'
 import { APOLLO_ORDER, APOLLO_RECORDS, type ApolloId } from './apollo-archive-data'
+import seismicSummary from './apollo11-seismic-summary.json'
 import type { SectionId } from './scientific-archive'
 import { SourceTag } from './archive-ui'
 
@@ -88,6 +89,24 @@ export function ApolloArchiveSection({ section }: { section: SectionId }) {
           <div className="grid gap-3 sm:grid-cols-2">
             {data.notes.map(note=><article key={note.title} className="rounded-2xl border border-hud/20 bg-midnight/50 p-5"><NotebookPen size={20} className="text-hud"/><h4 className="mt-3 font-semibold">{note.title}</h4><p className="mt-3 text-sm leading-7 text-frost/70">{note.body}</p></article>)}
           </div>
+          {mission === 'apollo11' && (
+            <div className="rounded-2xl border border-hud/25 bg-midnight/60 p-5">
+              <h4 className="font-display text-lg tracking-wider text-ember">PASSIVE SEISMIC / SOURCE SUMMARY</h4>
+              <p className="mt-2 text-xs leading-6 text-frost/65">NASA PDS-derived July 21, 1969 channel statistics. Values are raw uncalibrated digital counts, not verified moonquake amplitudes.</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {seismicSummary.channels.map(channel => (
+                  <div key={channel.channel} className="rounded-xl border border-hud/20 bg-[#061623] p-4">
+                    <p className="font-mono text-sm text-hud">{channel.channel}</p>
+                    <p className="mt-3 font-mono text-lg text-frost">{channel.meanCounts.toFixed(3)}</p>
+                    <p className="text-[10px] text-frost/55">Mean raw counts</p>
+                    <p className="mt-3 text-xs text-frost/70">{channel.rows.toLocaleString('en-US')} records</p>
+                    <p className="mt-1 text-xs text-amber-200">{channel.missingSamples.toLocaleString('en-US')} missing</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-[11px] text-frost/50">Instrument sampling: {seismicSummary.samplingRateHz} Hz. This is an aggregate metadata view; no artificial seismic waveform is drawn.</p>
+            </div>
+          )}
           <h4 className="font-display text-lg tracking-wider text-ember">ORIGINAL SCIENTIFIC DATASETS</h4>
           {data.science.map(item=>(
             <article key={item.originalFile} className="rounded-xl border border-hud/25 bg-midnight/50 p-5">
