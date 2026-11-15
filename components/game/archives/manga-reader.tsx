@@ -9,7 +9,6 @@ import { useGameSettings } from '../settings-provider'
 import { BackChip } from './archive-ui'
 import { OPPORTUNITY_MANGA, chapterForPage, totalPages, type MangaChapter, type MangaConfig } from './manga-data'
 import { markMangaFinished, saveMangaPage } from './manga-progress'
-import { OPPORTUNITY_ARABIC_PAGES } from './opportunity-arabic-pages'
 
 const ZOOM_LEVELS = [1, 1.25, 1.5, 2, 2.5, 3]
 const MAX_DPR = 2
@@ -58,7 +57,6 @@ export function MangaReader({ initialPage, onBack, manga = OPPORTUNITY_MANGA }: 
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [canFullscreen, setCanFullscreen] = useState(false)
   const [finished, setFinished] = useState(false)
-  const [showArabic, setShowArabic] = useState(false)
 
   const rootRef = useRef<HTMLElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -67,11 +65,9 @@ export function MangaReader({ initialPage, onBack, manga = OPPORTUNITY_MANGA }: 
   const chapter = chapterForPage(manga, page)
   const localPage = page - chapter.firstPage + 1
   const zoom = ZOOM_LEVELS[zoomIndex]
-  const arabicLines = manga.id === 'opportunity' ? OPPORTUNITY_ARABIC_PAGES[page] : undefined
 
   const goTo = useCallback((next: number) => {
     setFinished(false)
-    setShowArabic(false)
     setPage(Math.min(Math.max(next, 1), TOTAL_PAGES))
     viewportRef.current?.scrollTo({ top: 0, left: 0 })
   }, [TOTAL_PAGES])
@@ -232,16 +228,6 @@ export function MangaReader({ initialPage, onBack, manga = OPPORTUNITY_MANGA }: 
           />
         </div>
 
-        {manga.id === 'opportunity' && showArabic && (
-          <aside dir="rtl" lang="ar" aria-label="الترجمة العربية للصفحة الحالية" className="absolute bottom-3 left-3 right-3 z-20 max-h-[45%] overflow-y-auto rounded-xl border border-hud/50 bg-[#061522]/95 p-4 shadow-xl backdrop-blur-md sm:left-auto sm:max-w-md">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-hud">الترجمة العربية — صفحة {page}</p>
-              <button type="button" onClick={() => setShowArabic(false)} className="rounded-full border border-hud/40 px-3 py-1 text-xs text-frost">إغلاق</button>
-            </div>
-            {arabicLines?.length ? <div className="mt-3 space-y-3 text-sm leading-7 text-frost">{arabicLines.map((line,i)=><p key={i}>{line}</p>)}</div>
-              : <p className="mt-3 text-sm leading-7 text-frost/80">الترجمة الدقيقة للصفحة دي لسه مش متاحة. الصورة الأصلية بالإنجليزي موجودة كما هي، ومش هنعرض ملخصًا على إنه ترجمة.</p>}
-          </aside>
-        )}
         {busy && (
           <div role="status" className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-hud">
             <LoaderCircle aria-hidden className="size-8 animate-spin" />
@@ -308,11 +294,6 @@ export function MangaReader({ initialPage, onBack, manga = OPPORTUNITY_MANGA }: 
         </NavButton>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          {manga.id === 'opportunity' && (
-            <button type="button" aria-pressed={showArabic} onClick={() => setShowArabic(v => !v)} className="rounded-full border border-hud/50 px-2 py-2 text-[10px] font-semibold text-hud hover:border-hud sm:px-3 sm:text-xs">
-              {showArabic ? 'Hide Arabic' : 'ترجمة عربية'}
-            </button>
-          )}
           <ToolButton label={t.readerZoomOut} onClick={zoomOut} disabled={zoomIndex === 0}>
             <ZoomOut aria-hidden className="size-4" />
           </ToolButton>
