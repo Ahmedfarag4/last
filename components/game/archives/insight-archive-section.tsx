@@ -55,10 +55,10 @@ export function InsightArchiveSection({section}:{section:SectionId}) {
         <p className="mt-4 text-sm leading-7 text-frost/75">{PHOTOS[active].detail}</p>
         <div className="relative mt-5 aspect-video overflow-hidden rounded-xl border border-hud/20 bg-[#071c2c]">
           {!missingImages.includes(PHOTOS[active].id)
-            ? <Image src={PHOTOS[active].image} alt={PHOTOS[active].detail} fill sizes="(min-width: 1024px) 720px, 90vw" className="object-contain" onError={()=>setMissingImages(previous=>previous.includes(PHOTOS[active].id)?previous:[...previous,PHOTOS[active].id])} />
+            ? <Image key={PHOTOS[active].image} src={PHOTOS[active].image} alt={PHOTOS[active].detail} fill unoptimized priority sizes="(min-width: 1024px) 720px, 90vw" className="object-contain" onError={()=>setMissingImages(previous=>previous.includes(PHOTOS[active].id)?previous:[...previous,PHOTOS[active].id])} />
             : <p className="flex h-full items-center justify-center p-4 text-center text-sm text-frost/65">The original NASA image is awaiting upload to the repository. Open its official source below.</p>}
         </div>
-        <div className="mt-4"><Source href={PHOTOS[active].source}>View official photograph and download</Source></div>
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2"><Source href={PHOTOS[active].image}>Open local image directly</Source><Source href={PHOTOS[active].source}>View original NASA source</Source></div>
       </div>
       <div className="flex flex-col gap-2">
         {PHOTOS.map((p,i)=><button type="button" key={p.id} onClick={()=>setActive(i)} aria-pressed={active===i} className={'rounded-xl border p-4 text-left '+(active===i?'border-hud bg-hud/10':'border-hud/20 hover:border-hud/50')}>
