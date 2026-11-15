@@ -177,12 +177,12 @@ export function MangaOverview({ onBack, onRead, onReadArabic, manga = OPPORTUNIT
                     <button type="button" onClick={() => onReadArabic(chapter.firstPage)}
                       className="flex w-full items-center justify-between rounded-xl border border-hud/30 px-4 py-3 text-right text-sm text-frost transition-colors hover:border-hud/70 hover:bg-hud/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud">
                       <span>الفصل {chapter.number}</span>
-                      <span dir="ltr" className="font-mono text-xs text-hud">{pageCount(chapter)} pages</span>
+                      <span dir="ltr" className="font-mono text-xs text-hud">{pageCount(chapter)} صفحات</span>
                     </button>
                   </li>
                 ))}
               </ol>
-              <p className="text-[11px] leading-5 text-frost/55">يجب رفع ملفات الـPDF العربية إلى مجلد public/manga/opportunity/arabic حتى تعمل هذه الروابط.</p>
+              <p className="text-[11px] leading-5 text-frost/55">جميع الفصول العربية الأربعة متاحة للقراءة. النسخة الإنجليزية محفوظة كما هي، مع تقدم قراءة مستقل لكل لغة.</p>
             </section>
           )}
         </div>
