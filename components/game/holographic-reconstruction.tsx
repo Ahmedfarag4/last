@@ -91,7 +91,7 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
             onClick={onReturn}
             className="rounded-full border border-white/15 px-3 py-2 font-mono text-[9px] tracking-wider text-slate-300 transition-colors hover:border-amber-200/50 hover:text-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:text-[10px]"
           >
-            RETURN TO ROOM
+            RETURN TO FILE
           </button>
         </div>
       </header>

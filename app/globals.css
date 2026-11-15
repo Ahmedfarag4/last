@@ -7,6 +7,8 @@
 @theme inline {
   --font-sans: var(--font-exo), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-michroma), var(--font-exo), ui-sans-serif, sans-serif;
+  --font-file: var(--font-barlow), var(--font-exo), ui-sans-serif, sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, ui-serif, serif;
 
   --color-navy: #08111b;
   --color-midnight: #101c2a;
