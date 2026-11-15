@@ -8,7 +8,7 @@ import { OrbitalCapsuleButton } from './orbital-capsule-button'
 import { OrbitalRing } from './orbital-ring'
 import { useGameSettings } from './settings-provider'
 
-export type MenuAction = 'start' | 'archives' | 'settings' | 'about'
+export type MenuAction = 'start' | 'archives' | 'settings'
 
 const ITEMS: {
   id: MenuAction
@@ -53,17 +53,6 @@ const ITEMS: {
     height: 'clamp(46px, 5.8vh, 58px)',
     phase: 0.58,
     loopSeconds: 6.9,
-  },
-  {
-    id: 'about',
-    labelKey: 'menuAbout',
-    tone: 'cyan',
-    emphasis: 'secondary',
-    sound: 'click',
-    width: 'min(72vw, 330px)',
-    height: 'clamp(46px, 5.8vh, 58px)',
-    phase: 0.84,
-    loopSeconds: 6.1,
   },
 ]
 
@@ -116,7 +105,7 @@ export function MainMenu({ particlesActive, onSelect }: MainMenuProps) {
                 phase={item.phase}
                 loopSeconds={item.loopSeconds}
                 particlesActive={particlesActive}
-                aria-haspopup={item.id === 'settings' || item.id === 'about' ? 'dialog' : undefined}
+                aria-haspopup={item.id === 'settings' ? 'dialog' : undefined}
                 onActivate={() => onSelect(item.id)}
               />
             </li>
