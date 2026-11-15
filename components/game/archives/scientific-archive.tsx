@@ -86,7 +86,7 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
         </nav>
       )}
 
-      <div key={section ?? 'hub'} className="arc-swap arc-scroll min-h-0 flex-1 overflow-y-auto p-5 sm:p-7">
+      <div className="arc-swap arc-scroll min-h-0 flex-1 overflow-y-auto p-5 sm:p-7">
         {!section && (
           <ul className="grid h-full gap-4 sm:grid-cols-2">
             {SECTIONS.map((s, i) => (
