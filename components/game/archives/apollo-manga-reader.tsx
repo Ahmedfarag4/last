@@ -19,12 +19,12 @@ function startOf(chapter:number) {return CHAPTERS.slice(0,chapter).reduce((sum,c
 function activeChapter(index:number) {let n=0;for(let i=0;i<CHAPTERS.length;i++){n+=CHAPTERS[i].count;if(index<n)return i}return CHAPTERS.length-1}
 const clamp=(n:number)=>Math.max(0,Math.min(TOTAL-1,n))
 
-export function ApolloMangaReader({ initialPage = 1, onBack }: { initialPage?: number; onBack?: () => void }) {
-  const [index,setIndex]=useState(()=>Math.max(0,Math.min(TOTAL-1,initialPage-1)))
+export function ApolloMangaReader({ initialPage, onBack }: { initialPage?: number; onBack?: () => void }) {
+  const [index,setIndex]=useState(()=>Math.max(0,Math.min(TOTAL-1,(initialPage ?? 1)-1)))
   const [ready,setReady]=useState(false)
   const [failed,setFailed]=useState<string[]>([])
   useEffect(()=>{
-    if(initialPage===1) {try {const saved=Number(localStorage.getItem(KEY));if(Number.isInteger(saved)&&saved>=0&&saved<TOTAL)setIndex(saved)}catch{/* optional */}}
+    if(initialPage===undefined) {try {const saved=Number(localStorage.getItem(KEY));if(Number.isInteger(saved)&&saved>=0&&saved<TOTAL)setIndex(saved)}catch{/* optional */}}
     setReady(true)
   },[])
   useEffect(()=>{if(!ready)return;try{localStorage.setItem(KEY,String(index))}catch{/* optional */}},[index,ready])
