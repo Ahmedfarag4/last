@@ -19,12 +19,12 @@ function startOf(chapter:number) {return CHAPTERS.slice(0,chapter).reduce((sum,c
 function activeChapter(index:number) {let n=0;for(let i=0;i<CHAPTERS.length;i++){n+=CHAPTERS[i].count;if(index<n)return i}return CHAPTERS.length-1}
 const clamp=(n:number)=>Math.max(0,Math.min(TOTAL-1,n))
 
-export function ApolloMangaReader() {
-  const [index,setIndex]=useState(0)
+export function ApolloMangaReader({ initialPage = 1, onBack }: { initialPage?: number; onBack?: () => void }) {
+  const [index,setIndex]=useState(()=>Math.max(0,Math.min(TOTAL-1,initialPage-1)))
   const [ready,setReady]=useState(false)
   const [failed,setFailed]=useState<string[]>([])
   useEffect(()=>{
-    try {const saved=Number(localStorage.getItem(KEY));if(Number.isInteger(saved)&&saved>=0&&saved<TOTAL)setIndex(saved)}catch{/* optional */}
+    if(initialPage===1) {try {const saved=Number(localStorage.getItem(KEY));if(Number.isInteger(saved)&&saved>=0&&saved<TOTAL)setIndex(saved)}catch{/* optional */}}
     setReady(true)
   },[])
   useEffect(()=>{if(!ready)return;try{localStorage.setItem(KEY,String(index))}catch{/* optional */}},[index,ready])
@@ -33,6 +33,7 @@ export function ApolloMangaReader() {
   const src=`${ROOT}/chapter-${String(ch+1).padStart(2,'0')}/page-${String(chapterPage+1).padStart(2,'0')}.webp`
   const summarySrc=`${ROOT}/summary-en.webp`
   return <section className="rounded-2xl border border-hud/30 bg-[#061623] p-4 sm:p-5" aria-label="Apollo 11 English manga">
+    {onBack && <button type="button" onClick={onBack} className="mb-3 inline-flex w-fit items-center gap-1 rounded-full border border-hud/40 px-4 py-2 text-xs text-frost hover:border-hud"><ChevronLeft size={16}/> Back to Manga Archive</button>}
     <p className="font-mono text-[10px] tracking-[.2em] text-ember">APOLLO 11 / VISUAL STORY / ENGLISH</p>
     <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
       <div>
