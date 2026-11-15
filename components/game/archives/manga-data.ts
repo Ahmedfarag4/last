@@ -13,7 +13,7 @@ export type MangaCopy = {
   summaryAlt: string
   archiveTag: string
   completeBody: string
-  language?: 'en'
+  language?: 'en' | 'ar'
 }
 
 export type MangaConfig = {
@@ -59,6 +59,31 @@ export const OPPORTUNITY_MANGA: MangaConfig = {
     { number: 3, firstPage: 22, lastPage: 23, pdf: chapterPdf(MANGA_ASSET_ROOT, 3) },
     { number: 4, firstPage: 24, lastPage: 40, pdf: chapterPdf(MANGA_ASSET_ROOT, 4) },
   ],
+}
+
+/** Arabic illustrated pages, supplied by the team. English originals stay untouched. */
+const OPPORTUNITY_ARABIC_ROOT = '/manga/opportunity/arabic'
+export const OPPORTUNITY_MANGA_AR: MangaConfig = {
+  ...OPPORTUNITY_MANGA,
+  id: 'opportunity-ar',
+  title: 'Opportunity · العربية',
+  subtitle: 'رحلة أبعد من تسعين يومًا',
+  intro: 'اقرأ قصة المركبة أوبورتيونيتي المصوّرة باللغة العربية، من بداية المهمة حتى إرثها العلمي.',
+  storageKey: 'last-signal:manga:opportunity-ar:v1',
+  chapters: [
+    { number: 1, firstPage: 1, lastPage: 8, pdf: chapterPdf(OPPORTUNITY_ARABIC_ROOT, 1) },
+    { number: 2, firstPage: 9, lastPage: 21, pdf: chapterPdf(OPPORTUNITY_ARABIC_ROOT, 2) },
+    { number: 3, firstPage: 22, lastPage: 23, pdf: chapterPdf(OPPORTUNITY_ARABIC_ROOT, 3) },
+    { number: 4, firstPage: 24, lastPage: 40, pdf: chapterPdf(OPPORTUNITY_ARABIC_ROOT, 4) },
+  ],
+  copy: {
+    language: 'ar',
+    coverAlt: 'الغلاف الأصلي لمانجا Opportunity',
+    coverCaption: 'الغلاف الأصلي',
+    summaryAlt: 'ملخص مصوّر لقصة Opportunity',
+    archiveTag: 'OPPORTUNITY · النسخة العربية',
+    completeBody: 'انتهيت من قراءة الفصول الأربعة بالعربية. تم حفظ تقدمك على هذا الجهاز.',
+  },
 }
 
 const INSIGHT_ASSET_ROOT = '/nasa-data/insight/manga'
