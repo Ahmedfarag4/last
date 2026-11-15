@@ -1,15 +1,17 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { Activity, ExternalLink, FileText, Camera, MapPin } from 'lucide-react'
 import type { SectionId } from './scientific-archive'
 import { InsightMeasurements } from './insight-measurements'
 
 const NASA = 'https://science.nasa.gov/mission/insight/'
 const PHOTOS = [
-  { title: 'First Selfie · Sol 10', date: '2018-12-06', id: 'PIA22876', detail: 'The lander, its deployed solar arrays, deck and scientific hardware shortly after landing.', source: 'https://science.nasa.gov/photojournal/insights-first-selfie/' },
-  { title: 'SEIS on Mars', date: '2018-12', id: 'SEIS', detail: 'Seismometer deployment on the Martian ground by the robotic arm.', source: 'https://science.nasa.gov/mission/insight/science/' },
-  { title: 'Final Selfie · Sol 1211', date: '2022-04-24', id: 'PIA25287', detail: 'Dust covering the spacecraft and solar panels, documenting the declining power environment.', source: 'https://science.nasa.gov/photojournal/insights-final-selfie/' },
+  { title: 'InSight First Selfie', date: '2018-12', id: 'PIA22876', image: '/nasa-data/insight/images/PIA22876.jpg', detail: 'Early mission panorama of the lander and deployed solar arrays on Mars.', source: 'https://science.nasa.gov/photojournal/insights-first-selfie/' },
+  { title: 'Deployment Close-Up · Robotic Arm', date: '2019', id: 'PIA22977', image: '/nasa-data/insight/images/PIA22977.jpg', detail: 'Instrument handling and deployment operations recorded by InSight on the Martian surface.', source: 'https://science.nasa.gov/mission/insight/' },
+  { title: 'Instrument Deployment on Mars', date: '2019', id: 'PIA23249', image: '/nasa-data/insight/images/PIA23249.jpg', detail: 'A close view of the robotic arm interacting with a scientific instrument on the ground.', source: 'https://science.nasa.gov/mission/insight/' },
+  { title: 'InSight Final Selfie', date: '2022-04', id: 'PIA25287', image: '/nasa-data/insight/images/PIA25287.jpg', detail: 'Dust-coated lander and solar arrays near the end of the mission.', source: 'https://science.nasa.gov/photojournal/insights-final-selfie/' },
 ]
 const EVENTS = [
   { date: '2018-05-05', title: 'Launch', detail: 'InSight launched aboard Atlas V from Vandenberg Air Force Base, California.', source: NASA },
@@ -35,6 +37,7 @@ function Source({href, children}:{href:string;children:React.ReactNode}) {
 }
 export function InsightArchiveSection({section}:{section:SectionId}) {
   const [active,setActive] = useState(0)
+  const [missingImages,setMissingImages] = useState<string[]>([])
   const [collected,setCollected] = useState<string[]>([])
   useEffect(()=>{try{const value=JSON.parse(localStorage.getItem(KEY) ?? '[]'); if(Array.isArray(value)) setCollected(value.filter((v):v is string=>typeof v==='string' && EVIDENCE.some(e=>e.id===v)))}catch{/* storage unavailable */}},[])
   function collect(id:string){const next=collected.includes(id)?collected.filter(x=>x!==id):[...collected,id];setCollected(next);try{localStorage.setItem(KEY,JSON.stringify(next))}catch{/* session only */}}
@@ -50,9 +53,10 @@ export function InsightArchiveSection({section}:{section:SectionId}) {
         <h4 className="mt-3 font-display text-xl">{PHOTOS[active].title}</h4>
         <p className="mt-2 font-mono text-xs text-ember">{PHOTOS[active].id} · {PHOTOS[active].date}</p>
         <p className="mt-4 text-sm leading-7 text-frost/75">{PHOTOS[active].detail}</p>
-        <div className="mt-5 rounded-xl border border-hud/20 bg-[#071c2c] p-5 text-center">
-          <p className="text-sm text-frost/70">NASA image preview is hosted in the original official record.</p>
-          <p className="mt-2 text-xs text-frost/50">No locally uploaded InSight image yet.</p>
+        <div className="relative mt-5 aspect-video overflow-hidden rounded-xl border border-hud/20 bg-[#071c2c]">
+          {!missingImages.includes(PHOTOS[active].id)
+            ? <Image src={PHOTOS[active].image} alt={PHOTOS[active].detail} fill sizes="(min-width: 1024px) 720px, 90vw" className="object-contain" onError={()=>setMissingImages(previous=>previous.includes(PHOTOS[active].id)?previous:[...previous,PHOTOS[active].id])} />
+            : <p className="flex h-full items-center justify-center p-4 text-center text-sm text-frost/65">The original NASA image is awaiting upload to the repository. Open its official source below.</p>}
         </div>
         <div className="mt-4"><Source href={PHOTOS[active].source}>View official photograph and download</Source></div>
       </div>
