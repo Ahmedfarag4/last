@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { useGameSettings } from '../settings-provider'
 import {
   MEDIA,
+  type MissionId,
   OPPORTUNITY_INSTRUMENTS,
   OPPORTUNITY_OBJECTIVES,
   SIGNAL_LOGS,
@@ -29,14 +30,17 @@ type ScientificArchiveProps = {
   section: SectionId | null
   onSection: (s: SectionId | null) => void
   onBack: () => void
+  missionId?: MissionId
 }
 
-export function ScientificArchive({ section, onSection, onBack }: ScientificArchiveProps) {
+export function ScientificArchive({ section, onSection, onBack, missionId = 'opportunity' }: ScientificArchiveProps) {
   const { play } = useGameSettings()
   const headingRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => headingRef.current?.focus(), [section])
 
   const current = SECTIONS.find((s) => s.id === section)
+  const isOpportunity = missionId === 'opportunity'
+  const missionTitle = missionId === 'apollo' ? 'Apollo' : missionId === 'insight' ? 'InSight' : 'Opportunity'
 
   return (
     <section
@@ -52,7 +56,7 @@ export function ScientificArchive({ section, onSection, onBack }: ScientificArch
           tabIndex={-1}
           className="text-[10px] font-semibold tracking-[0.32em] text-hud uppercase outline-none"
         >
-          Opportunity · {current ? current.label : 'Scientific archive'}
+          {missionTitle} · {current ? current.label : 'Scientific archive'}
         </h2>
       </header>
 
@@ -106,12 +110,69 @@ export function ScientificArchive({ section, onSection, onBack }: ScientificArch
             ))}
           </ul>
         )}
-        {section === 'media' && <MediaSection />}
-        {section === 'signals' && <SignalSection />}
-        {section === 'notes' && <NotesSection />}
-        {section === 'traverse' && <TraverseSection />}
+        {isOpportunity ? (
+          <>
+            {section === 'media' && <MediaSection />}
+            {section === 'signals' && <SignalSection />}
+            {section === 'notes' && <NotesSection />}
+            {section === 'traverse' && <TraverseSection />}
+          </>
+        ) : section ? (
+          <PendingArchiveSection missionId={missionId as FutureMission} section={section} />
+        ) : null}
       </div>
     </section>
+  )
+}
+
+
+type FutureMission = Exclude<MissionId, 'opportunity'>
+const CONTENT_SLOTS: Record<FutureMission, Record<SectionId, { heading: string; body: string; fields: string[] }>> = {
+  apollo: {
+    media: { heading: 'Lunar mission media', body: 'NASA photographs, surface panoramas, mission footage and original captions will be added here.', fields: ['Apollo 11', 'Apollo 12', 'Apollo 15', 'Source metadata'] },
+    signals: { heading: 'Mission records', body: 'Verified communications, mission chronology, and document records will be imported here.', fields: ['Mission timeline', 'Communications records', 'Historical documents', 'Original source'] },
+    notes: { heading: 'Lunar field notes', body: 'Scientific instruments, surface observations, sample records and experiment data will be added here.', fields: ['Instrument records', 'Surface notes', 'Science datasets', 'Data provenance'] },
+    traverse: { heading: 'Lunar exploration', body: 'Landing-site maps and documented lunar exploration records will be added here.', fields: ['Landing sites', 'Surface operations', 'Apollo 15 traverse', 'Surveyor 3 context'] },
+  },
+  insight: {
+    media: { heading: 'InSight mission media', body: 'Authentic InSight imagery, panoramas and mission media will be imported here.', fields: ['Lander imagery', 'Instrument photographs', 'Surface views', 'Source metadata'] },
+    signals: { heading: 'Mission records', body: 'Verified timeline events, communication records and mission status reports will be added here.', fields: ['Mission timeline', 'Communications', 'Operations records', 'Original source'] },
+    notes: { heading: 'Martian field notes', body: 'SEIS, HP³ and other instrument records and scientific datasets will be added here.', fields: ['Marsquake observations', 'Instrument notes', 'Scientific datasets', 'Data provenance'] },
+    traverse: { heading: 'Landing site', body: 'InSight was a stationary lander. This section will contain landing-site context and instrument deployment locations, not an invented traverse.', fields: ['Elysium Planitia', 'Surface layout', 'Instrument deployment', 'Mission maps'] },
+  },
+}
+
+function PendingArchiveSection({ missionId, section }: { missionId: FutureMission; section: SectionId }) {
+  const [apolloMission, setApolloMission] = useState<'Apollo 11' | 'Apollo 12' | 'Apollo 15'>('Apollo 11')
+  const slot = CONTENT_SLOTS[missionId][section]
+  return (
+    <div className="arc-swap flex min-h-full flex-col gap-5">
+      {missionId === 'apollo' && (
+        <div role="group" aria-label="Apollo mission selection" className="flex flex-wrap gap-2">
+          {(['Apollo 11', 'Apollo 12', 'Apollo 15'] as const).map(name => (
+            <button key={name} type="button" aria-pressed={apolloMission === name} onClick={() => setApolloMission(name)}
+              className={cn('rounded-full border px-4 py-2 text-xs tracking-[.12em] focus-visible:outline-2 focus-visible:outline-hud', apolloMission === name ? 'border-hud bg-hud/15 text-frost' : 'border-hud/25 text-frost/65 hover:border-hud/60')}>
+              {name}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="relative flex min-h-52 flex-col justify-center overflow-hidden rounded-2xl border border-hud/25 bg-midnight/60 p-6 sm:p-9">
+        <span aria-hidden className="pointer-events-none absolute -right-12 -top-16 size-64 rounded-full border border-hud/15 shadow-[0_0_100px_#49d7ff20]" />
+        <p className="font-mono text-[10px] tracking-[.24em] text-ember">{missionId === 'apollo' ? apolloMission.toUpperCase() : 'INSIGHT'} / ARCHIVE VAULT</p>
+        <h3 className="mt-3 font-display text-2xl tracking-[.08em] text-frost">{slot.heading}</h3>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-frost/70">{slot.body}</p>
+        <p className="mt-5 w-fit rounded-full border border-ember/40 bg-ember/5 px-4 py-2 font-mono text-[10px] tracking-[.2em] text-ember">CONTENT AWAITING IMPORT</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {slot.fields.map(field => (
+          <div key={field} className="flex min-h-24 items-center justify-between gap-3 rounded-xl border border-hud/15 bg-midnight/40 p-4">
+            <span className="text-sm text-frost/75">{field}</span>
+            <span className="shrink-0 rounded-full border border-hud/20 px-2 py-1 font-mono text-[9px] text-hud/70">PENDING</span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 

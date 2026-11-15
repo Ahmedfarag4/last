@@ -67,7 +67,7 @@ export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadMa
             ))}
           </dl>
           <div className="flex flex-col gap-3 pt-1">
-            {dossier.hasArchive && (
+            {(dossier.hasArchive || mission.id !== 'opportunity') && (
               <OrbitalCapsuleButton
                 label="Explore Archive"
                 sound="archives"
@@ -77,7 +77,7 @@ export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadMa
                 onActivate={onExplore}
               />
             )}
-            <OrbitalCapsuleButton
+            {mission.id === 'opportunity' && <OrbitalCapsuleButton
               label="Begin Investigation"
               tone="amber"
               emphasis="primary"
@@ -86,8 +86,8 @@ export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadMa
               height="50px"
               phase={0.15}
               onActivate={onBegin}
-            />
-            {mission.id === 'opportunity' && onReadManga && (
+            />}
+            {onReadManga && (
               <OrbitalCapsuleButton
                 label="Read Manga"
                 sound="archives"
