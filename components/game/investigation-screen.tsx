@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, BatteryCharging, ClipboardList, FileSearch, RadioTower, ScanEye, X } from 'lucide-react'
 import { useGameSettings } from './settings-provider'
 
@@ -122,7 +122,9 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Hit areas intentionally use the same percentage positioning as the visual consoles. */}
-      <div className="absolute inset-0 z-10" aria-label="Interactive room stations">
+      <div className={"absolute inset-0 z-10 origin-center " + motion}
+        style={{ transform: 'translate3d(' + (-pan * 1.7) + 'px,0,0) scale(1.12)' }}
+        aria-label="Interactive room stations">
         <button type="button" onClick={(e) => openStation('briefing', e)}
           className="group absolute left-[28%] top-[26%] h-[29%] w-[44%] rounded-xl border border-transparent transition-colors hover:border-[#49d7ff]/70 hover:bg-[#49d7ff]/10 focus-visible:border-[#49d7ff] focus-visible:outline-2 focus-visible:outline-[#49d7ff]"
           aria-label="Open Main Display">
