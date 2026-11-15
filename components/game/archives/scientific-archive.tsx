@@ -17,6 +17,7 @@ import {
 import { BackChip, SourceTag } from './archive-ui'
 import { OPPORTUNITY_TAU_FINAL } from './opportunity-tau-data'
 import { ApolloArchiveSection } from './apollo-archive-section'
+import { InsightArchiveSection } from './insight-archive-section'
 
 export type SectionId = 'media' | 'signals' | 'notes' | 'traverse'
 
@@ -120,6 +121,8 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
           </>
         ) : missionId === 'apollo' && section ? (
           <ApolloArchiveSection section={section} />
+        ) : missionId === 'insight' && section ? (
+          <InsightArchiveSection key={section} section={section} />
         ) : section ? (
           <PendingArchiveSection missionId={missionId as FutureMission} section={section} />
         ) : null}
