@@ -7,13 +7,11 @@ import { CinematicEnvironment } from './cinematic-environment'
 import { HudOverlay } from './hud-overlay'
 import { InvestigationScreen } from './investigation-screen'
 import { MainMenu, type MenuAction } from './main-menu'
-import { MissionSelection } from './mission-selection'
 import { SettingsModal } from './settings-modal'
 import { SettingsProvider, useGameSettings } from './settings-provider'
 
-type Screen = 'menu' | 'selection' | 'investigation' | 'archives'
+type Screen = 'menu' | 'investigation' | 'archives'
 type Modal = 'settings' | 'about' | null
-type InvestigationOrigin = 'selection' | 'archives'
 
 const PARTICLES_AT_MS = 3700
 const INTRO_DONE_MS = 4500
@@ -59,9 +57,8 @@ function useParallax(rootRef: React.RefObject<HTMLElement | null>, enabled: bool
 }
 
 function GameExperience() {
-  const { settings, ready, play } = useGameSettings()
+  const { settings, ready, play, t } = useGameSettings()
   const [screen, setScreen] = useState<Screen>('menu')
-  const [origin, setOrigin] = useState<InvestigationOrigin>('selection')
   const [modal, setModal] = useState<Modal>(null)
   const [intro, setIntro] = useState<'playing' | 'complete'>('playing')
   const [particlesActive, setParticlesActive] = useState(false)
@@ -88,31 +85,25 @@ function GameExperience() {
   }, [ready, settings.reducedMotion, finishIntro])
 
   const goToMenu = useCallback(() => setScreen('menu'), [])
-  const exitInvestigation = useCallback(() => {
-    setScreen(origin === 'archives' ? 'archives' : 'selection')
-  }, [origin])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || e.defaultPrevented || modal) return
+      if (e.key !== 'Escape' || modal) return
       if (intro === 'playing') {
         finishIntro()
         return
       }
       if (screen === 'investigation') {
         play('back')
-        exitInvestigation()
-      } else if (screen === 'selection') {
-        play('back')
         goToMenu()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [screen, modal, intro, finishIntro, exitInvestigation, goToMenu, play])
+  }, [screen, modal, intro, finishIntro, goToMenu, play])
 
   const handleSelect = (action: MenuAction) => {
-    if (action === 'start') setScreen('selection')
+    if (action === 'start') setScreen('investigation')
     else if (action === 'archives') setScreen('archives')
     else setModal(action)
   }
@@ -128,29 +119,16 @@ function GameExperience() {
 
       <main className="relative z-10 flex h-full w-full flex-col items-center justify-start overflow-hidden pt-[max(56px,8.5vh)] sm:justify-center sm:pb-[14vh] sm:pt-0">
         {screen === 'menu' && <MainMenu particlesActive={particlesActive} onSelect={handleSelect} />}
-        {screen === 'investigation' && <InvestigationScreen key="investigation" onBack={exitInvestigation} />}
+        {screen === 'investigation' && <InvestigationScreen key="investigation" onBack={goToMenu} />}
       </main>
 
       <HudOverlay />
-
-      {screen === 'selection' && (
-        <MissionSelection
-          onBack={goToMenu}
-          onStartOpportunity={() => {
-            setOrigin('selection')
-            setScreen('investigation')
-          }}
-        />
-      )}
 
       {screen === 'archives' && (
         <ArchivesScreen
           key="archives"
           onBack={goToMenu}
-          onBeginInvestigation={() => {
-            setOrigin('archives')
-            setScreen('investigation')
-          }}
+          onBeginInvestigation={() => setScreen('investigation')}
         />
       )}
 
