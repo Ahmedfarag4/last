@@ -25,7 +25,7 @@ const kufi = Noto_Kufi_Arabic({
 export const metadata: Metadata = {
   title: 'The Last Signal — Echoes of Exploration',
   description:
-    'A cinematic sci-fi investigation game set at a Mars outpost overlooking a vast canyon. Main menu prototype.',
+    'Investigate Opportunity’s final days through a tactile mission dossier, NASA imagery, scientific records, and interactive evidence puzzles.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -42,6 +42,8 @@ export const viewport: Viewport = {
   themeColor: '#08111B',
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 }
 
 export default function RootLayout({

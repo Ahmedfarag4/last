@@ -17,10 +17,11 @@ const PARTICLES = [
   ['87%', '21%'], ['93%', '58%'], ['17%', '52%'], ['31%', '28%'], ['70%', '51%'], ['84%', '77%'],
 ] as const
 
-export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }: {
+export function HolographicReconstruction({ onFile, alreadyCollected, onReturn, returnLabel = 'RETURN TO ROOM' }: {
   onFile: () => void
   alreadyCollected: boolean
   onReturn: () => void
+  returnLabel?: string
 }) {
   const { settings, play } = useGameSettings()
   const [sequence, setSequence] = useState<NodeId[]>([])
@@ -91,7 +92,7 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
             onClick={onReturn}
             className="rounded-full border border-white/15 px-3 py-2 font-mono text-[9px] tracking-wider text-slate-300 transition-colors hover:border-amber-200/50 hover:text-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:text-[10px]"
           >
-            RETURN TO ROOM
+            {returnLabel}
           </button>
         </div>
       </header>

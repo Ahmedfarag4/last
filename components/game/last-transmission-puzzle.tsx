@@ -15,7 +15,7 @@ const EVENTS = EVENT_IDS.map(id => {
 
 type Phase = 'identify' | 'sort' | 'confirm'
 
-export function LastTransmissionPuzzle({ onClose }: { onClose: () => void }) {
+export function LastTransmissionPuzzle({ onClose, embedded = false }: { onClose: () => void; embedded?: boolean }) {
   const [phase, setPhase] = useState<Phase>('identify')
   const [lastContact, setLastContact] = useState<string | null>(null)
   const [answer, setAnswer] = useState<'continued' | 'recovery' | null>(null)
@@ -55,7 +55,7 @@ export function LastTransmissionPuzzle({ onClose }: { onClose: () => void }) {
   const current = EVENTS.find(entry => entry.id === selectedLog) ?? EVENTS[0]
 
   return (
-    <section id="station-dialog" className="absolute inset-0 z-50 overflow-y-auto bg-[#020a15]/95 p-4 text-[#eaf4ff] backdrop-blur-xl sm:p-7" role="dialog" aria-modal="true" aria-label="The Last Transmission investigation">
+    <section className={(embedded ? 'dossier-puzzle-embedded ' : 'absolute inset-0 z-50 ') + 'overflow-y-auto bg-[#020a15]/95 p-4 text-[#eaf4ff] backdrop-blur-xl sm:p-7'} role="dialog" aria-modal="true" aria-label="The Last Transmission investigation">
       <div className="mx-auto flex min-h-full max-w-6xl flex-col gap-5">
         <header className="flex items-start justify-between gap-3 border-b border-cyan-300/25 pb-5">
           <div>
@@ -63,7 +63,7 @@ export function LastTransmissionPuzzle({ onClose }: { onClose: () => void }) {
             <h2 className="mt-2 font-display text-2xl tracking-wider sm:text-4xl">THE LAST TRANSMISSION</h2>
             <p className="mt-2 text-sm text-slate-300">Restore the historical sequence. A command sent from Earth is not proof that Opportunity responded.</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close signal investigation" className="flex shrink-0 items-center gap-2 rounded-full border border-cyan-300/40 px-3 py-2 text-xs hover:bg-cyan-300/10"><X size={16}/><span className="hidden sm:inline">RETURN TO ROOM</span></button>
+          <button type="button" onClick={onClose} aria-label="Close signal investigation" className="flex shrink-0 items-center gap-2 rounded-full border border-cyan-300/40 px-3 py-2 text-xs hover:bg-cyan-300/10"><X size={16}/><span className="hidden sm:inline">{embedded ? 'RETURN TO DOSSIER' : 'RETURN TO ROOM'}</span></button>
         </header>
         <div className="grid grid-cols-3 gap-2 text-center font-mono text-[10px] tracking-wider">
           {([['identify','01 / IDENTIFY'],['sort','02 / RECONSTRUCT'],['confirm','03 / FILE']] as const).map(([id,label])=><span key={id} className={'rounded-lg border px-2 py-3 ' + (id === phase ? 'border-cyan-300 bg-cyan-300/10 text-cyan-100' : 'border-white/10 text-slate-500')}>{label}</span>)}
@@ -151,7 +151,7 @@ export function LastTransmissionPuzzle({ onClose }: { onClose: () => void }) {
             {collected ? (
               <div className="mt-6 flex flex-col items-center gap-3">
                 <span role="status" className="text-xs font-mono tracking-widest text-emerald-300">EVIDENCE 02 SAVED TO CASE FILE</span>
-                <button type="button" onClick={onClose} className="rounded-full bg-cyan-300 px-6 py-3 text-xs font-bold text-slate-950">RETURN TO MISSION CONTROL</button>
+                <button type="button" onClick={onClose} className="rounded-full bg-cyan-300 px-6 py-3 text-xs font-bold text-slate-950">{embedded ? 'RETURN TO DOSSIER' : 'RETURN TO MISSION CONTROL'}</button>
               </div>
             ) : (
               <button type="button" onClick={file} className="mt-6 flex items-center gap-2 rounded-full bg-amber-300 px-6 py-3 text-xs font-bold tracking-wider text-slate-950"><FileCheck2 size={18}/> CAPTURE EVIDENCE 02</button>

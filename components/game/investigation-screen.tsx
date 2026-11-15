@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react'
-import { ArrowLeft, ArrowRight, FileSearch, RadioTower, ScanEye, X } from 'lucide-react'
+import type { CSSProperties, KeyboardEvent } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { useGameSettings } from './settings-provider'
-import { DarkeningSkyPuzzle } from './darkening-sky-puzzle'
-import { LastTransmissionPuzzle } from './last-transmission-puzzle'
+import { OpportunityDossier } from './opportunity-dossier'
+import type { DossierPageId } from './opportunity-dossier-pages'
 
 type StationId = 'briefing' | 'telemetry' | 'signals' | 'evidence'
 
@@ -19,27 +19,18 @@ type Hotspot = {
   amber?: boolean
 }
 
-const STATIONS: Record<StationId, { name: string; serial: string; title: string; detail: string; objective: string }> = {
-  briefing: {
-    name: 'MAIN DISPLAY', serial: '01 / MISSION BRIEF', title: 'THE FINAL STORM',
-    detail: 'Opportunity last communicated with Earth on June 10, 2018 (Sol 5111), during a planet-encircling dust storm.',
-    objective: 'Your mission: reconstruct the final days of MER-B using documented NASA records. The investigation is historical; any future rescue scenario is simulated.',
-  },
-  telemetry: {
-    name: 'TELEMETRY', serial: '02 / ATMOSPHERIC DATA', title: 'THE DARKENING SKY',
-    detail: 'Atmospheric opacity (Tau) increased as dust blocked sunlight from reaching the rover solar arrays.',
-    objective: 'Inspect the original atmospheric data in the Scientific Archive. An interactive data-analysis puzzle will be connected here in the next milestone.',
-  },
-  signals: {
-    name: 'SIGNAL CONSOLE', serial: '03 / COMMUNICATIONS', title: 'THE LAST TRANSMISSION',
-    detail: 'The final contact took place on June 10, 2018. NASA continued recovery attempts and announced the end of the mission in February 2019.',
-    objective: 'Investigate the difference between the last received signal and the later recovery attempts. Reconstruct the dated NASA communications records and distinguish actual rover replies from later Earth commands.',
-  },
-  evidence: {
-    name: 'EVIDENCE DESK', serial: '04 / CASE FILE', title: 'CASE RECONSTRUCTION',
-    detail: 'Collect scientific evidence and communications records to establish what happened, what is documented, and what remains unknown.',
-    objective: 'Collected findings from both investigations are stored here. Final diagnosis and rescue simulation are coming in later stages.',
-  },
+const STATION_NAMES: Record<StationId, string> = {
+  briefing: 'MISSION OVERVIEW',
+  telemetry: 'TELEMETRY',
+  signals: 'SIGNAL LOGS',
+  evidence: 'EVIDENCE INVENTORY',
+}
+
+const STATION_PAGES: Record<StationId, DossierPageId> = {
+  briefing: 'overview',
+  telemetry: 'telemetry',
+  signals: 'signals',
+  evidence: 'evidence',
 }
 
 const SCENE_W = 1920
@@ -64,14 +55,11 @@ const toPoints = (points: Point[]) => points.map(([x, y]) => `${x},${y}`).join('
 
 export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   const { settings, play } = useGameSettings()
-  const [active, setActive] = useState<StationId | null>(null)
   const [hot, setHot] = useState<StationId | null>(null)
   const [camera, setCamera] = useState<StationId>('briefing')
-  const [evidenceCollected, setEvidenceCollected] = useState(false)
-  const [signalCollected, setSignalCollected] = useState(false)
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const [dossierVisible, setDossierVisible] = useState(true)
+  const [openRequest, setOpenRequest] = useState<{ page: DossierPageId; sequence: number }>({ page: 'overview', sequence: 0 })
   const lastFocus = useRef<SVGElement | null>(null)
-  const station = active ? STATIONS[active] : null
   const cameraPosition = CAMERA_POSITIONS[camera]
   const sceneStyle: CSSProperties = {
     transform: `translate3d(${cameraPosition.x}%, ${cameraPosition.y}%, 0) scale(${cameraPosition.zoom})`,
@@ -81,42 +69,25 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   }
 
   useEffect(() => {
-    if (active && active !== 'telemetry' && active !== 'signals') closeRef.current?.focus()
-  }, [active])
-
-  useEffect(() => {
     const onKey = (event: globalThis.KeyboardEvent) => {
-      if (active && event.key === 'Escape') {
-        event.preventDefault()
-        event.stopImmediatePropagation()
-        setActive(null)
-        window.setTimeout(() => lastFocus.current?.focus(), 0)
-        return
-      }
-      if (active || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return
+      if (dossierVisible || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return
       const index = CAMERA_ORDER.indexOf(camera)
       const nextIndex = Math.max(0, Math.min(CAMERA_ORDER.length - 1, index + (event.key === 'ArrowRight' ? 1 : -1)))
       if (nextIndex !== index) setCamera(CAMERA_ORDER[nextIndex])
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [active, camera])
+  }, [dossierVisible, camera])
 
   const openStation = (id: StationId, target: SVGElement) => {
     lastFocus.current = target
     play('click')
-    if (id === 'evidence') {
-      try {
-        setEvidenceCollected(window.localStorage.getItem('last-signal.opportunity.evidence-01.v1') === 'collected')
-        setSignalCollected(window.localStorage.getItem('last-signal.opportunity.evidence-02.v1') === 'collected')
-      } catch { setEvidenceCollected(false); setSignalCollected(false) }
-    }
-    setActive(id)
+    setOpenRequest((current) => ({ page: STATION_PAGES[id], sequence: current.sequence + 1 }))
+    setDossierVisible(true)
   }
 
   const closeStation = () => {
-    play('back')
-    setActive(null)
+    setDossierVisible(false)
     window.setTimeout(() => lastFocus.current?.focus(), 0)
   }
 
@@ -153,9 +124,9 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
               key={spot.id}
               role="button"
               tabIndex={0}
-              aria-label={`Open ${STATIONS[spot.id].name}`}
+              aria-label={`Open ${STATION_NAMES[spot.id]}`}
               aria-haspopup="dialog"
-              aria-controls="station-dialog"
+              aria-controls="opportunity-dossier"
               onClick={(event) => openStation(spot.id, event.currentTarget)}
               onKeyDown={(event) => handleHotspotKey(event, spot.id)}
               onPointerEnter={() => setHot(spot.id)}
@@ -202,7 +173,7 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
                   </text>
                 </g>
               )}
-              <title>{`Open ${STATIONS[spot.id].name}`}</title>
+              <title>{`Open ${STATION_NAMES[spot.id]}`}</title>
             </g>
           )
         })}
@@ -243,55 +214,12 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
         <p className="w-[38%] text-right text-[max(8px,0.55cqw)] tracking-[.16em] text-[#f2b35d]/90">SELECT A CONSOLE TO BEGIN</p>
       </footer>
 
-      {active === 'telemetry' && <DarkeningSkyPuzzle onClose={closeStation} />}
-      {active === 'signals' && <LastTransmissionPuzzle onClose={closeStation} />}
-
-      {station && active !== 'telemetry' && active !== 'signals' && (
-        <div id="station-dialog" className="absolute inset-0 z-30 flex items-center justify-center bg-[#020814]/90 p-4 backdrop-blur-xl" role="dialog" aria-modal="true" aria-labelledby="station-title">
-          <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-[#49d7ff]/40 bg-[linear-gradient(140deg,#112d40,#061322_70%)] p-5 shadow-[0_0_80px_#49d7ff1b] sm:p-9">
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#49d7ff]/60 to-transparent" />
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-mono text-[10px] tracking-[.25em] text-[#79e7ff]">{station.serial}</p>
-                <h2 id="station-title" className="mt-3 font-display text-xl tracking-[.12em] sm:text-3xl">{station.title}</h2>
-                <p className="mt-2 text-xs tracking-[.15em] text-[#f2b35d]">{station.name}</p>
-              </div>
-              <button ref={closeRef} type="button" onClick={closeStation} className="rounded-full border border-[#49d7ff]/35 p-2 hover:bg-[#49d7ff]/10 focus-visible:outline-2 focus-visible:outline-[#49d7ff]" aria-label="Close station"><X className="size-5" /></button>
-            </div>
-            <div className="my-6 h-px bg-gradient-to-r from-[#49d7ff]/60 to-transparent" />
-            <div className="flex items-start gap-4">
-              {active === 'signals' ? <RadioTower className="mt-1 shrink-0 text-[#71ddff]" /> : active === 'evidence' ? <FileSearch className="mt-1 shrink-0 text-[#f2b35d]" /> : <ScanEye className="mt-1 shrink-0 text-[#71ddff]" />}
-              <div>
-                <p className="text-sm leading-7 text-[#e5f3ff]">{station.detail}</p>
-                <p className="mt-4 text-sm leading-6 text-[#a1cedd]">{station.objective}</p>
-              </div>
-            </div>
-            {active === 'evidence' && (
-              <div className="mt-6 rounded-xl border border-[#f2b35d]/35 bg-[#f2b35d]/5 p-4">
-                <p className="text-xs font-bold tracking-[.2em] text-[#f2b35d]">OPPORTUNITY / EVIDENCE INVENTORY</p>
-                {evidenceCollected ? (
-                  <div className="mt-4 rounded-lg border border-emerald-300/40 bg-emerald-300/10 p-4">
-                    <p className="text-sm font-semibold text-emerald-200">✓ EVIDENCE 01 — THE DARKENING SKY</p>
-                    <p className="mt-2 text-xs leading-6 text-slate-200">Direct PDS Tau observations through Sol 5105.61, with the unmeasured Sol 5111 gap and NASA's separate Power vs Tau graphic. Dust obscured sunlight, reducing solar power.</p>
-
-                  </div>
-                ) : (
-                  <p className="mt-3 text-sm text-slate-300">Evidence 01 not yet collected. Inspect Telemetry to recover the atmospheric record.</p>
-                )}
-                <div className="mt-3 border-t border-[#f2b35d]/20 pt-3">
-                  {signalCollected ? (
-                    <div className="rounded-lg border border-emerald-300/35 bg-emerald-300/10 p-3">
-                      <p className="text-sm font-semibold text-emerald-200">✓ EVIDENCE 02 — THE LAST TRANSMISSION</p>
-                      <p className="mt-2 text-xs leading-6 text-slate-200">NASA’s documented last contact, later recovery attempts, and final mission announcement form the verified communication chronology.</p>
-                    </div>
-                  ) : <p className="text-xs text-amber-200">EVIDENCE 02 — NOT YET COLLECTED. Investigate the Signal Console.</p>}
-                </div>
-              </div>
-            )}
-            <button type="button" onClick={closeStation} className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#49d7ff]/60 px-5 py-2.5 text-xs font-semibold tracking-[.1em] hover:bg-[#49d7ff]/10 focus-visible:outline-2 focus-visible:outline-[#49d7ff]">RETURN TO ROOM <ArrowRight aria-hidden className="size-4" /></button>
-          </div>
-        </div>
-      )}
+      <OpportunityDossier
+        visible={dossierVisible}
+        openRequest={openRequest}
+        onClose={closeStation}
+        onExit={() => { play('back'); onBack() }}
+      />
     </section>
   )
 }

@@ -63,7 +63,7 @@ function TauPlot({ range, selected, onSelect }: {
   )
 }
 
-export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
+export function DarkeningSkyPuzzle({ onClose, embedded = false }: { onClose: () => void; embedded?: boolean }) {
   const [stage, setStage] = useState<Stage>(0)
   const [range, setRange] = useState<'all' | 'storm'>('storm')
   const [selected, setSelected] = useState(OPPORTUNITY_TAU_FINAL.length - 1)
@@ -97,7 +97,7 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <section className={'fixed inset-0 z-50 text-slate-100 ' + (stage === 3 ? 'overflow-hidden bg-[#020814]' : 'overflow-y-auto bg-[#020814]')} role="dialog" aria-modal="true" aria-label="The Darkening Sky investigation">
+    <section className={(embedded ? 'dossier-puzzle-embedded ' : 'fixed inset-0 z-50 ') + (embedded && stage === 3 ? 'dossier-puzzle-holo ' : '') + 'text-slate-100 ' + (stage === 3 ? 'overflow-hidden bg-[#020814]' : 'overflow-y-auto bg-[#020814]')} role="dialog" aria-modal="true" aria-label="The Darkening Sky investigation">
       <div className={stage === 3 ? 'flex h-[100dvh] min-h-[520px] w-full flex-col' : 'mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-5 sm:px-8'}>
         <header className={(stage === 3 ? 'hidden ' : '') + 'flex flex-wrap items-start justify-between gap-3 border-b border-cyan-400/20 pb-5'}>
           <div>
@@ -105,7 +105,7 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
             <h2 className="mt-2 text-2xl font-semibold tracking-[.08em] sm:text-4xl">THE DARKENING SKY</h2>
             <p className="mt-2 max-w-2xl text-sm text-slate-400">Reconstruct the last measured changes in Mars atmospheric opacity. Separate direct measurements from later published mission context.</p>
           </div>
-          <button type="button" onClick={onClose} className="flex items-center gap-2 rounded-full border border-cyan-300/40 px-4 py-2 text-xs hover:bg-cyan-300/10"><X size={16}/> RETURN TO ROOM</button>
+          <button type="button" onClick={onClose} className="flex items-center gap-2 rounded-full border border-cyan-300/40 px-4 py-2 text-xs hover:bg-cyan-300/10"><X size={16}/> {embedded ? 'RETURN TO DOSSIER' : 'RETURN TO ROOM'}</button>
         </header>
         <nav className={(stage === 3 ? 'hidden ' : '') + 'mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4'} aria-label="Investigation progress">
           {TASKS.map((task, index) => (
@@ -194,6 +194,7 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
               onFile={finish}
               alreadyCollected={collected}
               onReturn={onClose}
+              returnLabel={embedded ? 'RETURN TO DOSSIER' : 'RETURN TO ROOM'}
             />
           )}
         </div>
