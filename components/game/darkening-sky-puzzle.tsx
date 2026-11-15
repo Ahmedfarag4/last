@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, LockKeyhole, ScanSearch, X } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, LockKeyhole, ScanSearch, X } from 'lucide-react'
 import { OPPORTUNITY_TAU_FINAL } from './archives/opportunity-tau-data'
 import { HolographicReconstruction } from './holographic-reconstruction'
 
@@ -74,7 +74,6 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
   const [feedback, setFeedback] = useState('')
   const [sourceOpen, setSourceOpen] = useState(false)
   const [seenGraphic, setSeenGraphic] = useState(false)
-  const [showCapture, setShowCapture] = useState(false)
   const [collected, setCollected] = useState(false)
   useEffect(() => { setCollected(readSaved()) }, [])
   useEffect(() => {
@@ -94,14 +93,13 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
   const finish = () => {
     try { window.localStorage.setItem(SAVE_KEY, 'collected') } catch { /* gameplay still completes without persistent storage */ }
     setCollected(true)
-    setShowCapture(true)
-    setFeedback('Evidence 01 captured — The Darkening Sky')
+    onClose()
   }
 
   return (
-    <section className="fixed inset-0 z-50 overflow-y-auto bg-[#020814] text-slate-100" role="dialog" aria-modal="true" aria-label="The Darkening Sky investigation">
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-5 sm:px-8">
-        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-cyan-400/20 pb-5">
+    <section className={'fixed inset-0 z-50 text-slate-100 ' + (stage === 3 ? 'overflow-hidden bg-[#020814]' : 'overflow-y-auto bg-[#020814]')} role="dialog" aria-modal="true" aria-label="The Darkening Sky investigation">
+      <div className={stage === 3 ? 'flex h-[100dvh] min-h-[520px] w-full flex-col' : 'mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-5 sm:px-8'}>
+        <header className={(stage === 3 ? 'hidden ' : '') + 'flex flex-wrap items-start justify-between gap-3 border-b border-cyan-400/20 pb-5'}>
           <div>
             <p className="text-xs tracking-[.25em] text-cyan-400">MER-B / TELEMETRY INVESTIGATION / NASA PDS</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-[.08em] sm:text-4xl">THE DARKENING SKY</h2>
@@ -109,14 +107,14 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
           </div>
           <button type="button" onClick={onClose} className="flex items-center gap-2 rounded-full border border-cyan-300/40 px-4 py-2 text-xs hover:bg-cyan-300/10"><X size={16}/> RETURN TO ROOM</button>
         </header>
-        <nav className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Investigation progress">
+        <nav className={(stage === 3 ? 'hidden ' : '') + 'mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4'} aria-label="Investigation progress">
           {TASKS.map((task, index) => (
             <div key={task} className={'rounded-xl border p-3 text-[10px] tracking-wider ' + (stage === index ? 'border-cyan-300 bg-cyan-300/10 text-cyan-100' : 'border-white/10 text-slate-500')}>
               {index + 1}. {task}
             </div>
           ))}
         </nav>
-        <div className="mt-6 flex-1">
+        <div className={stage === 3 ? 'min-h-0 flex-1' : 'mt-6 flex-1'}>
           {stage === 0 && (
             <div className="space-y-4">
               <div className="flex flex-wrap justify-between gap-3">
@@ -199,20 +197,7 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
             />
           )}
         </div>
-        {showCapture && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-[#020814]/95 p-5 backdrop-blur-xl" role="alertdialog" aria-modal="true" aria-label="Evidence secured">
-            <div className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-amber-300/60 bg-[radial-gradient(ellipse_at_50%_15%,#274c57_0%,#0a1d2c_58%,#06101b_100%)] p-6 text-center shadow-[0_0_90px_rgba(251,191,36,0.2)] sm:p-9">
-              <div aria-hidden className="pointer-events-none absolute inset-0 opacity-25" style={{backgroundImage:'repeating-linear-gradient(0deg,transparent 0px,transparent 8px,#a6e9ff22 9px,#a6e9ff22 10px)'}} />
-              <div className="relative mx-auto mb-6 flex size-24 items-center justify-center rounded-[1.8rem] border border-amber-300/70 bg-amber-300/10 shadow-[0_0_45px_#f6b95455] motion-safe:animate-pulse"><CheckCircle2 className="size-12 text-amber-200"/></div>
-              <p className="relative font-mono text-xs tracking-[.28em] text-amber-300">MISSION 01 / EVIDENCE CORE FILED</p>
-              <h3 className="relative mt-4 text-2xl tracking-wider text-white sm:text-3xl">THE DARKENING SKY</h3>
-              <p className="relative mt-4 text-sm leading-6 text-slate-300">NASA Pancam opacity readings and a separately published solar-power graphic support the dust → sunlight → solar power chain. There is no direct Sol 5111 Tau reading in this series.</p>
-              <p className="relative mt-3 font-mono text-xs tracking-wider text-emerald-300">EVIDENCE 01 / SAVED TO CASE FILE</p>
-              <button type="button" onClick={() => {setShowCapture(false);onClose()}} className="relative mt-7 rounded-full bg-amber-300 px-7 py-3 text-xs font-bold tracking-widest text-slate-950 hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300">RETURN TO MISSION CONTROL</button>
-            </div>
-          </div>
-        )}
-        <footer className="mt-8 flex items-center gap-2 border-t border-white/10 pt-4 text-[11px] text-slate-400">
+        <footer className={(stage === 3 ? 'hidden ' : '') + 'mt-8 flex items-center gap-2 border-t border-white/10 pt-4 text-[11px] text-slate-400'}>
           <LockKeyhole size={13}/> Historical data ≠ simulated rescue. <span className="ml-auto">MISSION 01 / OPPORTUNITY</span>
         </footer>
       </div>

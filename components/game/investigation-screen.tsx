@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react'
-import { ArrowLeft, ArrowRight, BatteryCharging, FileSearch, RadioTower, ScanEye, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, FileSearch, RadioTower, ScanEye, X } from 'lucide-react'
 import { useGameSettings } from './settings-provider'
 import { DarkeningSkyPuzzle } from './darkening-sky-puzzle'
 
@@ -254,7 +254,7 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
             </div>
             <div className="my-6 h-px bg-gradient-to-r from-[#49d7ff]/60 to-transparent" />
             <div className="flex items-start gap-4">
-              {active === 'telemetry' ? <BatteryCharging className="mt-1 shrink-0 text-[#71ddff]" /> : active === 'signals' ? <RadioTower className="mt-1 shrink-0 text-[#71ddff]" /> : active === 'evidence' ? <FileSearch className="mt-1 shrink-0 text-[#f2b35d]" /> : <ScanEye className="mt-1 shrink-0 text-[#71ddff]" />}
+              {active === 'signals' ? <RadioTower className="mt-1 shrink-0 text-[#71ddff]" /> : active === 'evidence' ? <FileSearch className="mt-1 shrink-0 text-[#f2b35d]" /> : <ScanEye className="mt-1 shrink-0 text-[#71ddff]" />}
               <div>
                 <p className="text-sm leading-7 text-[#e5f3ff]">{station.detail}</p>
                 <p className="mt-4 text-sm leading-6 text-[#a1cedd]">{station.objective}</p>
