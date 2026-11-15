@@ -1,7 +1,7 @@
 /**
  * Curated Apollo archive entries from user-supplied Apollo 11, Apollo 12,
  * Apollo 15 and Surveyor 3 metadata packages (November 2026).
- * Photographs load from external NASA archives; original ZIP binaries are
+ * Photographs prefer local uploaded assets where available; archive binaries are
  * not committed. Scientific files remain listed as provenance only.
  * This module contains no simulated measurement samples.
  */
@@ -33,9 +33,9 @@ export const APOLLO_RECORDS: Record<ApolloId, ApolloRecord> = {
       { title: 'Lunar site', body: 'Landing coordinates in the supplied NASA NSSDCA record: 0.67416° N, 23.47314° E.' },
     ],
     photos: [
-      { id: 'AS11-40-5927', title: 'Experiments removed from Eagle', description: 'Buzz Aldrin removes scientific equipment from the lunar module during the Apollo 11 EVA.', imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/AS11-40-5927%20(21648739442).jpg?width=1200', sourceUrl: 'https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=AS11&roll=40&frame=5927', archiveFile: 'apollo 11/photos/AS11-40-5927.jfif', credit: 'NASA / Neil Armstrong · AS11-40-5927' },
-      { id: 'AS11-40-5948', title: 'Passive seismic deployment', description: 'Apollo 11 crew installing lunar surface experiment equipment.', imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/AS11-40-5948%20(21881859809).jpg?width=1200', sourceUrl: 'https://history.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11_eva_thumbs.html', archiveFile: 'apollo 11/photos/AS11-40-5948.jfif', credit: 'NASA · AS11-40-5948' },
-      { id: 'AS11-40-5921', title: 'Eagle landing hardware', description: 'Documentary surface photograph from the Apollo 11 Hasselblad film magazine.', imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/AS11-40-5921.jpg?width=1200', sourceUrl: 'https://history.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11_eva_thumbs.html', archiveFile: 'apollo 11/photos/AS11-40-5921.jfif', credit: 'NASA · AS11-40-5921' },
+      { id: 'AS11-40-5927', title: 'Experiments removed from Eagle', description: 'Buzz Aldrin removes scientific equipment from the lunar module during the Apollo 11 EVA.', imageUrl: '/nasa-data/apollo-11/images/AS11-40-5927.jfif', sourceUrl: 'https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=AS11&roll=40&frame=5927', archiveFile: 'apollo 11/photos/AS11-40-5927.jfif', credit: 'NASA / Neil Armstrong · AS11-40-5927' },
+      { id: 'AS11-40-5948', title: 'Passive seismic deployment', description: 'Apollo 11 crew installing lunar surface experiment equipment.', imageUrl: '/nasa-data/apollo-11/images/AS11-40-5948.jfif', sourceUrl: 'https://history.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11_eva_thumbs.html', archiveFile: 'apollo 11/photos/AS11-40-5948.jfif', credit: 'NASA · AS11-40-5948' },
+      { id: 'AS11-40-5921', title: 'Eagle landing hardware', description: 'Documentary surface photograph from the Apollo 11 Hasselblad film magazine.', imageUrl: '/nasa-data/apollo-11/images/AS11-40-5921.jfif', sourceUrl: 'https://history.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11_eva_thumbs.html', archiveFile: 'apollo 11/photos/AS11-40-5921.jfif', credit: 'NASA · AS11-40-5921' },
     ],
     science: [
       { instrument: 'Passive Seismic Experiment · MH1 / MH2 / MHZ', dataset: 'PSE station S11 · July 21, 1969', description: 'User-supplied NASA PDS-derived game-ready excerpt: three channels, 404,020 rows per channel, approximately 6.625 Hz sampling. A separate one-minute aggregate and downsampled excerpt are available in the source package. They are raw instrument counts, not calibrated ground velocity or verified moonquake events.', originalFile: 'Apollo11_Game_Ready.zip / manifest.json, minute_summary.csv, excerpts.json', sourceUrl: 'https://pds-geosciences.wustl.edu/lunar/urn-nasa-pds-apollo_pse/data/xa/continuous_waveform/s11/1969/202/', caveat: 'Only a portion of one day of observations. Missing -1 samples are excluded from derived statistics; no event classification or physical-unit calibration.' },
