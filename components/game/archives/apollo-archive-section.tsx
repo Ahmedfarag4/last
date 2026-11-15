@@ -58,7 +58,7 @@ export function ApolloArchiveSection({ section }: { section: SectionId }) {
                 <span><span className="block text-sm">{photo.title}</span><span className="font-mono text-[10px] text-frost/50">{photo.id}</span></span>
               </button>
             ))}
-            <p className="mt-3 text-xs leading-6 text-frost/50">Photos are referenced from NASA-hosted archives. The supplied original image files are catalogued by filename but are not embedded in this GitHub commit.</p>
+            <p className="mt-3 text-xs leading-6 text-frost/50">Apollo 12 photos uploaded to this project load locally from the NASA data archive. Other historic images may load from linked NASA sources. Images with unverified capture details are labeled accordingly.</p>
           </div>
         </div>
       )}
@@ -105,6 +105,17 @@ export function ApolloArchiveSection({ section }: { section: SectionId }) {
                 ))}
               </div>
               <p className="mt-3 text-[11px] text-frost/50">Instrument sampling: {seismicSummary.samplingRateHz} Hz. This is an aggregate metadata view; no artificial seismic waveform is drawn.</p>
+            </div>
+          )}
+          {mission === 'apollo12' && (
+            <div className="rounded-2xl border border-hud/25 bg-midnight/60 p-5">
+              <h4 className="font-display text-lg tracking-wider text-ember">APOLLO 12 / ORIGINAL DATA FILES</h4>
+              <p className="mt-2 text-xs leading-6 text-frost/65">Solar Wind Spectrometer source files are preserved in the project. These are original records and label definitions, not yet a calibrated interactive chart.</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <a href="/nasa-data/apollo-12/apollo12_sws_1hr_1969c9381.tab" download className="rounded-full border border-hud/50 px-4 py-2 text-xs text-hud hover:bg-hud/10">Download measurement table (.tab)</a>
+                <a href="/nasa-data/apollo-12/apollo12_sws_1hr_1969c9381.xml" download className="rounded-full border border-hud/50 px-4 py-2 text-xs text-hud hover:bg-hud/10">Download PDS label (.xml)</a>
+                <a href="/nasa-data/apollo-12/apollo12_metadata.json" target="_blank" rel="noopener noreferrer" className="rounded-full border border-hud/50 px-4 py-2 text-xs text-hud hover:bg-hud/10">Open mission metadata (.json)</a>
+              </div>
             </div>
           )}
           <h4 className="font-display text-lg tracking-wider text-ember">ORIGINAL SCIENTIFIC DATASETS</h4>
