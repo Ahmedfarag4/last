@@ -96,9 +96,45 @@ export const INSIGHT_MANGA: MangaConfig = {
   },
 }
 
+const APOLLO_ASSET_ROOT = '/nasa-data/apollo/manga'
+
+export const APOLLO_MANGA: MangaConfig = {
+  id: 'apollo',
+  title: 'Apollo 11',
+  subtitle: 'The First Journey to the Moon',
+  intro: 'Follow Apollo 11 from the ambition of reaching the Moon through launch, lunar landing, scientific exploration and the safe journey back to Earth. Seven illustrated chapters retell the mission.',
+  coverImage: `${APOLLO_ASSET_ROOT}/chapter-01/page-01.webp`,
+  coverWidth: 900,
+  coverHeight: 1200,
+  summaryImage: `${APOLLO_ASSET_ROOT}/summary-en.webp`,
+  summaryWidth: 1169,
+  summaryHeight: 1280,
+  pagesAvailable: true,
+  summaryUploaded: true,
+  storageKey: 'last-signal:manga:apollo:v1',
+  chapters: [
+    { number: 1, firstPage: 1, lastPage: 5, pdf: '', title: 'The Dream of Reaching the Moon' },
+    { number: 2, firstPage: 6, lastPage: 10, pdf: '', title: 'Preparing for the Impossible' },
+    { number: 3, firstPage: 11, lastPage: 13, pdf: '', title: 'The Journey to the Moon' },
+    { number: 4, firstPage: 14, lastPage: 19, pdf: '', title: 'Landing on Another World' },
+    { number: 5, firstPage: 20, lastPage: 27, pdf: '', title: 'Steps on the Moon' },
+    { number: 6, firstPage: 28, lastPage: 32, pdf: '', title: 'The Return to Earth' },
+    { number: 7, firstPage: 33, lastPage: 37, pdf: '', title: 'Beyond the First Step' },
+  ],
+  copy: {
+    language: 'en',
+    coverAlt: 'First illustrated page of Apollo 11 manga showing the dream of reaching the Moon.',
+    coverCaption: 'Chapter 1 · Opening Page',
+    summaryAlt: 'English illustrated summary of Apollo 11 from the space race through the lunar landing.',
+    archiveTag: 'APOLLO 11 · ILLUSTRATED ARCHIVE',
+    completeBody: 'All seven illustrated chapters have been read. Reading progress is saved on this device.',
+  },
+}
+
 export const MANGA_BY_MISSION = {
   opportunity: OPPORTUNITY_MANGA,
   insight: INSIGHT_MANGA,
+  apollo: APOLLO_MANGA,
 } as const
 
 export const totalPages = (manga: MangaConfig) => manga.chapters[manga.chapters.length - 1].lastPage
