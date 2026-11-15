@@ -1,0 +1,29 @@
+{
+  "mission": "InSight",
+  "status": "source-verified-download-pending",
+  "note": "This manifest is an index of verified official hosted source files, NOT a claim that the scientific data files were downloaded into this repository. The physical datasets and their PDS XML labels must be downloaded before charting.",
+  "seismic": {
+    "title": "Mars Seismic Catalogue v14",
+    "source": "https://insight.ethz.ch/en/seismicity/catalog/v14/",
+    "doi": "10.12686/a21",
+    "format": "QuakeML XML",
+    "dataset_status": "official_source_confirmed"
+  },
+  "radiometer": {
+    "directory": "https://pds-geosciences.wustl.edu/insight/urn-nasa-pds-insight_rad/data_calibrated/",
+    "source_tab": "https://pds-geosciences.wustl.edu/insight/urn-nasa-pds-insight_rad/data_calibrated/hp3_rad_cal_00983_20210901_113348.tab",
+    "source_xml": "https://pds-geosciences.wustl.edu/insight/urn-nasa-pds-insight_rad/data_calibrated/hp3_rad_cal_00983_20210901_113348.xml",
+    "size_bytes": 50508,
+    "description": "Short calibrated radiometer observations, beginning 2021-09-01",
+    "download_status": "pending"
+  },
+  "hp3": {
+    "directory": "https://pds-geosciences.wustl.edu/insight/urn-nasa-pds-insight_hp3_tem/data_tem_calibrated/",
+    "source_tab": "https://pds-geosciences.wustl.edu/insight/urn-nasa-pds-insight_hp3_tem/data_tem_calibrated/hp3_tem_cal_00680_20201025_080853.tab",
+    "source_xml": "https://pds-geosciences.wustl.edu/insight/urn-nasa-pds-insight_hp3_tem/data_tem_calibrated/hp3_tem_cal_00680_20201025_080853.xml",
+    "size_bytes": 11485740,
+    "download_status": "pending"
+  },
+  "nasa_pds_mission": "https://pds-geosciences.wustl.edu/missions/insight/index.htm",
+  "verified_utc": "2026-11-15"
+}
