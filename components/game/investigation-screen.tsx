@@ -2,7 +2,9 @@
 
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties, MouseEvent } from 'react'
 import { ArrowLeft, ArrowRight, BatteryCharging, ClipboardList, FileSearch, RadioTower, ScanEye, X } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { useGameSettings } from './settings-provider'
 
 type StationId = 'briefing' | 'telemetry' | 'signals' | 'evidence'
@@ -30,12 +32,47 @@ const STATIONS: Record<StationId, { name: string; serial: string; title: string;
   },
 }
 
+/* All scene geometry is expressed in the background image's native pixel space (1672 x 940). */
+const SCENE_W = 1672
+const SCENE_H = 940
+type Point = readonly [number, number]
+
+const HOTSPOTS: { id: StationId; label: string; icon: LucideIcon; amber?: boolean; shape: Point[]; anchor: Point }[] = [
+  { id: 'briefing', label: 'MAIN DISPLAY', icon: ScanEye, shape: [[402, 170], [1270, 170], [1270, 474], [402, 474]], anchor: [836, 452] },
+  { id: 'telemetry', label: 'TELEMETRY', icon: BatteryCharging, shape: [[24, 390], [508, 382], [534, 548], [92, 606]], anchor: [290, 628] },
+  { id: 'signals', label: 'SIGNALS', icon: RadioTower, shape: [[1212, 394], [1652, 388], [1646, 600], [1198, 550]], anchor: [1424, 626] },
+  { id: 'evidence', label: 'EVIDENCE DESK', icon: ClipboardList, amber: true, shape: [[538, 662], [1134, 662], [1184, 798], [490, 798]], anchor: [836, 816] },
+]
+
+/* Panels painted over invented readouts in the reference art so no unverified values are shown. */
+const READOUT_MASKS: Point[][] = [
+  [[420, 430], [496, 426], [502, 524], [424, 530]],
+  [[1376, 518], [1480, 522], [1478, 558], [1374, 554]],
+]
+
+const pct = (value: number, total: number) => (value / total) * 100 + '%'
+const toPoints = (shape: Point[]) => shape.map(([x, y]) => x + ',' + y).join(' ')
+
+function hitStyle(shape: Point[]): CSSProperties {
+  const xs = shape.map((p) => p[0])
+  const ys = shape.map((p) => p[1])
+  const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys)
+  const w = maxX - minX, h = maxY - minY
+  return {
+    left: pct(minX, SCENE_W), top: pct(minY, SCENE_H), width: pct(w, SCENE_W), height: pct(h, SCENE_H),
+    clipPath: 'polygon(' + shape.map(([x, y]) => ((x - minX) / w) * 100 + '% ' + ((y - minY) / h) * 100 + '%').join(',') + ')',
+  }
+}
+
 const PAN_LIMIT = 45
 const PAN_STEP = 15
+const PAN_SCALE = 1.06
+const PAN_SHIFT_PER_DEG = 0.06
 
 export function InvestigationScreen({ onBack }: { onBack: () => void }) {
   const { settings, play } = useGameSettings()
   const [active, setActive] = useState<StationId | null>(null)
+  const [hot, setHot] = useState<StationId | null>(null)
   const [pan, setPan] = useState(0)
   const closeRef = useRef<HTMLButtonElement>(null)
   const lastFocus = useRef<HTMLElement | null>(null)
@@ -62,7 +99,7 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
     return () => window.removeEventListener('keydown', onKey, true)
   }, [active])
 
-  const openStation = (id: StationId, event: React.MouseEvent<HTMLButtonElement>) => {
+  const openStation = (id: StationId, event: MouseEvent<HTMLButtonElement>) => {
     lastFocus.current = event.currentTarget
     play('click')
     setActive(id)
@@ -77,125 +114,100 @@ export function InvestigationScreen({ onBack }: { onBack: () => void }) {
     setPan((value) => Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, value + direction * PAN_STEP)))
   }
   const motion = settings.reducedMotion ? 'transition-none' : 'transition-transform duration-700 ease-out'
+  const fade = settings.reducedMotion ? 'transition-none' : 'transition-opacity duration-200'
 
   return (
-    <section className="fixed inset-0 z-30 isolate overflow-hidden bg-[#020814] text-[#eaf4ff]" aria-label="Opportunity Mission Control">
-      {/* Entire investigation room is a fixed single-viewport scene; no dashboard-like scrolling. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_43%,#163851_0%,#081b2e_44%,#020814_83%)]" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[.13] [background-image:repeating-linear-gradient(0deg,transparent_0px,transparent_3px,#8cdef0_4px)]" />
+    <section className="fixed inset-0 z-30 isolate flex items-center justify-center overflow-hidden bg-[#010409] text-[#eaf4ff]" aria-label="Opportunity Mission Control">
+      {/* Stage is locked to 16:9 and fitted inside the viewport so the room never scrolls or distorts. */}
+      <div className="@container relative aspect-video w-[min(100vw,calc(100dvh*16/9))] overflow-hidden">
+        <div className={'absolute inset-0 origin-center ' + motion}
+          style={{ transform: 'translate3d(' + -pan * PAN_SHIFT_PER_DEG + '%,0,0) scale(' + PAN_SCALE + ')' }}>
+          <Image src="/images/opportunity-control-room.png" alt="" fill priority sizes="100vw" className="select-none object-cover" draggable={false} />
 
-      <div
-        className={'absolute inset-0 origin-center ' + motion}
-        style={{ transform: 'translate3d(' + (-pan * 1.7) + 'px,0,0) scale(1.12)' }}
-        aria-hidden="true"
-      >
-        <div className="absolute inset-x-[-4%] top-[-5%] h-[26%] border-b-[10px] border-[#233a4e] bg-[linear-gradient(180deg,#01040a,#101f2e_65%,#17334a)] shadow-[0_18px_60px_#0009]" />
-        <div className="absolute left-1/2 top-[11%] h-[7%] w-[58%] -translate-x-1/2 rounded-[100%] border-t-[5px] border-[#316076]/80 bg-[#061423] shadow-[0_0_30px_#49d7ff1f]" />
-        <div className="absolute left-[-5%] top-[12%] h-[71%] w-[19%] -skew-x-6 border-r-[12px] border-[#243e53] bg-[linear-gradient(90deg,#020813,#0a2131)] shadow-[inset_-15px_0_35px_#000b]" />
-        <div className="absolute right-[-5%] top-[12%] h-[71%] w-[19%] skew-x-6 border-l-[12px] border-[#243e53] bg-[linear-gradient(270deg,#020813,#0a2131)] shadow-[inset_15px_0_35px_#000b]" />
-        <div className="absolute inset-x-[10%] top-[17%] h-[56%] rounded-[44%_44%_3%_3%/12%_12%_3%_3%] border-[10px] border-[#1e3d50] bg-[linear-gradient(180deg,#102b3e,#061522_82%)] shadow-[inset_0_0_90px_#010911,0_0_60px_#1a536431]" />
-        <div className="absolute inset-x-[15%] top-[18%] h-[2px] bg-gradient-to-r from-transparent via-[#49d7ff]/35 to-transparent" />
-
-        {/* Central situation display: original approved artistic rover render, clearly not telemetry. */}
-        <div className="absolute left-[26%] right-[26%] top-[22%] h-[36%] overflow-hidden rounded-lg border-[5px] border-[#31566c] bg-[#08131f] shadow-[0_0_0_2px_#07111d,0_0_48px_#49d7ff24,inset_0_0_25px_#000]">
-          <Image src="/images/archives/opportunity.png" alt="" fill priority sizes="65vw" className="object-cover opacity-75" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#040b17] via-[#020714]/30 to-[#020714]/45" />
-          <div className="absolute left-[5%] top-[8%] flex items-center gap-2 font-mono text-[9px] tracking-[.18em] text-[#98eeff]">
-            <span className="size-1.5 animate-pulse rounded-full bg-[#f2b35d] motion-reduce:animate-none" /> MER-B · ARCHIVE FEED
-          </div>
-          <div className="absolute right-[5%] top-[8%] font-mono text-[9px] text-[#b8d6e7]">SOL 5111</div>
-          <div className="absolute inset-x-3 bottom-[13%] text-center">
-            <p className="font-display text-[clamp(14px,2vw,28px)] font-semibold tracking-[.22em] text-[#f7e9d5] [text-shadow:0_3px_12px_#000]">SIGNAL LOST</p>
-            <p className="mt-1 font-mono text-[clamp(8px,.8vw,11px)] tracking-[.14em] text-[#f2b35d]">LAST CONTACT · 10 JUN 2018</p>
-          </div>
-          <div className="absolute bottom-2 left-3 rounded border border-[#fff3] bg-[#020714]/70 px-2 py-0.5 text-[8px] tracking-[.1em] text-white/65">ARTISTIC RENDER</div>
-        </div>
-
-        {/* Angled physical control bays. Labels sit inside the devices rather than overlapping the wall. */}
-        <div className="absolute left-[12%] top-[48%] h-[23%] w-[25%] -skew-y-6 rounded-xl border-[5px] border-[#294d62] bg-[linear-gradient(145deg,#0d3145,#03101d_68%)] shadow-[0_18px_28px_#000a,inset_0_0_25px_#2f849322]" />
-        <div className="absolute right-[12%] top-[48%] h-[23%] w-[25%] skew-y-6 rounded-xl border-[5px] border-[#294d62] bg-[linear-gradient(210deg,#0d3145,#03101d_68%)] shadow-[0_18px_28px_#000a,inset_0_0_25px_#2f849322]" />
-        <div className="absolute left-[15%] top-[53%] h-[11%] w-[20%] -skew-y-6 rounded border border-[#49d7ff]/30 bg-[repeating-linear-gradient(90deg,#08273a_0px,#08273a_13px,#174a5b_14px,#174a5b_15px)] opacity-70" />
-        <div className="absolute right-[15%] top-[53%] h-[11%] w-[20%] skew-y-6 rounded border border-[#49d7ff]/30 bg-[repeating-linear-gradient(90deg,#08273a_0px,#08273a_13px,#174a5b_14px,#174a5b_15px)] opacity-70" />
-        {/* Embedded diagnostic readouts: stylized, not presented as live NASA measurements. */}
-        <div aria-hidden className="absolute left-[15.5%] top-[51.5%] h-[16%] w-[19%] -skew-y-6 overflow-hidden rounded border border-[#46cbed]/30 bg-[#03111e]/85 px-[5%] py-2 shadow-[inset_0_0_24px_#49d7ff24]">
-          <div className="flex items-center justify-between border-b border-[#49d7ff]/20 pb-1 text-[clamp(6px,.65vw,10px)] tracking-[.14em] text-[#90eaff]">
-            <span>ATMOSPHERIC SCAN</span><span className="text-[#f2b35d]">TAU</span>
-          </div>
-          <svg className="mt-2 h-[50%] w-full" viewBox="0 0 160 46" preserveAspectRatio="none" role="img" aria-label="Decorative rising dust trace">
-            <path d="M0 10H160 M0 24H160 M0 38H160" stroke="#49d7ff" strokeOpacity=".14" />
-            <path d="M1 37 L28 34 L50 30 L71 32 L92 24 L116 19 L140 9 L159 5" stroke="#65e2ff" strokeWidth="2" fill="none" vectorEffect="non-scaling-stroke" />
-            <path d="M1 37 L28 34 L50 30 L71 32 L92 24 L116 19 L140 9 L159 5 V46 H1 Z" fill="#49d7ff" fillOpacity=".10" />
+          <svg aria-hidden className="pointer-events-none absolute inset-0 size-full" viewBox={'0 0 ' + SCENE_W + ' ' + SCENE_H} preserveAspectRatio="none">
+            <defs>
+              <radialGradient id="hud-mask">
+                <stop offset="55%" stopColor="#02060c" stopOpacity="1" />
+                <stop offset="100%" stopColor="#02060c" stopOpacity="0" />
+              </radialGradient>
+              <linearGradient id="floor-mask" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#02060c" stopOpacity="0" />
+                <stop offset="45%" stopColor="#02060c" stopOpacity=".92" />
+                <stop offset="100%" stopColor="#02060c" stopOpacity="1" />
+              </linearGradient>
+              <filter id="hot-glow" x="-10%" y="-10%" width="120%" height="120%">
+                <feGaussianBlur stdDeviation="6" />
+              </filter>
+            </defs>
+            {/* Fade out HUD chrome baked into the reference art; the live HUD sits above it. */}
+            <ellipse cx="138" cy="52" rx="190" ry="62" fill="url(#hud-mask)" />
+            <ellipse cx="1396" cy="54" rx="320" ry="70" fill="url(#hud-mask)" />
+            <rect x="0" y="842" width={SCENE_W} height="98" fill="url(#floor-mask)" />
+            {READOUT_MASKS.map((shape, i) => (
+              <g key={i}>
+                <polygon points={toPoints(shape)} fill="#041522" fillOpacity=".97" />
+                <polygon points={toPoints(shape)} fill="none" stroke="#49d7ff" strokeOpacity=".18" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+              </g>
+            ))}
+            {HOTSPOTS.map((spot) => {
+              const color = spot.amber ? '#f2b35d' : '#49d7ff'
+              return (
+                <g key={spot.id} className={fade} style={{ opacity: hot === spot.id ? 1 : 0 }}>
+                  <polygon points={toPoints(spot.shape)} fill="none" stroke={color} strokeOpacity=".55" strokeWidth="10" filter="url(#hot-glow)" />
+                  <polygon points={toPoints(spot.shape)} fill={color} fillOpacity=".07" stroke={color} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                </g>
+              )
+            })}
           </svg>
-          <p className="mt-1 font-mono text-[clamp(6px,.65vw,10px)] tracking-[.1em] text-[#b1ccda]">ARCHIVED DATA · PREVIEW</p>
+
+          {HOTSPOTS.map((spot) => {
+            const Icon = spot.icon
+            return (
+              <span key={spot.id} aria-hidden
+                className={'pointer-events-none absolute z-10 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-[0.4cqw] whitespace-nowrap rounded-full border bg-[#020a12]/90 px-[0.7cqw] py-[0.3cqw] text-[max(9px,0.62cqw)] font-semibold tracking-[.16em] shadow-[0_0_14px_#0008] ' + fade + ' ' +
+                  (spot.amber ? 'border-[#f2b35d]/60 text-[#ffe1a5]' : 'border-[#49d7ff]/60 text-[#c9f4ff]')}
+                style={{ left: pct(spot.anchor[0], SCENE_W), top: pct(spot.anchor[1], SCENE_H), opacity: hot === spot.id ? 1 : 0 }}>
+                <Icon className="size-[max(10px,0.7cqw)]" /> {spot.label}
+              </span>
+            )
+          })}
+
+          {HOTSPOTS.map((spot) => (
+            <button key={spot.id} type="button"
+              onClick={(e) => openStation(spot.id, e)}
+              onMouseEnter={() => setHot(spot.id)}
+              onMouseLeave={() => setHot((h) => (h === spot.id ? null : h))}
+              onFocus={() => setHot(spot.id)}
+              onBlur={() => setHot((h) => (h === spot.id ? null : h))}
+              className="absolute cursor-pointer bg-transparent outline-none"
+              style={hitStyle(spot.shape)}
+              aria-label={'Open ' + STATIONS[spot.id].name} />
+          ))}
         </div>
-        <div aria-hidden className="absolute right-[15.5%] top-[51.5%] h-[16%] w-[19%] skew-y-6 overflow-hidden rounded border border-[#46cbed]/30 bg-[#03111e]/85 px-[5%] py-2 shadow-[inset_0_0_24px_#49d7ff24]">
-          <div className="flex items-center justify-between border-b border-[#49d7ff]/20 pb-1 text-[clamp(6px,.65vw,10px)] tracking-[.14em] text-[#90eaff]">
-            <span>COMMS ARRAY</span><span className="text-[#f2b35d]">OFFLINE</span>
+
+        <div aria-hidden className="pointer-events-none absolute inset-0 shadow-[inset_0_0_8cqw_#000a]" />
+
+        <header className="pointer-events-none absolute inset-x-[1.8%] top-[3%] z-20 flex items-start justify-between gap-4">
+          <button type="button" onClick={() => { play('back'); onBack() }}
+            className="pointer-events-auto inline-flex items-center gap-[0.5cqw] rounded-full border border-[#49d7ff]/40 bg-[#040e18]/90 px-[1.1cqw] py-[0.55cqw] text-[max(10px,0.72cqw)] font-semibold tracking-[.1em] backdrop-blur-sm transition-colors hover:border-[#49d7ff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#49d7ff]">
+            <ArrowLeft className="size-[max(12px,0.9cqw)]" /> EXIT INVESTIGATION
+          </button>
+          <div className="rounded-md border border-[#49d7ff]/20 bg-[#030a12]/85 px-[1cqw] py-[0.5cqw] text-right backdrop-blur-sm">
+            <p className="text-[max(8px,0.55cqw)] font-semibold tracking-[.25em] text-[#6cdffe]">OUTPOST M-07 · MISSION 01</p>
+            <h1 className="mt-[0.2cqw] font-display text-[max(10px,1.05cqw)] leading-tight tracking-[.1em]">OPPORTUNITY / THE FINAL STORM</h1>
           </div>
-          <svg className="mt-2 h-[50%] w-full" viewBox="0 0 160 46" preserveAspectRatio="none" role="img" aria-label="Decorative signal trace">
-            <path d="M0 23H160" stroke="#49d7ff" strokeOpacity=".25" strokeDasharray="3 5" />
-            <path d="M0 23L18 23L25 14L31 32L38 8L45 37L54 23L75 23L80 19L85 27L91 23H160" stroke="#73dbf0" strokeWidth="1.8" fill="none" vectorEffect="non-scaling-stroke" />
-          </svg>
-          <p className="mt-1 font-mono text-[clamp(6px,.65vw,10px)] tracking-[.1em] text-[#b1ccda]">LAST CONTACT · SOL 5111</p>
-        </div>
-        <div className="absolute inset-x-[-10%] bottom-[-22%] h-[52%] rounded-[50%_50%_0_0] border-t-[14px] border-[#1d394e] bg-[repeating-linear-gradient(90deg,#081321_0%,#081321_12%,#0d2434_12.3%,#081321_13%)] shadow-[0_-30px_60px_#010611]" />
-        <div className="absolute left-[37%] top-[70%] h-[21%] w-[26%] rounded-[50%_50%_14%_14%] border-[7px] border-[#456273] bg-[radial-gradient(ellipse_at_50%_15%,#153e52,#061322_72%)] shadow-[0_-8px_35px_#f2b35d20,0_14px_50px_#000c]" />
-        <div aria-hidden className="absolute left-[40%] top-[73%] h-[14%] w-[20%] overflow-hidden rounded-[45%_45%_13%_13%] border border-[#f2b35d]/25 bg-[linear-gradient(180deg,#2d4350,#091826)] shadow-[inset_0_8px_28px_#f2b35d11]">
-          <div className="mx-auto mt-[8%] h-[45%] w-[75%] rounded-md border border-[#49d7ff]/30 bg-[#061521] p-2">
-            <div className="flex items-center justify-between gap-1"><span className="h-1.5 w-1/3 bg-[#49d7ff]/40" /><span className="h-1.5 w-1/5 bg-[#f2b35d]/40" /></div>
-            <div className="mt-1.5 h-px w-full bg-[#49d7ff]/25" />
-            <div className="mt-1.5 h-px w-2/3 bg-[#49d7ff]/25" />
+        </header>
+
+        <footer className="pointer-events-none absolute inset-x-[1.8%] bottom-[2.4%] z-20 flex items-center justify-between gap-2">
+          <p className="w-[30%] text-[max(8px,0.55cqw)] tracking-[.16em] text-[#70cbe0]/80">INVESTIGATION ACTIVE · NASA ARCHIVE</p>
+          <div className="pointer-events-auto flex items-center gap-[0.8cqw] rounded-full border border-[#49d7ff]/20 bg-[#030a12]/85 p-[0.3cqw] backdrop-blur-sm">
+            <button type="button" onClick={() => move(-1)} disabled={pan <= -PAN_LIMIT} aria-label="Look left" className="rounded-full border border-[#49d7ff]/40 p-[0.5cqw] transition-colors hover:bg-[#49d7ff]/10 disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-[#49d7ff]"><ArrowLeft className="size-[max(12px,0.9cqw)]" /></button>
+            <span aria-live="polite" className="min-w-[5cqw] text-center font-mono text-[max(9px,0.62cqw)] tracking-[.12em] text-[#a7eaff]">VIEW {pan > 0 ? '+' : ''}{pan}°</span>
+            <button type="button" onClick={() => move(1)} disabled={pan >= PAN_LIMIT} aria-label="Look right" className="rounded-full border border-[#49d7ff]/40 p-[0.5cqw] transition-colors hover:bg-[#49d7ff]/10 disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-[#49d7ff]"><ArrowRight className="size-[max(12px,0.9cqw)]" /></button>
           </div>
-        </div>
-        <div className="absolute inset-x-0 bottom-[11%] h-px bg-gradient-to-r from-transparent via-[#f2b35d]/20 to-transparent" />
+          <p className="w-[30%] text-right text-[max(8px,0.55cqw)] tracking-[.16em] text-[#f2b35d]/80">SELECT A CONSOLE TO BEGIN</p>
+        </footer>
       </div>
-
-      {/* Hit areas intentionally use the same percentage positioning as the visual consoles. */}
-      <div className={"absolute inset-0 z-10 origin-center " + motion}
-        style={{ transform: 'translate3d(' + (-pan * 1.7) + 'px,0,0) scale(1.12)' }}
-        aria-label="Interactive room stations">
-        <button type="button" onClick={(e) => openStation('briefing', e)}
-          className="group absolute left-[28%] top-[26%] h-[29%] w-[44%] rounded-xl border border-transparent transition-colors hover:border-[#49d7ff]/70 hover:bg-[#49d7ff]/10 focus-visible:border-[#49d7ff] focus-visible:outline-2 focus-visible:outline-[#49d7ff]"
-          aria-label="Open Main Display">
-          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full border border-[#49d7ff]/60 bg-[#03121e]/90 px-3 py-1 text-[9px] font-semibold tracking-[.18em] text-[#c1f3ff] opacity-0 shadow-[0_0_16px_#49d7ff55] transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">MAIN DISPLAY</span>
-        </button>
-        <button type="button" onClick={(e) => openStation('telemetry', e)}
-          className="group absolute left-[10%] top-[53%] h-[20%] w-[27%] rounded-xl border border-transparent transition-colors hover:border-[#49d7ff]/70 hover:bg-[#49d7ff]/10 focus-visible:outline-2 focus-visible:outline-[#49d7ff]"
-          aria-label="Open Telemetry Console">
-          <span className="absolute bottom-1 left-3 inline-flex items-center gap-2 rounded-full border border-[#49d7ff]/35 bg-[#03121e]/90 px-3 py-1.5 text-[10px] font-semibold tracking-[.1em] text-[#cef5ff]"><BatteryCharging className="size-3.5" /> TELEMETRY</span>
-        </button>
-        <button type="button" onClick={(e) => openStation('signals', e)}
-          className="group absolute right-[10%] top-[53%] h-[20%] w-[27%] rounded-xl border border-transparent transition-colors hover:border-[#49d7ff]/70 hover:bg-[#49d7ff]/10 focus-visible:outline-2 focus-visible:outline-[#49d7ff]"
-          aria-label="Open Signal Console">
-          <span className="absolute bottom-1 right-3 inline-flex items-center gap-2 rounded-full border border-[#49d7ff]/35 bg-[#03121e]/90 px-3 py-1.5 text-[10px] font-semibold tracking-[.1em] text-[#cef5ff]"><RadioTower className="size-3.5" /> SIGNALS</span>
-        </button>
-        <button type="button" onClick={(e) => openStation('evidence', e)}
-          className="group absolute left-[37%] top-[76%] h-[13%] w-[26%] rounded-[50%] border border-transparent transition-colors hover:border-[#f2b35d]/60 hover:bg-[#f2b35d]/10 focus-visible:outline-2 focus-visible:outline-[#f2b35d]"
-          aria-label="Open Evidence Desk">
-          <span className="absolute left-1/2 top-[38%] inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-[#f2b35d]/50 bg-[#07131e]/90 px-3 py-1.5 text-[10px] font-semibold tracking-[.1em] text-[#ffe1a5]"><ClipboardList className="size-3.5" /> EVIDENCE DESK</span>
-        </button>
-      </div>
-
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-4 bg-gradient-to-b from-[#020814]/95 via-[#020814]/60 to-transparent px-4 pb-7 pt-4 sm:px-7">
-        <button type="button" onClick={() => { play('back'); onBack() }}
-          className="pointer-events-auto inline-flex shrink-0 items-center gap-2 rounded-full border border-[#49d7ff]/40 bg-[#061b2b]/90 px-4 py-2 text-[11px] font-semibold tracking-[.09em] hover:border-[#49d7ff] focus-visible:outline-2 focus-visible:outline-[#49d7ff]">
-          <ArrowLeft className="size-4" /> EXIT INVESTIGATION
-        </button>
-        <div className="max-w-[50%] rounded-lg border border-[#49d7ff]/15 bg-[#020814]/75 px-3 py-2 text-right backdrop-blur-sm">
-          <p className="text-[9px] font-semibold tracking-[.25em] text-[#6cdffe]">OUTPOST M-07 · MISSION 01</p>
-          <h1 className="mt-1 font-display text-[clamp(10px,1.15vw,14px)] leading-tight tracking-[.08em]">OPPORTUNITY <span className="hidden lg:inline">/ THE FINAL STORM</span></h1>
-        </div>
-      </header>
-
-      <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end justify-between gap-2 bg-gradient-to-t from-[#020814] via-[#020814]/90 to-transparent px-4 pb-4 pt-10 sm:px-7">
-        <div className="hidden max-w-[30%] text-[9px] tracking-[.14em] text-[#70cbe0]/70 sm:block">INVESTIGATION ACTIVE · NASA ARCHIVE</div>
-        <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-[#49d7ff]/20 bg-[#03111e]/85 px-2 py-1">
-          <button type="button" onClick={() => move(-1)} disabled={pan <= -PAN_LIMIT} aria-label="Look left" className="rounded-full border border-[#49d7ff]/35 p-2 hover:bg-[#49d7ff]/10 disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-[#49d7ff]"><ArrowLeft className="size-4" /></button>
-          <span aria-live="polite" className="min-w-20 text-center font-mono text-[10px] text-[#a7eaff]">VIEW {pan > 0 ? '+' : ''}{pan}°</span>
-          <button type="button" onClick={() => move(1)} disabled={pan >= PAN_LIMIT} aria-label="Look right" className="rounded-full border border-[#49d7ff]/35 p-2 hover:bg-[#49d7ff]/10 disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-[#49d7ff]"><ArrowRight className="size-4" /></button>
-        </div>
-        <div className="hidden max-w-[30%] text-right text-[9px] tracking-[.13em] text-[#f2b35d]/75 sm:block">SELECT A CONSOLE TO BEGIN</div>
-      </footer>
 
       {station && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#020814]/90 p-4 backdrop-blur-xl" role="dialog" aria-modal="true" aria-label={station.name}>
