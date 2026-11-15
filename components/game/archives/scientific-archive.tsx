@@ -132,6 +132,27 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
         ) : section ? (
           <PendingArchiveSection missionId={missionId as FutureMission} section={section} />
         ) : null}
+        {section === 'media' && (
+          <div className="mt-6 rounded-2xl border border-hud/25 bg-midnight/50 p-4 sm:p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-ember">MISSION VIDEO · EXTERNAL</p>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="font-display text-lg tracking-wider text-frost">
+                  {missionId === 'opportunity' ? 'Opportunity Summary' : missionId === 'insight' ? 'InSight Objective' : 'Apollo Animation Video'}
+                </h3>
+                <p className="mt-1 text-xs leading-6 text-frost/60">
+                  {missionId === 'opportunity' ? 'Illustrated mission recap' : missionId === 'insight' ? 'An introduction to the mission objectives' : 'Animated overview of the Apollo mission'}
+                  {' · User-provided YouTube video'}
+                </p>
+              </div>
+              <a href={missionId === 'opportunity' ? 'https://youtu.be/8tKtXzLnPfU' : missionId === 'insight' ? 'https://youtu.be/5jtln32v6Is' : 'https://youtu.be/h_xs6OBiqQ4'}
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center rounded-full border border-hud/50 px-4 py-2 text-xs font-semibold tracking-wider text-hud transition-colors hover:border-hud hover:bg-hud/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud">
+                Watch Video ↗
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )
