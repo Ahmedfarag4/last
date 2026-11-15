@@ -10,7 +10,7 @@ import { MISSIONS, type MissionId } from './archives/archive-data'
 import { MissionDossier } from './archives/mission-dossier'
 import { MangaOverview } from './archives/manga-overview'
 import { MangaReader } from './archives/manga-reader'
-import { MANGA_BY_MISSION } from './archives/manga-data'
+import { MANGA_BY_MISSION, OPPORTUNITY_MANGA_AR } from './archives/manga-data'
 import { ApolloMangaReader } from './archives/apollo-manga-reader'
 import { MissionPlatform } from './archives/mission-platform'
 import { ScientificArchive, type SectionId } from './archives/scientific-archive'
@@ -36,6 +36,7 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
   const [mobileIndex, setMobileIndex] = useState(1)
   const [selectedId, setSelectedId] = useState<MissionId | null>(null)
   const [readerPage, setReaderPage] = useState(1)
+  const [readerArabic, setReaderArabic] = useState(false)
   const focusTimer = useRef<number>(0)
 
   useEffect(() => {
@@ -167,9 +168,15 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
               manga={MANGA_BY_MISSION[selectedId]}
               onBack={() => setView('dossier')}
               onRead={(page) => {
+                setReaderArabic(false)
                 setReaderPage(page)
                 setView('reader')
               }}
+              onReadArabic={selectedId === 'opportunity' ? (page) => {
+                setReaderArabic(true)
+                setReaderPage(page)
+                setView('reader')
+              } : undefined}
             />
           )}
           {view === 'reader' && selectedId === 'apollo' && (
@@ -178,7 +185,9 @@ export function ArchivesScreen({ onBack, onBeginInvestigation }: ArchivesScreenP
             </div>
           )}
           {view === 'reader' && (selectedId === 'opportunity' || selectedId === 'insight') && (
-            <MangaReader key={selectedId} manga={MANGA_BY_MISSION[selectedId]} initialPage={readerPage} onBack={() => setView('manga')} />
+            <MangaReader key={selectedId === 'opportunity' && readerArabic ? 'opportunity-ar' : selectedId}
+              manga={selectedId === 'opportunity' && readerArabic ? OPPORTUNITY_MANGA_AR : MANGA_BY_MISSION[selectedId]}
+              initialPage={readerPage} onBack={() => setView('manga')} />
           )}
           {view === 'archive' && (
             <ScientificArchive missionId={selectedId ?? 'opportunity'} section={section} onSection={setSection} onBack={() => setView('dossier')} />
