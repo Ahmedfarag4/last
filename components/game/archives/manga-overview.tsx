@@ -13,10 +13,11 @@ import { useMangaProgress } from './manga-progress'
 type MangaOverviewProps = {
   onBack: () => void
   onRead: (page: number) => void
+  onReadArabic?: (page: number) => void
   manga?: MangaConfig
 }
 
-export function MangaOverview({ onBack, onRead, manga = OPPORTUNITY_MANGA }: MangaOverviewProps) {
+export function MangaOverview({ onBack, onRead, onReadArabic, manga = OPPORTUNITY_MANGA }: MangaOverviewProps) {
   const { settings, t } = useGameSettings()
   const progress = useMangaProgress(manga)
   const copy = manga.copy
@@ -163,6 +164,27 @@ export function MangaOverview({ onBack, onRead, manga = OPPORTUNITY_MANGA }: Man
               })}
             </ol>
           </section>
+          {manga.id === 'opportunity' && onReadArabic && (
+            <section aria-labelledby="arabic-chapters-heading" dir="rtl" lang="ar" className="flex flex-col gap-3 rounded-2xl border border-hud/25 bg-midnight/40 p-4">
+              <div className="flex items-center gap-3">
+                <h3 id="arabic-chapters-heading" className="text-sm font-semibold tracking-wide text-hud">اقرأ المانجا بالعربية</h3>
+                <span aria-hidden="true" className="h-px flex-1 bg-hud/20" />
+              </div>
+              <p className="text-xs leading-6 text-frost/65">النسخة العربية الكاملة أسفل الفصول الإنجليزية. اختر الفصل لفتحه بنفس قارئ المانجا والتكبير والتنقل.</p>
+              <ol className="grid gap-2 sm:grid-cols-2">
+                {manga.chapters.map((chapter) => (
+                  <li key={chapter.number}>
+                    <button type="button" onClick={() => onReadArabic(chapter.firstPage)}
+                      className="flex w-full items-center justify-between rounded-xl border border-hud/30 px-4 py-3 text-right text-sm text-frost transition-colors hover:border-hud/70 hover:bg-hud/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud">
+                      <span>الفصل {chapter.number}</span>
+                      <span dir="ltr" className="font-mono text-xs text-hud">{pageCount(chapter)} pages</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <p className="text-[11px] leading-5 text-frost/55">يجب رفع ملفات الـPDF العربية إلى مجلد public/manga/opportunity/arabic حتى تعمل هذه الروابط.</p>
+            </section>
+          )}
         </div>
       </div>
     </section>
