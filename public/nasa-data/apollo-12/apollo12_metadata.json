@@ -1,0 +1,78 @@
+{
+  "mission_id": "apollo_12",
+  "spacecraft": {
+    "name": "Apollo 12 Lunar Module",
+    "nickname": "Intrepid",
+    "designation": "LM-6",
+    "nssdc_cospar_id": "1969-099C",
+    "type": "crewed lunar module",
+    "crew": [
+      {"name": "Charles P. Conrad", "role": "Commander"},
+      {"name": "Alan L. Bean", "role": "Lunar Module Pilot"}
+    ],
+    "mass_kg": 15235,
+    "stages": {
+      "descent": {"dry_mass_kg": 2118, "propellant_mass_kg": 8359, "fate": "Remained on lunar surface after ascent", "scientific_role": "Landing platform and equipment storage"},
+      "ascent": {"dry_mass_kg": 2383, "propellant_mass_kg": 2375, "fate": "Jettisoned from command/service module and intentionally impacted the Moon at 3.94° S, 338.80° E; impact registered by Apollo 12 landing-site seismometer"}
+    }
+  },
+  "timeline_utc": [
+    {"event": "launch", "date_time": "1969-11-14", "note": "Saturn V, Cape Canaveral"},
+    {"event": "separation_from_CSM", "date_time": "1969-11-19T04:16:03Z"},
+    {"event": "lunar_landing", "date_time": "1969-11-19T06:54:35Z"},
+    {"event": "ALSEP_central_station_activated", "date_time": "1969-11-19T14:21:00Z"},
+    {"event": "ascent_from_moon", "date_time": "1969-11-20T14:25:47Z"},
+    {"event": "ascent_stage_jettisoned", "date_time": "1969-11-20T20:21:30Z"},
+    {"event": "ALSEP_shutdown", "date_time": "1977-09-30"}
+  ],
+  "landing": {
+    "site": "Oceanus Procellarum",
+    "latitude_deg": -3.0128,
+    "longitude_deg": -23.4219,
+    "coordinate_system": "Coordinates specified by NSSDCA as determined from Lunar Reconnaissance Orbiter images",
+    "nearby_legacy_hardware": "Surveyor 3 spacecraft, landed April 20, 1967",
+    "distance_to_surveyor3_m_approx": 180
+  },
+  "field_operations": {
+    "moonwalks": 2,
+    "total_rock_and_soil_mass_kg": 34.35,
+    "retrieved_surveyor3_parts": true,
+    "survey3_parts_approx_kg": 10,
+    "notes": [
+      "Two EVAs took place on 19 and 20 November 1969",
+      "Crew deployed ALSEP and solar wind collection apparatus",
+      "Crew photographed and sampled terrain and retrieved Surveyor 3 hardware"
+    ]
+  },
+  "alsep": {
+    "full_name": "Apollo Lunar Surface Experiments Package",
+    "location": {"latitude_deg": -3.0094, "longitude_deg": -23.4246},
+    "power_source": {"type": "SNAP-27 radioisotope thermoelectric generator", "approx_electrical_power_w": 70, "fuel": "plutonium-238"},
+    "instruments": [
+      "passive seismometer",
+      "suprathermal ion detector",
+      "cold cathode ion gauge",
+      "lunar dust detector",
+      "lunar surface magnetometer",
+      "solar wind spectrometer"
+    ],
+    "operated_until": "1977-09-30",
+    "communication": "Data relayed from ALSEP central station to Earth",
+    "fate": "Left on lunar surface; scientific instruments shut down with other ALSEP stations"
+  },
+  "game_evidence_candidates": [
+    {"id": "a12_descent_stage", "type": "hardware", "fact": "LM descent stage was left on the Moon", "source_pages": [1]},
+    {"id": "a12_surveyor3_recovery", "type": "mission_event", "fact": "Apollo 12 crew recovered parts of the previously landed Surveyor 3 spacecraft", "source_pages": [1]},
+    {"id": "a12_ascent_impact", "type": "seismic_event", "fact": "The intentionally crashed ascent stage produced an impact detected by the lunar seismometer", "source_pages": [1]},
+    {"id": "a12_alsep_legacy", "type": "science_hardware", "fact": "ALSEP instruments operated until 30 September 1977", "source_pages": [2]}
+  ],
+  "source": {
+    "agency": "NASA",
+    "archive": "NASA Space Science Data Coordinated Archive (NSSDCA)",
+    "document_title": "Apollo 12 Lunar Module / ALSEP",
+    "document_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C",
+    "provided_file": "pdf2.pdf",
+    "source_page_count": 4,
+    "notes": "Transcribed from the user-provided print-to-PDF of the NSSDCA spacecraft record. Dates given as dates only where the source lacks a time. Approximate quantities remain approximate."
+  }
+}
