@@ -7,6 +7,7 @@ import type { SectionId } from './scientific-archive'
 import { SourceTag } from './archive-ui'
 import { ApolloEvidenceBoard } from './apollo-evidence-board'
 import { Apollo12SolarWindChart } from './apollo12-solar-wind-chart'
+import { ApolloMangaReader } from './apollo-manga-reader'
 
 export function ApolloArchiveSection({ section }: { section: SectionId }) {
   const [mission, setMission] = useState<ApolloId>('apollo11')
@@ -36,6 +37,7 @@ export function ApolloArchiveSection({ section }: { section: SectionId }) {
         <p className="text-xs leading-6 text-frost/65">{data.vehicle} · {data.site} · Landing: {data.landing}</p>
       </div>
 
+      {section === 'media' && mission === 'apollo11' && <ApolloMangaReader />}
       {section === 'media' && (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <figure className="flex flex-col gap-3">
