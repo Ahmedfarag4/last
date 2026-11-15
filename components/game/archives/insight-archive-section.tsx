@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Activity, ExternalLink, FileText, Camera, MapPin } from 'lucide-react'
 import type { SectionId } from './scientific-archive'
+import { InsightMeasurements } from './insight-measurements'
 
 const NASA = 'https://science.nasa.gov/mission/insight/'
 const PHOTOS = [
@@ -19,8 +20,8 @@ const EVENTS = [
   { date: '2022-12-21', title: 'Mission conclusion announced', detail: 'NASA announced that InSight had completed its mission after attempts to recontact the lander.', source: NASA },
 ]
 const DATASETS = [
-  { title: 'Marsquake Catalogue · V14', instrument: 'SEIS', detail: 'Official event catalogue for Mars seismicity. Event plots require the actual catalogue file; not yet present in this repository.', source: 'https://service.earthscope.org/irisws/mars-event/1/', status: 'Source indexed · data file pending' },
-  { title: 'Calibrated surface radiometry', instrument: 'HP³ / RAD', detail: 'Surface thermal measurements. Numerical plots need the calibrated table and corresponding PDS XML label.', source: 'https://pds-geosciences.wustl.edu/missions/insight/hp3rad.htm', status: 'Source indexed · data file pending' },
+  { title: 'Marsquake Catalogue · V14', instrument: 'SEIS', detail: 'The supplied Marsquake export has been analyzed and monthly event counts are now displayed below.', source: 'https://service.earthscope.org/irisws/mars-event/1/', status: 'Derived chart imported · raw file awaiting upload' },
+  { title: 'Calibrated surface radiometry', instrument: 'HP³ / RAD', detail: '138 calibrated radiometer measurements were inspected with their PDS4 XML label. Grouped brightness-temperature averages now appear below.', source: 'https://pds-geosciences.wustl.edu/missions/insight/hp3rad.htm', status: 'Derived chart imported · raw files awaiting upload' },
   { title: 'Subsurface temperature telemetry', instrument: 'HP³ / TEM', detail: 'Heat-flow instrument telemetry. The mole did not reach its originally planned depth; this is not a completed heat-flow profile.', source: 'https://pds-geosciences.wustl.edu/missions/insight/index.htm', status: 'Source indexed · data file pending' },
 ]
 const EVIDENCE = [
@@ -70,6 +71,7 @@ export function InsightArchiveSection({section}:{section:SectionId}) {
         <article className="rounded-2xl border border-hud/20 bg-midnight/50 p-4"><h4 className="font-semibold text-hud">SEIS · Seismic Experiment</h4><p className="mt-2 text-sm leading-6 text-frost/70">Seismometer measuring Mars vibrations and revealing details of the planet’s internal structure.</p></article>
         <article className="rounded-2xl border border-hud/20 bg-midnight/50 p-4"><h4 className="font-semibold text-hud">HP³ · Heat Flow Probe</h4><p className="mt-2 text-sm leading-6 text-frost/70">Heat-flow investigation; the mole’s penetration difficulties limited planned subsurface measurements.</p></article>
       </div>
+      <InsightMeasurements />
       <h4 className="font-display text-lg tracking-wider text-ember">ORIGINAL SCIENTIFIC DATASETS</h4>
       {DATASETS.map(d=><article key={d.title} className="rounded-xl border border-hud/25 bg-midnight/50 p-4">
         <p className="font-mono text-xs text-hud">{d.instrument}</p><h5 className="mt-2 font-semibold">{d.title}</h5><p className="mt-2 text-sm leading-6 text-frost/70">{d.detail}</p><p className="mt-3 text-xs text-amber-200">{d.status}</p><div className="mt-3"><Source href={d.source}>Official science source</Source></div>
