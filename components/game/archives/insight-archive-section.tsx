@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Activity, ExternalLink, FileText, Camera, MapPin } from 'lucide-react'
 import type { SectionId } from './scientific-archive'
 import { InsightMeasurements } from './insight-measurements'
+import { InsightMangaReader } from './insight-manga-reader'
 
 const NASA = 'https://science.nasa.gov/mission/insight/'
 const PHOTOS = [
@@ -47,6 +48,7 @@ export function InsightArchiveSection({section}:{section:SectionId}) {
       <h3 className="mt-2 font-display text-2xl tracking-wider">INSIGHT · ELYSIUM PLANITIA</h3>
       <p className="mt-2 text-sm leading-6 text-frost/70">Stationary Mars lander · November 2018 – December 2022 · NASA/JPL-Caltech</p>
     </header>
+    {section==='media' && <InsightMangaReader />}
     {section==='media' && <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
       <div className="rounded-2xl border border-hud/25 bg-midnight/60 p-5">
         <Camera className="text-hud" size={26}/>
