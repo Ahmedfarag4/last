@@ -138,8 +138,7 @@ export function useDossierProgress(file: MissionFile) {
     (pageId: string): PageState => {
       if (!visited.has(pageId)) return 'unread'
       if (completedPage(pageId)) return 'collected'
-      const items = file.items.filter((i) => i.pageId === pageId)
-      return items.length > 0 && items.every((i) => collected.has(i.id)) ? 'collected' : 'reviewed'
+      return 'reviewed'
     },
     [file.items, visited, collected, completedPage],
   )
