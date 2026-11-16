@@ -55,7 +55,7 @@ export function ApolloArchiveSection({ section }: { section: SectionId }) {
               <p className="flex flex-wrap items-center gap-2 font-semibold"><span>{tr(media.title)}</span><SourceTag kind="history"/></p>
               <p className="text-sm text-frost/75">{tr(media.description)}</p>
               <p className="font-mono text-[10px] text-frost/50">{media.credit} · {media.archiveFile}</p>
-              <a href={media.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-hud underline underline-offset-4">Open NASA image record <ExternalLink size={13}/></a>
+              <a href={media.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-hud underline underline-offset-4">{tr('Open NASA image record')} <ExternalLink size={13}/></a>
             </figcaption>
           </figure>
           <div className="flex flex-col gap-3">
