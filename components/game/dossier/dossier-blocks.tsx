@@ -8,6 +8,7 @@ import type { CollectibleItem, DossierBlock, InfoKind, LogEntry, MissionFile } f
 
 export type BlockContext = {
   file: MissionFile
+  arabic: boolean
   collected: Set<string>
   onCollect: (itemId: string) => void
   onAnalysis: (analysisId: string) => void
@@ -91,7 +92,7 @@ export function DossierBlockView({ block, ctx }: { block: DossierBlock; ctx: Blo
         </ol>
       )
     case 'logs':
-      return <SignalLogList entries={block.entries} />
+      return <SignalLogList entries={block.entries} arabic={ctx.arabic} />
     case 'chart':
       return (
         <figure className="rounded-sm border border-[var(--ink)]/25 bg-[#f3ead4]/60 p-3">
@@ -116,14 +117,14 @@ export function DossierBlockView({ block, ctx }: { block: DossierBlock; ctx: Blo
       )
     case 'clue': {
       const item = ctx.file.items.find((i) => i.id === block.itemId)
-      return item ? <ClueCard item={item} collected={ctx.collected.has(item.id)} onCollect={() => ctx.onCollect(item.id)} /> : null
+      return item ? <ClueCard item={item} arabic={ctx.arabic} collected={ctx.collected.has(item.id)} onCollect={() => ctx.onCollect(item.id)} /> : null
     }
     case 'analysis': {
       const done = ctx.collected.has(block.itemId)
       return (
         <section className="rounded-sm border-2 border-[var(--ink)] bg-[#0b1620] p-3.5 text-[#eaf4ff] shadow-[0_8px_18px_rgba(20,12,4,0.35)]">
           <p className="flex items-center gap-2 font-file text-[12px] font-semibold uppercase tracking-[0.22em] text-[var(--hud)]">
-            <ScanSearch aria-hidden className="size-4" /> Interactive analysis
+            <ScanSearch aria-hidden className="size-4" /> {ctx.arabic ? 'تحليل تفاعلي' : 'Interactive analysis'}
           </p>
           <h3 className="mt-1 font-file text-[19px] font-bold uppercase leading-tight tracking-[0.04em]">{block.title}</h3>
           <p className="mt-1 text-pretty font-serif text-[14px] leading-snug text-[#c7d9e6]">{block.body}</p>
@@ -132,7 +133,7 @@ export function DossierBlockView({ block, ctx }: { block: DossierBlock; ctx: Blo
             onClick={() => ctx.onAnalysis(block.analysisId)}
             className={`mt-3 inline-flex items-center gap-2 rounded-sm px-3.5 py-2 font-file text-[13px] font-bold uppercase tracking-[0.16em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--hud)] ${done ? 'border border-emerald-300/60 text-emerald-200 hover:bg-emerald-300/10' : 'bg-[var(--hud)] text-[#04121c] hover:bg-[#8be6ff]'}`}
           >
-            {done ? <><Check aria-hidden className="size-4" /> Evidence secured · Review</> : 'Begin analysis'}
+            {done ? <><Check aria-hidden className="size-4" /> {ctx.arabic ? 'تم حفظ الدليل · مراجعة' : 'Evidence secured · Review'}</> : ctx.arabic ? 'بدء التحليل' : 'Begin analysis'}
           </button>
         </section>
       )
@@ -146,13 +147,13 @@ export function DossierBlockView({ block, ctx }: { block: DossierBlock; ctx: Blo
             const done = ctx.collected.has(id)
             return (
               <article key={id} className={`relative rounded-sm border-2 p-3.5 ${done ? 'border-[var(--ink)] bg-[#f6efdf]' : 'border-dashed border-[var(--ink)]/35 bg-transparent'}`}>
-                <p className="font-file text-[12px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{done ? 'Secured' : 'Not yet secured'}</p>
+                <p className="font-file text-[12px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{done ? (ctx.arabic ? 'تم حفظ الدليل' : 'Secured') : (ctx.arabic ? 'لم يُحفظ بعد' : 'Not yet secured')}</p>
                 <h3 className="font-file text-[19px] font-bold uppercase leading-tight tracking-[0.04em]">{item.label}</h3>
                 <p className={`mt-1 font-serif text-[14px] leading-snug ${done ? '' : 'text-[var(--ink-faint)]'}`}>
-                  {done ? item.detail : 'Complete the linked analysis to file this evidence.'}
+                  {done ? item.detail : (ctx.arabic ? 'أكمل التحليل المرتبط لتسجيل هذا الدليل.' : 'Complete the linked analysis to file this evidence.')}
                 </p>
                 {done ? (
-                  <span className="dossier-stamp dossier-stamp-in absolute right-3 top-3 rotate-[-8deg] rounded-sm px-2 py-0.5 font-file text-[13px] font-bold uppercase tracking-[0.2em]">Verified</span>
+                  <span className="dossier-stamp dossier-stamp-in absolute right-3 top-3 rotate-[-8deg] rounded-sm px-2 py-0.5 font-file text-[13px] font-bold uppercase tracking-[0.2em]">{ctx.arabic ? 'تم التحقق' : 'Verified'}</span>
                 ) : (
                   <Lock aria-hidden className="absolute right-3 top-3 size-4 text-[var(--ink-faint)]" />
                 )}
@@ -166,7 +167,7 @@ export function DossierBlockView({ block, ctx }: { block: DossierBlock; ctx: Blo
   }
 }
 
-function ClueCard({ item, collected, onCollect }: { item: CollectibleItem; collected: boolean; onCollect: () => void }) {
+function ClueCard({ item, arabic, collected, onCollect }: { item: CollectibleItem; arabic: boolean; collected: boolean; onCollect: () => void }) {
   const Icon = KIND_ICON[item.kind]
   return (
     <div className={`relative flex items-start gap-3 rounded-sm border px-3 py-2.5 transition-colors ${collected ? 'border-[var(--ink)]/30 bg-[#f6efdf]/70' : 'border-[#1d7f9c]/60 bg-[#dff3f6]/45 shadow-[0_0_0_3px_rgba(73,215,255,0.12)]'}`}>
@@ -176,21 +177,21 @@ function ClueCard({ item, collected, onCollect }: { item: CollectibleItem; colle
         <p className="font-serif text-[13.5px] leading-snug text-[var(--ink-soft)]">{item.detail}</p>
       </div>
       {collected ? (
-        <span className="dossier-stamp dossier-stamp-in shrink-0 rotate-[-8deg] rounded-sm px-1.5 py-0.5 font-file text-[11px] font-bold uppercase tracking-[0.18em]">Logged</span>
+        <span className="dossier-stamp dossier-stamp-in shrink-0 rotate-[-8deg] rounded-sm px-1.5 py-0.5 font-file text-[11px] font-bold uppercase tracking-[0.18em]">{arabic ? 'تم التسجيل' : 'Logged'}</span>
       ) : (
         <button
           type="button"
           onClick={onCollect}
           className="shrink-0 rounded-sm bg-[var(--ink)] px-2.5 py-1.5 font-file text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--paper)] transition-colors hover:bg-[#14708c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#14708c]"
         >
-          Log to file<span className="sr-only">: {item.label}</span>
+          {arabic ? 'تسجيل' : 'Log to file'}<span className="sr-only">: {item.label}</span>
         </button>
       )}
     </div>
   )
 }
 
-function SignalLogList({ entries }: { entries: LogEntry[] }) {
+function SignalLogList({ entries, arabic }: { entries: LogEntry[]; arabic: boolean }) {
   const [openId, setOpenId] = useState<string | undefined>(entries.find((e) => e.id === 'last')?.id ?? entries[0]?.id)
   return (
     <ol className="flex flex-col gap-1.5 font-file">
@@ -210,7 +211,7 @@ function SignalLogList({ entries }: { entries: LogEntry[] }) {
             {open && (
               <div className="px-3 pb-2.5 pl-[116px] max-sm:pl-3">
                 <p className="text-pretty font-serif text-[14px] leading-snug text-[var(--ink-soft)]">{entry.body}</p>
-                {entry.kind === 'fiction' && <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#6a4c8a]">Fiction · not a NASA record</p>}
+                {entry.kind === 'fiction' && <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#6a4c8a]">{arabic ? 'خيال قصصي · ليس سجلًا تابعًا لناسا' : 'Fiction · not a NASA record'}</p>}
                 {entry.sourceUrl && (
                   <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#14708c] underline underline-offset-2">
                     {entry.sourceLabel} <ExternalLink aria-hidden className="size-3" />
@@ -232,7 +233,7 @@ function SummaryBlock({ conclusion, caveat, ctx }: { conclusion: string; caveat?
   return (
     <div className="flex flex-col gap-4">
       <section>
-        <SectionLabel>Findings recorded · {done} / {total}</SectionLabel>
+        <SectionLabel>{ctx.arabic ? 'النتائج المسجلة' : 'Findings recorded'} · {done} / {total}</SectionLabel>
         <ul className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
           {ctx.file.items.map((item) => {
             const has = ctx.collected.has(item.id)
@@ -242,22 +243,22 @@ function SummaryBlock({ conclusion, caveat, ctx }: { conclusion: string; caveat?
                   {has && <Check className="size-3" />}
                 </span>
                 <span className={has ? '' : 'text-[var(--ink-faint)]'}>{item.label}</span>
-                <span className="sr-only">{has ? 'collected' : 'missing'}</span>
+                <span className="sr-only">{has ? (ctx.arabic ? 'مجمّع' : 'collected') : (ctx.arabic ? 'ناقص' : 'missing')}</span>
               </li>
             )
           })}
         </ul>
       </section>
       <section className="relative">
-        <SectionLabel>Conclusion</SectionLabel>
+        <SectionLabel>{ctx.arabic ? 'الخلاصة' : 'Conclusion'}</SectionLabel>
         {complete ? (
           <>
             <p className="text-pretty font-serif text-[15px] leading-[1.65]">{conclusion}</p>
-            <span className="dossier-stamp dossier-stamp-in mt-3 inline-block rotate-[-8deg] rounded-sm px-3 py-1 font-file text-[18px] font-bold uppercase tracking-[0.24em]">Case closed</span>
+            <span className="dossier-stamp dossier-stamp-in mt-3 inline-block rotate-[-8deg] rounded-sm px-3 py-1 font-file text-[18px] font-bold uppercase tracking-[0.24em]">{ctx.arabic ? 'أُغلقت القضية' : 'Case closed'}</span>
           </>
         ) : (
           <p className="font-serif text-[15px] italic leading-snug text-[var(--ink-faint)]">
-            The conclusion is sealed until every finding is logged and both evidence files are secured.
+            {ctx.arabic ? 'تظل الخلاصة مغلقة حتى تُسجل جميع النتائج ويُحفظ ملفا الدليل.' : 'The conclusion is sealed until every finding is logged and both evidence files are secured.'}
           </p>
         )}
       </section>

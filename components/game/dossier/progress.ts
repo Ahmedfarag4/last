@@ -8,12 +8,13 @@ export type DossierSave = {
   page: number
   visited: string[]
   collected: string[]
+  reviewed?: string[]
 }
 
 export type PageState = 'unread' | 'reviewed' | 'collected'
 
 const CHANGE_EVENT = 'last-signal:dossier-progress'
-const EMPTY: DossierSave = { opened: false, page: 0, visited: [], collected: [] }
+const EMPTY: DossierSave = { opened: false, page: 0, visited: [], collected: [], reviewed: [] }
 const storageKey = (missionId: string) => `last-signal:dossier:${missionId}:v1`
 
 function safeGet(key: string) {
@@ -36,6 +37,7 @@ function sanitize(raw: string | null, file: MissionFile): DossierSave {
       page: Number.isInteger(page) && page >= 0 && page < file.pages.length ? page : 0,
       visited: Array.isArray(value.visited) ? value.visited.filter((id) => pageIds.has(id)) : [],
       collected: Array.isArray(value.collected) ? value.collected.filter((id) => itemIds.has(id)) : [],
+      reviewed: Array.isArray(value.reviewed) ? value.reviewed.filter((id) => pageIds.has(id)) : [],
     }
   } catch {
     return EMPTY
@@ -79,6 +81,16 @@ function subscribe(onChange: () => void) {
   }
 }
 
+/** Start from scratch only for this mission; do not touch archive, reader, or settings data. */
+export function startNewInvestigation(file: MissionFile) {
+  try {
+    window.localStorage.removeItem(storageKey(file.id))
+    file.items.forEach(item => { if (item.externalKey) window.localStorage.removeItem(item.externalKey) })
+  } catch { /* Progress is also reset in memory when storage is available. */ }
+  cache.delete(file.id)
+  notifyDossierChange()
+}
+
 /** Re-evaluates externally stored evidence (e.g. a puzzle that saved its own key). */
 export function notifyDossierChange() {
   window.dispatchEvent(new Event(CHANGE_EVENT))
@@ -95,14 +107,40 @@ export function useDossierProgress(file: MissionFile) {
 
   const collected = useMemo(() => new Set([...save.collected, ...external]), [save.collected, external])
   const visited = useMemo(() => new Set(save.visited), [save.visited])
+  const reviewed = useMemo(() => new Set(save.reviewed ?? []), [save.reviewed])
+
+  // Evidence earned in an analysis is required where that analysis is performed,
+  // not only on the later Evidence Locker recap page.
+  const requirementsFor = useCallback((id: string) => {
+    const page = file.pages.find(p => p.id === id)
+    if (!page) return [] as string[]
+    const direct = file.items.filter(item => item.pageId === id && !item.externalKey).map(item => item.id)
+    const analysis = [...page.left, ...page.right].filter(block => block.type === 'analysis').map(block => block.itemId)
+    return [...direct, ...analysis]
+  }, [file])
+  const completedPage = useCallback((id: string) => {
+    const required = requirementsFor(id)
+    return visited.has(id) && required.every(item => collected.has(item)) && (required.length > 0 || reviewed.has(id))
+  }, [requirementsFor, collected, reviewed, visited])
+  const unlockedCount = (() => {
+    let count = 1
+    for (let i = 0; i < file.pages.length - 1; i++) {
+      if (!completedPage(file.pages[i].id)) break
+      count++
+    }
+    return count
+  })()
+  const isUnlocked = (index: number) => index >= 0 && index < unlockedCount
+  const completedPages = file.pages.filter(p => completedPage(p.id)).length
+  const missionComplete = file.pages.every(p => completedPage(p.id))
 
   const pageState = useCallback(
     (pageId: string): PageState => {
       if (!visited.has(pageId)) return 'unread'
-      const items = file.items.filter((i) => i.pageId === pageId)
-      return items.length > 0 && items.every((i) => collected.has(i.id)) ? 'collected' : 'reviewed'
+      if (completedPage(pageId)) return 'collected'
+      return 'reviewed'
     },
-    [file.items, visited, collected],
+    [file.items, visited, collected, completedPage],
   )
 
   const totals = {
@@ -111,7 +149,7 @@ export function useDossierProgress(file: MissionFile) {
     items: file.items.length,
     collected: file.items.filter((i) => collected.has(i.id)).length,
   }
-  const percent = Math.round(((totals.visited + totals.collected) / (totals.pages + totals.items)) * 100)
+  const percent = Math.round((completedPages / file.pages.length) * 100)
 
   const actions = useMemo(
     () => ({
@@ -120,22 +158,18 @@ export function useDossierProgress(file: MissionFile) {
       goTo: (page: number) =>
         write(file, (p) => {
           const id = file.pages[page]?.id
-          if (!id) return p
+          if (!id || !isUnlocked(page)) return p
           return { ...p, opened: true, page, visited: p.visited.includes(id) ? p.visited : [...p.visited, id] }
         }),
+      review: (id: string) => write(file, p => ({ ...p, reviewed: (p.reviewed ?? []).includes(id) ? p.reviewed : [...(p.reviewed ?? []), id] })),
       collect: (itemId: string) =>
         write(file, (p) => (p.collected.includes(itemId) ? p : { ...p, collected: [...p.collected, itemId] })),
       reset: () => {
-        try {
-          window.localStorage.removeItem(storageKey(file.id))
-        } catch {
-          // ignore
-        }
-        notifyDossierChange()
+        startNewInvestigation(file)
       },
     }),
-    [file],
+    [file, unlockedCount],
   )
 
-  return { hydrated, save, collected, visited, pageState, totals, percent, ...actions }
+  return { hydrated, save, collected, visited, reviewed, pageState, requirementsFor, completedPage, completedPages, unlockedCount, isUnlocked, missionComplete, totals, percent, ...actions }
 }

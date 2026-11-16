@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useGameSettings } from '../settings-provider'
 
 type Metric = 'speed' | 'density'
 type Reading = { time: string; stamp: number; speed: number | null; density: number | null }
@@ -36,6 +37,8 @@ function parseTable(input: string): Reading[] {
 }
 
 export function Apollo12SolarWindChart() {
+  const { settings } = useGameSettings()
+  const ar = settings.language === 'ar'
   const [readings, setReadings] = useState<Reading[]>([])
   const [metric, setMetric] = useState<Metric>('speed')
   const [error, setError] = useState<string | null>(null)
@@ -74,31 +77,31 @@ export function Apollo12SolarWindChart() {
   const starting = readings[0]?.time.slice(0, 10) ?? '1969-11-19'
   const ending = readings[readings.length - 1]?.time.slice(0, 10) ?? '1969-12-31'
   return (
-    <section aria-label="Apollo 12 Solar Wind Spectrometer measurement chart" className="rounded-2xl border border-hud/30 bg-[#061623] p-4 sm:p-5">
+    <section aria-label={ar ? 'رسم قياسات مطياف الرياح الشمسية في أبولو 12' : 'Apollo 12 Solar Wind Spectrometer measurement chart'} className="rounded-2xl border border-hud/30 bg-[#061623] p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h4 className="font-display text-lg tracking-wider text-ember">SOLAR WIND / HOURLY OBSERVATIONS</h4>
+          <h4 className="font-display text-lg tracking-wider text-ember">{ar ? 'الرياح الشمسية / مشاهدات ساعية' : 'SOLAR WIND / HOURLY OBSERVATIONS'}</h4>
           <p className="mt-1 text-xs text-frost/60">Apollo 12 ALSEP · Solar Wind Spectrometer · Set 1 · UTC</p>
         </div>
-        <div className="flex flex-wrap gap-2" aria-label="Solar wind measurement selector">
+        <div className="flex flex-wrap gap-2" aria-label={ar ? 'اختيار قياسات الرياح الشمسية' : 'Solar wind measurement selector'}>
           {(['speed', 'density'] as const).map(key => (
             <button key={key} type="button" aria-pressed={metric === key} onClick={() => setMetric(key)}
               className={'rounded-full border px-3 py-2 text-xs focus-visible:outline-2 focus-visible:outline-hud ' + (metric === key ? 'border-hud bg-hud/15 text-frost' : 'border-hud/30 text-frost/65 hover:border-hud/60')}>
-              {METRICS[key].label}
+              {ar ? (key === 'speed' ? 'سرعة البروتونات' : 'كثافة البروتونات') : METRICS[key].label}
             </button>
           ))}
         </div>
       </div>
-      {error ? <p role="alert" className="mt-5 text-sm text-amber-200">{error}</p> : !readings.length ?
-        <p role="status" className="mt-5 text-sm text-frost/65">Loading NASA measurement records…</p> :
+      {error ? <p role="alert" className="mt-5 text-sm text-amber-200">{ar ? 'تعذر تحميل بيانات القياس. تحقق من الملف الأصلي.' : error}</p> : !readings.length ?
+        <p role="status" className="mt-5 text-sm text-frost/65">{ar ? 'جاري تحميل قياسات ناسا…' : 'Loading NASA measurement records…'}</p> :
         <>
           <div className="mt-4 grid grid-cols-2 gap-3 text-xs sm:grid-cols-3">
-            <p className="rounded-lg border border-hud/20 p-3"><span className="block text-frost/55">Valid readings</span><strong className="mt-1 block font-mono text-base text-hud">{valid.length} / {readings.length}</strong></p>
-            <p className="rounded-lg border border-hud/20 p-3"><span className="block text-frost/55">Maximum</span><strong className="mt-1 block font-mono text-base text-hud">{max.toFixed(1)} {METRICS[metric].unit}</strong></p>
-            <p className="col-span-2 rounded-lg border border-hud/20 p-3 sm:col-span-1"><span className="block text-frost/55">Observation interval</span><strong className="mt-1 block font-mono text-xs text-hud">{starting} — {ending}</strong></p>
+            <p className="rounded-lg border border-hud/20 p-3"><span className="block text-frost/55">{ar ? 'القراءات الصالحة' : 'Valid readings'}</span><strong className="mt-1 block font-mono text-base text-hud">{valid.length} / {readings.length}</strong></p>
+            <p className="rounded-lg border border-hud/20 p-3"><span className="block text-frost/55">{ar ? 'القيمة العظمى' : 'Maximum'}</span><strong className="mt-1 block font-mono text-base text-hud">{max.toFixed(1)} {METRICS[metric].unit}</strong></p>
+            <p className="col-span-2 rounded-lg border border-hud/20 p-3 sm:col-span-1"><span className="block text-frost/55">{ar ? 'فترة الرصد' : 'Observation interval'}</span><strong className="mt-1 block font-mono text-xs text-hud">{starting} — {ending}</strong></p>
           </div>
           <div className="mt-4 overflow-hidden rounded-xl border border-hud/20 bg-[#030e17] p-2">
-            <svg viewBox="0 0 900 275" role="img" aria-label={METRICS[metric].label + ' over time. Missing hourly observations are shown as gaps.'} className="w-full">
+            <svg viewBox="0 0 900 275" role="img" aria-label={(ar ? (metric === 'speed' ? 'سرعة البروتونات' : 'كثافة البروتونات') : METRICS[metric].label) + (ar ? ' عبر الزمن؛ تظهر الساعات المفقودة كفجوات.' : ' over time. Missing hourly observations are shown as gaps.')} className="w-full">
               {[0, .25, .5, .75, 1].map(n => (
                 <g key={n}>
                   <line x1="58" x2="864" y1={y(max * n)} y2={y(max * n)} stroke="#477384" opacity=".35" strokeDasharray="3 5"/>
@@ -108,12 +111,11 @@ export function Apollo12SolarWindChart() {
               {paths.map((path,i) => <path key={i} d={path} fill="none" stroke="#54d9ed" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round"/>)}
               <text x="58" y="255" fill="#a4bac7" fontSize="12">{starting}</text>
               <text x="864" y="255" fill="#a4bac7" fontSize="12" textAnchor="end">{ending}</text>
-              <text x="461" y="272" fill="#a4bac7" fontSize="11" textAnchor="middle">UTC DATE</text>
+              <text x="461" y="272" fill="#a4bac7" fontSize="11" textAnchor="middle">{ar ? 'التاريخ بتوقيت UTC' : 'UTC DATE'}</text>
             </svg>
           </div>
           <p className="mt-3 text-xs leading-6 text-frost/60">
-            {METRICS[metric].label} ({METRICS[metric].unit}); each point is a source-reported hourly average.
-            Gaps are unavailable measurements, not zero. Set 1 only; no estimated or synthetic values.
+            {ar ? (metric === 'speed' ? 'سرعة البروتونات' : 'كثافة البروتونات') : METRICS[metric].label} ({METRICS[metric].unit}); {ar ? 'تمثل كل نقطة متوسطًا ساعيًا مذكورًا في المصدر. الفجوات قياسات غير متاحة وليست أصفارًا. تُعرض المجموعة الأولى فقط دون قيم تقديرية أو مصطنعة.' : 'each point is a source-reported hourly average. Gaps are unavailable measurements, not zero. Set 1 only; no estimated or synthetic values.'}
           </p>
         </>}
     </section>

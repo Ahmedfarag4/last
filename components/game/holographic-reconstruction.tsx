@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Check, CircleAlert, RotateCcw, SkipForward, Sun, Wind, Zap } from 'lucide-react'
 import { useGameSettings } from './settings-provider'
+import { translateOpportunityText } from './dossier/localize-opportunity'
 
 type NodeId = 'dust' | 'sun' | 'power'
 const ORDER: NodeId[] = ['dust', 'sun', 'power']
@@ -23,6 +24,8 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
   onReturn: () => void
 }) {
   const { settings, play } = useGameSettings()
+  const ar = settings.language === 'ar'
+  const tr = (value: string) => ar ? translateOpportunityText(value) : value
   const [sequence, setSequence] = useState<NodeId[]>([])
   const [hint, setHint] = useState('')
   const [skipAnimations, setSkipAnimations] = useState(false)
@@ -64,7 +67,8 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
 
   return (
     <section
-      aria-label="Holographic evidence reconstruction"
+      aria-label={tr("Holographic evidence reconstruction")}
+      dir={ar ? "rtl" : "ltr"} lang={ar ? "ar" : "en"}
       className={'holo-reconstruction relative isolate flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#050b14] text-slate-100 ' + (motionDisabled ? 'holo-motion-disabled' : '') + (ready ? ' holo-core-preparing' : '')}
     >
       <div aria-hidden="true" className="holo-grid pointer-events-none absolute inset-0" />
@@ -72,8 +76,8 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
 
       <header className="relative z-20 flex shrink-0 items-center justify-between gap-4 border-b border-cyan-200/10 bg-[#07111d]/75 px-5 py-3 backdrop-blur-md sm:px-8">
         <div className="min-w-0">
-          <p className="font-mono text-[9px] tracking-[.26em] text-cyan-300/75 sm:text-[10px]">MER-B / OPPORTUNITY / CASE RECONSTRUCTION</p>
-          <h2 className="mt-1 font-display text-sm tracking-[.08em] text-white sm:text-lg">THE DARKENING SKY</h2>
+          <p className="font-mono text-[9px] tracking-[.26em] text-cyan-300/75 sm:text-[10px]">{tr("MER-B / OPPORTUNITY / CASE RECONSTRUCTION")}</p>
+          <h2 className="mt-1 font-display text-sm tracking-[.08em] text-white sm:text-lg">{tr("THE DARKENING SKY")}</h2>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <button
@@ -83,8 +87,8 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
             className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 px-3 py-2 font-mono text-[9px] tracking-wider text-cyan-100/80 transition-colors hover:border-cyan-200/50 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:text-[10px]"
           >
             <SkipForward size={12} aria-hidden="true" />
-            <span className="hidden sm:inline">{skipAnimations ? 'ANIMATIONS SKIPPED' : 'SKIP ANIMATIONS'}</span>
-            <span className="sm:hidden">{skipAnimations ? 'SKIP ON' : 'SKIP FX'}</span>
+            <span className="hidden sm:inline">{skipAnimations ? tr("ANIMATIONS SKIPPED") : tr("SKIP ANIMATIONS")}</span>
+            <span className="sm:hidden">{skipAnimations ? tr("SKIP ON") : tr("SKIP FX")}</span>
           </button>
           <button
             type="button"
@@ -96,7 +100,7 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
         </div>
       </header>
 
-      <main className={'holo-scene relative min-h-0 flex-1 overflow-hidden ' + (sequence.includes('sun') ? 'is-sun-dimmed ' : '') + (sequence.includes('power') ? 'is-power-reduced' : '')} aria-label="Interactive Mars reconstruction">
+      <main className={'holo-scene relative min-h-0 flex-1 overflow-hidden ' + (sequence.includes('sun') ? 'is-sun-dimmed ' : '') + (sequence.includes('power') ? 'is-power-reduced' : '')} aria-label={tr('Interactive Mars reconstruction')}>
         <div className="holo-scanline pointer-events-none absolute inset-x-0 top-0 z-10" aria-hidden="true" />
         <div className="holo-stars pointer-events-none absolute inset-0" aria-hidden="true" />
         <div className={'holo-particle-field pointer-events-none absolute inset-0 ' + (sequence.includes('dust') ? 'is-dust-active' : '')} aria-hidden="true">
@@ -115,7 +119,7 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
           <path className="holo-sunlight-beam" d="M 839 20 L 581 235 L 557 277 L 630 287 Z" />
         </svg>
 
-        <div role="img" className={'holo-planet-system absolute left-1/2 top-[52%] ' + (sequence.includes('sun') ? 'is-darkened ' : '') + (sequence.includes('dust') ? 'is-hazed ' : '')} aria-label="Conceptual Mars atmosphere and surface reconstruction">
+        <div role="img" className={'holo-planet-system absolute left-1/2 top-[52%] ' + (sequence.includes('sun') ? 'is-darkened ' : '') + (sequence.includes('dust') ? 'is-hazed ' : '')} aria-label={tr('Conceptual Mars atmosphere and surface reconstruction')}>
           <div className="holo-orbit holo-orbit-one" aria-hidden="true" />
           <div className="holo-orbit holo-orbit-two" aria-hidden="true" />
           <div className="holo-mars" aria-hidden="true">
@@ -126,12 +130,12 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
             <div className="holo-mars-haze" />
             <div className="holo-mars-glint" />
           </div>
-          <div className="holo-planet-label" aria-hidden="true">MARS / ATMOSPHERE</div>
+          <div className="holo-planet-label" aria-hidden="true">{tr("MARS / ATMOSPHERE")}</div>
         </div>
 
         <div className={'holo-solar-array pointer-events-none absolute ' + (sequence.includes('power') ? 'is-dimmed' : '')} aria-hidden="true">
           <div className="holo-array-frame"><span /><span /><span /><span /><span /><span /></div>
-          <div className="holo-array-label">SOLAR ARRAY / CONCEPT</div>
+          <div className="holo-array-label">{tr("SOLAR ARRAY / CONCEPT")}</div>
         </div>
         <div className={'holo-power-stream pointer-events-none absolute ' + (sequence.includes('power') ? 'is-weakened' : '')} aria-hidden="true"><i /><i /><i /><i /></div>
 
@@ -146,7 +150,7 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
               type="button"
               data-node={node}
               aria-pressed={linked}
-              aria-label={`${item.title}${linked ? `, connected as link ${linkedAt + 1}` : ', not yet connected'}`}
+              aria-label={`${tr(item.title)}${linked ? `, ${tr('connected as link')} ${linkedAt + 1}` : `, ${tr('not yet connected')}`}`}
               disabled={linked || ready}
               onClick={() => choose(node)}
               className={'holo-node absolute z-20 ' + (linked ? 'is-linked' : '') + (ready ? ' is-converging' : '')}
@@ -155,17 +159,17 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
               <span className="holo-node-orbit" aria-hidden="true" />
               <span className="holo-node-icon" aria-hidden="true">{linked ? <Check size={19} /> : <Icon size={19} />}</span>
               <span className="holo-node-copy">
-                <span className="holo-node-title">{item.title}</span>
-                <span className="holo-node-caption">{item.caption}</span>
+                <span className="holo-node-title">{tr(item.title)}</span>
+                <span className="holo-node-caption">{tr(item.caption)}</span>
               </span>
-              {linked && <span className="holo-node-link">LINK 0{linkedAt + 1}</span>}
+              {linked && <span className="holo-node-link">{tr('LINK')} 0{linkedAt + 1}</span>}
             </button>
           )
         })}
 
         <div className="holo-scene-readout absolute left-5 top-5 z-20 font-mono text-[9px] leading-5 tracking-[.12em] text-cyan-100/60 sm:left-8 sm:top-7">
-          <p>RECONSTRUCTION MODE</p>
-          <p className="text-amber-100/70">CONCEPTUAL / NOT DIRECT TELEMETRY</p>
+          <p>{tr("RECONSTRUCTION MODE")}</p>
+          <p className="text-amber-100/70">{tr("CONCEPTUAL / NOT DIRECT TELEMETRY")}</p>
         </div>
 
         <div className={'holo-evidence-core absolute left-1/2 top-[52%] z-30 ' + (coreFormed ? 'is-formed' : '')}>
@@ -174,13 +178,13 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
             type="button"
             onClick={onFile}
             disabled={!coreFormed}
-            aria-label="File Evidence 01, The Darkening Sky"
+            aria-label={tr('File Evidence 01, The Darkening Sky')}
             className="holo-core-button"
           >
             <span className="holo-core-crystal" aria-hidden="true"><span /><span /><span /></span>
-            <span className="holo-core-label">EVIDENCE 01</span>
+            <span className="holo-core-label">{tr("EVIDENCE 01")}</span>
             <span className="holo-core-title">THE DARKENING SKY</span>
-            <span className="holo-core-action">{coreFormed ? 'SELECT CORE TO FILE' : 'FORMING EVIDENCE CORE'}</span>
+            <span className="holo-core-action">{coreFormed ? tr("SELECT CORE TO FILE") : tr("FORMING EVIDENCE CORE")}</span>
           </button>
         </div>
 
@@ -193,20 +197,20 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
 
       <footer className="relative z-20 flex shrink-0 flex-wrap items-center justify-between gap-x-5 gap-y-2 border-t border-cyan-200/10 bg-[#07111d]/75 px-5 py-3 backdrop-blur-md sm:px-8">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex items-center gap-1.5" aria-label={`${sequence.length} of 3 systems connected`}>
+          <div className="flex items-center gap-1.5" aria-label={ar ? `${sequence.length} من 3 أنظمة متصلة` : `${sequence.length} of 3 systems connected`}>
             {ORDER.map((node, index) => <span key={node} className={'holo-progress-mark ' + (sequence.includes(node) ? 'is-active' : '')} aria-hidden="true">0{index + 1}</span>)}
           </div>
           <p className="truncate font-mono text-[9px] tracking-[.09em] text-slate-300/70 sm:text-[10px]" aria-live="polite">
-            {ready ? coreFormed ? 'SYSTEMS CONVERGED / CORE READY TO FILE' : 'ENERGY PATHS CONVERGING / EVIDENCE FORMING' : `CONNECT THE CAUSAL SEQUENCE / ${sequence.length} OF 3 LINKS`}
+            {ready ? coreFormed ? tr("SYSTEMS CONVERGED / CORE READY TO FILE") : tr("ENERGY PATHS CONVERGING / EVIDENCE FORMING") : (ar ? `اربط تسلسل السبب والنتيجة / ${sequence.length} من 3 روابط` : `CONNECT THE CAUSAL SEQUENCE / ${sequence.length} OF 3 LINKS`)}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <p className="hidden font-mono text-[9px] tracking-wider text-slate-400/65 md:block">VISUAL MODEL ONLY · NO SOL 5111 TAU READING</p>
+          <p className="hidden font-mono text-[9px] tracking-wider text-slate-400/65 md:block">{tr("VISUAL MODEL ONLY · NO SOL 5111 TAU READING")}</p>
           <button type="button" onClick={reset} disabled={!sequence.length} className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2 font-mono text-[9px] tracking-wider text-slate-300/80 transition-colors hover:border-cyan-200/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
-            <RotateCcw size={12} aria-hidden="true" /> RESET
+            <RotateCcw size={12} aria-hidden="true" /> {tr('RESET')}
           </button>
         </div>
-        {alreadyCollected && <span className="sr-only">Evidence 01 is already stored. This replay will not remove it.</span>}
+        {alreadyCollected && <span className="sr-only">{tr("Evidence 01 is already stored. This replay will not remove it.")}</span>}
       </footer>
     </section>
   )

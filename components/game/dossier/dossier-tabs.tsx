@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, CheckCheck, Circle } from 'lucide-react'
+import { Check, CheckCheck, Circle, LockKeyhole } from 'lucide-react'
 import type { PageState } from './progress'
 import type { DossierPage } from './types'
 
@@ -21,12 +21,14 @@ export function DossierTabs({
   pageState,
   onSelect,
   side,
+  isUnlocked,
 }: {
   pages: DossierPage[]
   current: number | null
   pageState: (id: string) => PageState
   onSelect: (index: number) => void
   side: 'left' | 'right'
+  isUnlocked?: (index: number) => boolean
 }) {
   return (
     <nav aria-label="Mission file sections" className="max-md:w-full">
@@ -34,17 +36,20 @@ export function DossierTabs({
         {pages.map((page, index) => {
           const state = pageState(page.id)
           const active = current === index
+          const locked = isUnlocked ? !isUnlocked(index) : false
           return (
             <li key={page.id} className="shrink-0">
               <button
                 type="button"
-                onClick={() => onSelect(index)}
+                onClick={() => { if (!locked) onSelect(index) }}
+                disabled={locked}
+                aria-label={locked ? `${page.tab} — locked` : undefined}
                 aria-current={active ? 'page' : undefined}
-                className={`dossier-tab group flex items-center gap-2 px-3 py-1.5 font-file text-[13px] font-bold uppercase tracking-[0.14em] transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--hud)] md:w-[132px] md:py-2 ${side === 'left' ? 'md:justify-between md:rounded-l-md md:hover:-translate-x-1' : 'md:justify-between md:rounded-r-md md:hover:translate-x-1'} max-md:rounded-t-md ${active && side === 'left' ? 'md:-translate-x-1.5' : ''}`}
+                className={`dossier-tab group flex items-center gap-2 px-3 py-1.5 font-file text-[13px] font-bold uppercase tracking-[0.14em] transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--hud)] md:w-[132px] md:py-2 ${side === 'left' ? 'md:justify-between md:rounded-l-md md:hover:-translate-x-1' : 'md:justify-between md:rounded-r-md md:hover:translate-x-1'} max-md:rounded-t-md ${locked ? 'cursor-not-allowed opacity-40' : ''} ${active && side === 'left' ? 'md:-translate-x-1.5' : ''}`}
               >
                 <span>{page.tab}</span>
-                <PageStateIcon state={state} className="size-3.5 shrink-0" />
-                <span className="sr-only">, {STATE_META[state].label}</span>
+                {locked ? <LockKeyhole aria-hidden className="size-3.5 shrink-0" /> : <PageStateIcon state={state} className="size-3.5 shrink-0" />}
+                <span className="sr-only">, {locked ? 'Locked' : STATE_META[state].label}</span>
               </button>
             </li>
           )

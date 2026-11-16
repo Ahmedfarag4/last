@@ -4,6 +4,8 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Activity, ExternalLink, FileText, MapPin } from 'lucide-react'
 import type { SectionId } from './scientific-archive'
 import { InsightMeasurements } from './insight-measurements'
+import { useGameSettings } from '../settings-provider'
+import { translateArchiveText } from './archive-text-ar'
 
 const NASA = 'https://science.nasa.gov/mission/insight/'
 const EVENTS = [
@@ -29,43 +31,46 @@ function Source({href, children}:{href:string;children:React.ReactNode}) {
   return <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-hud underline underline-offset-4 hover:text-white">{children}<ExternalLink size={12}/></a>
 }
 export function InsightArchiveSection({section,media}:{section:SectionId;media:React.ReactNode}) {
+  const { settings } = useGameSettings()
+  const ar = settings.language === 'ar'
+  const tr = (v:string) => translateArchiveText(v, settings.language)
   const [active,setActive] = useState(0)
   const [collected,setCollected] = useState<string[]>([])
   useEffect(()=>{try{const value=JSON.parse(localStorage.getItem(KEY) ?? '[]'); if(Array.isArray(value)) setCollected(value.filter((v):v is string=>typeof v==='string' && EVIDENCE.some(e=>e.id===v)))}catch{/* storage unavailable */}},[])
   function collect(id:string){const next=collected.includes(id)?collected.filter(x=>x!==id):[...collected,id];setCollected(next);try{localStorage.setItem(KEY,JSON.stringify(next))}catch{/* session only */}}
-  return <div className="arc-swap flex flex-col gap-5 text-frost">
+  return <div className="arc-swap flex flex-col gap-5 text-frost" dir={ar ? 'rtl' : 'ltr'} lang={settings.language}>
     <header className="border-b border-hud/20 pb-4">
-      <p className="font-mono text-[10px] tracking-[.2em] text-ember">NASA / INSIGHT / OFFICIAL MISSION RECORD</p>
-      <h3 className="mt-2 font-display text-2xl tracking-wider">INSIGHT · ELYSIUM PLANITIA</h3>
-      <p className="mt-2 text-sm leading-6 text-frost/70">Stationary Mars lander · November 2018 – December 2022 · NASA/JPL-Caltech</p>
+      <p className="font-mono text-[10px] tracking-[.2em] text-ember">{tr("NASA / INSIGHT / OFFICIAL MISSION RECORD")}</p>
+      <h3 className="mt-2 font-display text-2xl tracking-wider">{tr("INSIGHT · ELYSIUM PLANITIA")}</h3>
+      <p className="mt-2 text-sm leading-6 text-frost/70">{tr("Stationary Mars lander · November 2018 – December 2022 · NASA/JPL-Caltech")}</p>
     </header>
     {section==='media' && media}
     {section==='signals' && <div className="grid gap-4 md:grid-cols-[1fr_1.25fr]">
-      <div className="flex flex-col gap-2">{EVENTS.map((ev,i)=><button key={ev.title} type="button" aria-pressed={active===i} onClick={()=>setActive(i)} className={'rounded-xl border p-3 text-left '+(active===i?'border-hud bg-hud/10':'border-hud/20 hover:border-hud/50')}><span className="block font-mono text-xs text-ember">{ev.date}</span><span className="mt-1 block text-sm">{ev.title}</span></button>)}</div>
-      <article className="rounded-2xl border border-hud/20 bg-midnight/60 p-5"><Activity className="text-hud" size={25}/><p className="mt-4 font-mono text-xs text-ember">{EVENTS[Math.min(active,EVENTS.length-1)].date}</p><h4 className="mt-3 font-display text-xl">{EVENTS[Math.min(active,EVENTS.length-1)].title}</h4><p className="mt-4 text-sm leading-7 text-frost/75">{EVENTS[Math.min(active,EVENTS.length-1)].detail}</p><div className="mt-4"><Source href={EVENTS[Math.min(active,EVENTS.length-1)].source}>Official NASA mission record</Source></div><p className="mt-4 text-xs text-frost/50">Documented timeline — not an original audio transmission.</p></article>
+      <div className="flex flex-col gap-2">{EVENTS.map((ev,i)=><button key={tr(ev.title)} type="button" aria-pressed={active===i} onClick={()=>setActive(i)} className={'rounded-xl border p-3 text-start '+(active===i?'border-hud bg-hud/10':'border-hud/20 hover:border-hud/50')}><span className="block font-mono text-xs text-ember">{ev.date}</span><span className="mt-1 block text-sm">{ev.title}</span></button>)}</div>
+      <article className="rounded-2xl border border-hud/20 bg-midnight/60 p-5"><Activity className="text-hud" size={25}/><p className="mt-4 font-mono text-xs text-ember">{EVENTS[Math.min(active,EVENTS.length-1)].date}</p><h4 className="mt-3 font-display text-xl">{tr(EVENTS[Math.min(active,EVENTS.length-1)].title)}</h4><p className="mt-4 text-sm leading-7 text-frost/75">{tr(EVENTS[Math.min(active,EVENTS.length-1)].detail)}</p><div className="mt-4"><Source href={EVENTS[Math.min(active,EVENTS.length-1)].source}>{tr("Official NASA mission record")}</Source></div><p className="mt-4 text-xs text-frost/50">{tr("Documented timeline — not an original audio transmission.")}</p></article>
     </div>}
     {section==='notes' && <>
       <div className="grid gap-3 sm:grid-cols-2">
-        <article className="rounded-2xl border border-hud/20 bg-midnight/50 p-4"><h4 className="font-semibold text-hud">SEIS · Seismic Experiment</h4><p className="mt-2 text-sm leading-6 text-frost/70">Seismometer measuring Mars vibrations and revealing details of the planet’s internal structure.</p></article>
-        <article className="rounded-2xl border border-hud/20 bg-midnight/50 p-4"><h4 className="font-semibold text-hud">HP³ · Heat Flow Probe</h4><p className="mt-2 text-sm leading-6 text-frost/70">Heat-flow investigation; the mole’s penetration difficulties limited planned subsurface measurements.</p></article>
+        <article className="rounded-2xl border border-hud/20 bg-midnight/50 p-4"><h4 className="font-semibold text-hud">{tr("SEIS · Seismic Experiment")}</h4><p className="mt-2 text-sm leading-6 text-frost/70">{tr("Seismometer measuring Mars vibrations and revealing details of the planet’s internal structure.")}</p></article>
+        <article className="rounded-2xl border border-hud/20 bg-midnight/50 p-4"><h4 className="font-semibold text-hud">{tr("HP³ · Heat Flow Probe")}</h4><p className="mt-2 text-sm leading-6 text-frost/70">{tr("Heat-flow investigation; the mole’s penetration difficulties limited planned subsurface measurements.")}</p></article>
       </div>
       <InsightMeasurements />
-      <h4 className="font-display text-lg tracking-wider text-ember">ORIGINAL SCIENTIFIC DATASETS</h4>
-      {DATASETS.map(d=><article key={d.title} className="rounded-xl border border-hud/25 bg-midnight/50 p-4">
-        <p className="font-mono text-xs text-hud">{d.instrument}</p><h5 className="mt-2 font-semibold">{d.title}</h5><p className="mt-2 text-sm leading-6 text-frost/70">{d.detail}</p><p className="mt-3 text-xs text-amber-200">{d.status}</p><div className="mt-3"><Source href={d.source}>Official science source</Source></div>
+      <h4 className="font-display text-lg tracking-wider text-ember">{tr("ORIGINAL SCIENTIFIC DATASETS")}</h4>
+      {DATASETS.map(d=><article key={tr(d.title)} className="rounded-xl border border-hud/25 bg-midnight/50 p-4">
+        <p className="font-mono text-xs text-hud">{d.instrument}</p><h5 className="mt-2 font-semibold">{d.title}</h5><p className="mt-2 text-sm leading-6 text-frost/70">{tr(d.detail)}</p><p className="mt-3 text-xs text-amber-200">{tr(d.status)}</p><div className="mt-3"><Source href={d.source}>{tr("Official science source")}</Source></div>
       </article>)}
       <div className="rounded-2xl border border-hud/30 bg-[#061623] p-5">
-        <h4 className="font-display text-lg tracking-wider text-ember">EVIDENCE COLLECTION</h4>
-        <p className="mt-2 text-xs leading-6 text-frost/65">Save scientifically grounded observations to a local InSight evidence collection. This does not claim the raw datasets have been loaded.</p>
-        <p className="mt-3 font-mono text-sm text-hud">{collected.length} / {EVIDENCE.length} collected</p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">{EVIDENCE.map(e=><article key={e.id} className="rounded-xl border border-hud/20 p-4"><h5 className="font-semibold">{e.title}</h5><p className="mt-2 text-xs leading-6 text-frost/70">{e.desc}</p><div className="mt-3"><Source href={e.url}>View supporting source</Source></div><button type="button" onClick={()=>collect(e.id)} aria-pressed={collected.includes(e.id)} className="mt-3 rounded-full border border-hud/50 px-3 py-2 text-xs text-hud hover:bg-hud/10">{collected.includes(e.id)?'Collected · Remove':'Collect evidence'}</button></article>)}</div>
+        <h4 className="font-display text-lg tracking-wider text-ember">{tr("EVIDENCE COLLECTION")}</h4>
+        <p className="mt-2 text-xs leading-6 text-frost/65">{tr("Save scientifically grounded observations to a local InSight evidence collection. This does not claim the raw datasets have been loaded.")}</p>
+        <p className="mt-3 font-mono text-sm text-hud">{collected.length} / {EVIDENCE.length} {ar ? 'مجمّع' : 'collected'}</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">{EVIDENCE.map(e=><article key={e.id} className="rounded-xl border border-hud/20 p-4"><h5 className="font-semibold">{tr(e.title)}</h5><p className="mt-2 text-xs leading-6 text-frost/70">{tr(e.desc)}</p><div className="mt-3"><Source href={e.url}>{tr("View supporting source")}</Source></div><button type="button" onClick={()=>collect(e.id)} aria-pressed={collected.includes(e.id)} className="mt-3 rounded-full border border-hud/50 px-3 py-2 text-xs text-hud hover:bg-hud/10"{tr(collected.includes(e.id)?'Collected · Remove':'Collect evidence')}</button></article>)}</div>
       </div>
     </>}
     {section==='traverse' && <div className="rounded-2xl border border-hud/25 bg-midnight/60 p-7">
-      <MapPin className="text-hud" size={30}/><h4 className="mt-4 font-display text-2xl">Elysium Planitia</h4>
-      <p className="mt-3 text-sm leading-7 text-frost/75">InSight was stationary after landing on 26 November 2018. It deployed instruments around the lander but never drove across Mars. This section records its landing-site environment and instrument operations, not a rover traverse.</p>
-      <div className="mt-4"><Source href={NASA}>NASA mission overview</Source></div>
+      <MapPin className="text-hud" size={30}/><h4 className="mt-4 font-display text-2xl">{tr("Elysium Planitia")}</h4>
+      <p className="mt-3 text-sm leading-7 text-frost/75">{tr("InSight was stationary after landing on 26 November 2018. It deployed instruments around the lander but never drove across Mars. This section records its landing-site environment and instrument operations, not a rover traverse.")}</p>
+      <div className="mt-4"><Source href={NASA}>{tr("NASA mission overview")}</Source></div>
     </div>}
-    <footer className="border-t border-hud/20 pt-4 text-xs text-frost/55"><FileText size={14} className="mr-2 inline"/>Public NASA mission facts are separated from PDS measurements that have not yet been uploaded. No simulated scientific readings are displayed.</footer>
+    <footer className="border-t border-hud/20 pt-4 text-xs text-frost/55"><FileText size={14} className="mr-2 inline"/>{tr("Public NASA mission facts are separated from PDS measurements that have not yet been uploaded. No simulated scientific readings are displayed.")}</footer>
   </div>
 }
