@@ -47,7 +47,7 @@ export function MissionDossier({ missionId, onBack, onExplore, onBegin, onReadMa
               className="object-cover"
             />
             <span className="absolute bottom-2 left-2 rounded-full bg-navy/80 px-2.5 py-1 text-[9px] tracking-[0.2em] text-frost/70">
-              ARTISTIC RENDER
+              {tr('ARTISTIC RENDER')}
             </span>
           </div>
           <div>
