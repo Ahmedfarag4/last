@@ -61,8 +61,8 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
       if (analysis) return
       const target = event.target as HTMLElement | null
       if (!opened || target?.closest('input, textarea, select')) return
-      if (event.key === 'ArrowRight') goTo(pageIndex + 1)
-      if (event.key === 'ArrowLeft') goTo(pageIndex - 1)
+      if (event.key === 'ArrowRight') goTo(pageIndex + (settings.language === 'ar' ? -1 : 1))
+      if (event.key === 'ArrowLeft') goTo(pageIndex + (settings.language === 'ar' ? 1 : -1))
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
@@ -237,7 +237,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
             disabled={pageIndex === 0}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--hud)]/40 bg-[#040e18]/90 px-4 py-1.5 text-[13px] font-bold uppercase tracking-[0.16em] transition-colors hover:border-[var(--hud)] focus-visible:outline-2 focus-visible:outline-[var(--hud)] disabled:opacity-35"
           >
-            <ArrowLeft aria-hidden className="size-4" /> <span className="max-sm:sr-only">{isArabic ? 'السابق' : 'Previous'}</span>
+            <ArrowLeft aria-hidden className={`size-4 ${isArabic ? 'rotate-180' : ''}`} /> <span className="max-sm:sr-only">{isArabic ? 'السابق' : 'Previous'}</span>
           </button>
           <div className="flex flex-col items-center gap-1">
             <p aria-live="polite" className="text-[12px] font-semibold uppercase tabular-nums tracking-[0.22em] text-[#b5cbd8]">{pageLabel}</p>
@@ -262,7 +262,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
             disabled={pageIndex === file.pages.length - 1 || !progress.isUnlocked(pageIndex + 1)}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--hud)]/60 bg-[#040e18]/90 px-4 py-1.5 text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--hud)] transition-colors hover:bg-[var(--hud)]/10 focus-visible:outline-2 focus-visible:outline-[var(--hud)] disabled:opacity-35"
           >
-            <span className="max-sm:sr-only">{isArabic ? 'التالي' : 'Next'}</span> <ArrowRight aria-hidden className="size-4" />
+            <span className="max-sm:sr-only">{isArabic ? 'التالي' : 'Next'}</span> <ArrowRight aria-hidden className={`size-4 ${isArabic ? 'rotate-180' : ''}`} />
           </button>
         </nav>
       )}
