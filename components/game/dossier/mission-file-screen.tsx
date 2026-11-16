@@ -8,6 +8,7 @@ import { CollectedPanel } from './collected-panel'
 import { DossierBlockView, type BlockContext } from './dossier-blocks'
 import { DossierCover } from './dossier-cover'
 import { DossierTabs } from './dossier-tabs'
+import { MissionCinematics } from './mission-cinematics'
 import { notifyDossierChange, useDossierProgress } from './progress'
 import type { MissionFile } from './types'
 import './dossier.css'
@@ -20,6 +21,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
   const { hydrated, save, collected, pageState, totals, percent } = progress
   const [analysis, setAnalysis] = useState<string | null>(null)
   const [drawer, setDrawer] = useState(false)
+  const [showCinematics, setShowCinematics] = useState(false)
   const pageRef = useRef<HTMLDivElement>(null)
   const pageIndex = Math.min(save.page, progress.unlockedCount - 1)
   const page = file.pages[pageIndex]
@@ -267,6 +269,10 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
         </div>
       )}
 
+      {progress.missionComplete && !showCinematics && !analysis && (
+        <button type="button" onClick={() => setShowCinematics(true)} className="absolute bottom-16 right-5 z-30 rounded-full border border-amber-300 bg-[#122638] px-5 py-3 text-sm font-bold text-amber-200 shadow-lg hover:bg-[#1c3850]">{isArabic ? 'اكتملت المهمة — شاهد الأفلام' : 'MISSION COMPLETE · WATCH CINEMATICS'}</button>
+      )}
+      {showCinematics && progress.missionComplete && <MissionCinematics arabic={isArabic} onBack={() => setShowCinematics(false)} onExit={onBack} />}
       {Analysis && <Analysis onClose={closeAnalysis} />}
     </section>
   )
