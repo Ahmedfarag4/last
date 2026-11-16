@@ -346,9 +346,7 @@ function NotesSection() {
           <SourceTag kind="history" />
         </div>
         <p className="max-w-3xl text-pretty text-sm leading-relaxed text-frost/80">
-          Near its landing site, Opportunity found small hematite-rich spherules, nicknamed “blueberries,” embedded in
-          layered sedimentary rock. Together with other mineral evidence, they indicated that liquid water was once
-          present at Meridiani Planum.
+          {tr("Near its landing site, Opportunity found small hematite-rich spherules, nicknamed “blueberries,” embedded in layered sedimentary rock. Together with other mineral evidence, they indicated that liquid water was once present at Meridiani Planum.")}
         </p>
       </section>
       <section className="flex flex-col gap-3">
@@ -379,9 +377,7 @@ function NotesSection() {
           <SourceTag kind="history" />
         </div>
         <p className="max-w-3xl text-xs leading-relaxed text-frost/65">
-          Direct measurements from the original NASA PDS MER1 Pancam opacity table (Sol 5000–5105).
-          Higher Tau means more dust obscuring the Sun. Missing/non-measurement values are excluded.
-          This series ends at Sol 5105, so it does not measure the final Sol 5111 dust level.
+          {tr("Direct measurements from the original NASA PDS MER1 Pancam opacity table (Sol 5000–5105). Higher Tau means more dust obscuring the Sun. Missing/non-measurement values are excluded. This series ends at Sol 5105, so it does not measure the final Sol 5111 dust level.")}
         </p>
         <TauChart />
         <a href="/data/opportunity/scientific/atmospheric-opacity/1tau880_5106_20181207a.tab" download className="w-fit text-xs text-hud underline underline-offset-4">{tr("Download original NASA PDS measurements (.tab)")}</a>
@@ -391,10 +387,10 @@ function NotesSection() {
         <div className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-hud/25 bg-midnight/50">
           <Image src="/data/opportunity/scientific/power/Opportunity_Power_vs_Tau_2018.jpg" alt="NASA graphic comparing Opportunity's available solar energy with rising atmospheric opacity during the 2018 dust storm" fill sizes="(min-width: 1024px) 760px, 90vw" className="object-contain" />
         </div>
-        <p className="text-xs leading-relaxed text-frost/65">NASA's published graphic reports approximately 21 watt-hours of available energy as dust opacity rose dramatically near the final communication. This is a published graphic, not raw battery telemetry.</p>
+        <p className="text-xs leading-relaxed text-frost/65">{tr("NASA's published graphic reports approximately 21 watt-hours of available energy as dust opacity rose dramatically near the final communication. This is a published graphic, not raw battery telemetry.")}</p>
         <a href="https://science.nasa.gov/resource/on-mars-light-is-energy/" target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4">{tr("NASA image source")}</a>
       </section>
-      <Unavailable>Raw rover power telemetry and full instrument spectra are not included in this archive.</Unavailable>
+      <Unavailable>{tr("Raw rover power telemetry and full instrument spectra are not included in this archive.")}</Unavailable>
     </div>
   )
 }
@@ -428,16 +424,16 @@ function TraverseSection() {
             />
           ) : (
             <div className="flex min-h-60 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-frost/75">
-              {settings.language === 'ar' ? 'تعذر تحميل خريطة ناسا.' : 'NASA map image could not be loaded.'}
+              {settings.language === 'ar' ? 'تعذر تحميل خريطة ناسا.' : '{tr('NASA map image could not be loaded.')}'}
               <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="text-hud underline underline-offset-4">{settings.language === 'ar' ? 'عرض خريطة ناسا الرسمية' : "Open NASA's official traverse map"}</a>
             </div>
           )}
           <figcaption className="border-t border-hud/15 px-3 py-2 text-xs leading-relaxed text-frost/65">
-            Actual Opportunity traverse map · NASA/JPL-Caltech/MSSS · PIA23178 (2019)
+            {tr("Actual Opportunity traverse map · NASA/JPL-Caltech/MSSS · PIA23178 (2019)")}
           </figcaption>
         </figure>
         <p className="text-[11px] leading-relaxed text-frost/55">
-          The yellow route is from NASA's mapped orbital imagery. The station list is a separate historical index, not geolocated clickable markers.
+          {tr("The yellow route is from NASA's mapped orbital imagery. The station list is a separate historical index, not geolocated clickable markers.")}
         </p>
         <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">
           {settings.language === 'ar' ? 'عرض صورة ناسا الرسمية ووصفها' : 'View official NASA image and description'}
@@ -486,6 +482,8 @@ function TraverseSection() {
 }
 
 function TauChart() {
+  const { settings } = useGameSettings()
+  const tr = (value: string) => translateArchiveText(value, settings.language)
   const valid = OPPORTUNITY_TAU_FINAL
   const width = 740
   const height = 230
@@ -520,7 +518,7 @@ function TauChart() {
         ))}
         <polyline points={polyline} fill="none" stroke="#49d7ff" strokeWidth="2.3" strokeLinejoin="round" strokeLinecap="round" />
         <circle cx={x(valid[valid.length - 1].sol)} cy={y(valid[valid.length - 1].tau)} r="4" fill="#f2b35d" />
-        <text x={width - padding.right} y="15" textAnchor="end" fill="#f2b35d" fontSize="12">Last observation: Tau {valid[valid.length - 1].tau.toFixed(3)} · Sol {Math.floor(valid[valid.length - 1].sol)}</text>
+        <text x={width - padding.right} y="15" textAnchor="end" fill="#f2b35d" fontSize="12">{tr('Last observation')}: Tau {valid[valid.length - 1].tau.toFixed(3)} · Sol {Math.floor(valid[valid.length - 1].sol)}</text>
       </svg>
       <figcaption className="mt-2 text-xs text-frost/55">NASA PDS Pancam R8 880 nm · Tau is dimensionless · plotted as daily means; not simulated</figcaption>
     </figure>
