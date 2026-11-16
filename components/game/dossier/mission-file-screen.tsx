@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ComponentType, CSSProperties } from 'react'
 import { ArrowLeft, ArrowRight, BookMarked, ClipboardList, X } from 'lucide-react'
 import { useGameSettings } from '../settings-provider'
@@ -9,6 +9,7 @@ import { DossierBlockView, type BlockContext } from './dossier-blocks'
 import { DossierCover } from './dossier-cover'
 import { DossierTabs } from './dossier-tabs'
 import { MissionCinematics } from './mission-cinematics'
+import { localizeOpportunity } from './localize-opportunity'
 import { notifyDossierChange, useDossierProgress } from './progress'
 import type { MissionFile } from './types'
 import './dossier.css'
@@ -18,13 +19,14 @@ export type AnalysisRegistry = Record<string, ComponentType<{ onClose: () => voi
 export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFile; analyses: AnalysisRegistry; onBack: () => void }) {
   const { settings, play } = useGameSettings()
   const progress = useDossierProgress(file)
+  const displayFile = useMemo(() => localizeOpportunity(file, settings.language), [file, settings.language])
   const { hydrated, save, collected, pageState, totals, percent } = progress
   const [analysis, setAnalysis] = useState<string | null>(null)
   const [drawer, setDrawer] = useState(false)
   const [showCinematics, setShowCinematics] = useState(false)
   const pageRef = useRef<HTMLDivElement>(null)
   const pageIndex = Math.min(save.page, progress.unlockedCount - 1)
-  const page = file.pages[pageIndex]
+  const page = displayFile.pages[pageIndex]
   const opened = hydrated && save.opened
 
   const goTo = (index: number) => {
@@ -61,7 +63,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
   })
 
   const ctx: BlockContext = {
-    file,
+    file: displayFile,
     collected,
     onCollect: (id) => {
       play('click')
@@ -80,13 +82,15 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
   const hasRequired = progress.requirementsFor(page.id).length > 0
 
   const panel = (
-    <CollectedPanel file={file} pageId={page.id} collected={collected} totals={totals} onReset={() => { play('back'); progress.reset() }} />
+    <CollectedPanel file={displayFile} pageId={page.id} collected={collected} totals={totals} onReset={() => { play('back'); progress.reset() }} />
   )
 
   return (
     <section
       className="dossier fixed inset-0 z-30 isolate flex flex-col overflow-hidden bg-[#03070c] font-file text-[#eaf4ff]"
       data-reduced-motion={settings.reducedMotion}
+      dir={settings.language === 'ar' ? 'rtl' : 'ltr'}
+      lang={settings.language}
       aria-label={`${file.name} mission file`}
       style={{ '--backdrop': `url(${file.backdrop})` } as CSSProperties}
     >
@@ -147,9 +151,9 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
       <div className="flex min-h-0 flex-1 items-stretch justify-center gap-3 px-3 py-3 sm:px-5">
         {!hydrated ? null : !opened ? (
           <div className="flex h-full w-full items-center justify-center gap-0">
-            <DossierCover file={file} resumePage={save.visited.length ? pageIndex : 0} onOpen={() => goTo(pageIndex)} />
+            <DossierCover file={displayFile} resumePage={save.visited.length ? pageIndex : 0} onOpen={() => goTo(pageIndex)} />
             <div className="hidden self-center md:block">
-              <DossierTabs pages={file.pages} current={null} pageState={pageState} onSelect={goTo} side="right" isUnlocked={progress.isUnlocked} />
+              <DossierTabs pages={displayFile.pages} current={null} pageState={pageState} onSelect={goTo} side="right" isUnlocked={progress.isUnlocked} />
             </div>
           </div>
         ) : (
@@ -179,7 +183,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
                           {page.title}
                         </h2>
                         {pageIndex === 0 && (
-                          <span className="dossier-stamp rotate-[-8deg] rounded-sm px-2 py-0.5 font-file text-[15px] font-bold uppercase tracking-[0.22em]">{file.clearance}</span>
+                          <span className="dossier-stamp rotate-[-8deg] rounded-sm px-2 py-0.5 font-file text-[15px] font-bold uppercase tracking-[0.22em]">{displayFile.clearance}</span>
                         )}
                       </div>
                       <span aria-hidden className="mt-1 h-[3px] w-full bg-[var(--ink)]" />
@@ -192,7 +196,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
 
                   <div className="dossier-paper dossier-page-right dossier-scroll flex flex-col gap-4 p-4 pt-2 sm:p-6 md:overflow-y-auto md:pt-6">
                     <p className="hidden items-center justify-between font-file text-[12px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)] md:flex">
-                      <span>{file.code} · {file.designation}</span>
+                      <span>{displayFile.code} · {displayFile.designation}</span>
                       <span className="rounded-sm border border-[var(--ink)]/40 px-1.5 py-0.5 tabular-nums">{pageLabel}</span>
                     </p>
                     {page.right.map((block, i) => <DossierBlockView key={i} block={block} ctx={ctx} />)}
@@ -231,7 +235,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
           <div className="flex flex-col items-center gap-1">
             <p aria-live="polite" className="text-[12px] font-semibold uppercase tabular-nums tracking-[0.22em] text-[#b5cbd8]">{pageLabel}</p>
             <ol className="flex gap-1.5">
-              {file.pages.map((p, i) => (
+              {displayFile.pages.map((p, i) => (
                 <li key={p.id}>
                   <button
                     type="button"
