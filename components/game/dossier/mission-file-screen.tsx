@@ -21,12 +21,12 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
   const [analysis, setAnalysis] = useState<string | null>(null)
   const [drawer, setDrawer] = useState(false)
   const pageRef = useRef<HTMLDivElement>(null)
-  const pageIndex = save.page
+  const pageIndex = Math.min(save.page, progress.unlockedCount - 1)
   const page = file.pages[pageIndex]
   const opened = hydrated && save.opened
 
   const goTo = (index: number) => {
-    if (index < 0 || index >= file.pages.length) return
+    if (index < 0 || index >= file.pages.length || !progress.isUnlocked(index)) return
     if (index !== pageIndex || !save.opened) play('click')
     progress.goTo(index)
     pageRef.current?.scrollTo({ top: 0 })
@@ -72,7 +72,10 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
   }
 
   const Analysis = analysis ? analyses[analysis] : null
-  const pageLabel = `Page ${String(pageIndex + 1).padStart(2, '0')} / ${String(file.pages.length).padStart(2, '0')}`
+  const isArabic = settings.language === 'ar'
+  const pageLabel = `${isArabic ? 'صفحة' : 'Page'} ${String(pageIndex + 1).padStart(2, '0')} / ${String(file.pages.length).padStart(2, '0')}`
+  const missing = progress.requirementsFor(page.id).filter(id => !collected.has(id))
+  const hasRequired = progress.requirementsFor(page.id).length > 0
 
   const panel = (
     <CollectedPanel file={file} pageId={page.id} collected={collected} totals={totals} onReset={() => { play('back'); progress.reset() }} />
@@ -144,14 +147,14 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
           <div className="flex h-full w-full items-center justify-center gap-0">
             <DossierCover file={file} resumePage={save.visited.length ? pageIndex : 0} onOpen={() => goTo(pageIndex)} />
             <div className="hidden self-center md:block">
-              <DossierTabs pages={file.pages} current={null} pageState={pageState} onSelect={goTo} side="right" />
+              <DossierTabs pages={file.pages} current={null} pageState={pageState} onSelect={goTo} side="right" isUnlocked={progress.isUnlocked} />
             </div>
           </div>
         ) : (
           <>
             <div className="flex min-h-0 w-full max-w-[1240px] flex-1 gap-0 max-md:flex-col">
               <div className="z-10 shrink-0 md:pt-10">
-                <DossierTabs pages={file.pages} current={pageIndex} pageState={pageState} onSelect={goTo} side="left" />
+                <DossierTabs pages={file.pages} current={pageIndex} pageState={pageState} onSelect={goTo} side="left" isUnlocked={progress.isUnlocked} />
               </div>
 
               <article
@@ -194,6 +197,9 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
                   </div>
                 </div>
               </article>
+              <div className="flex shrink-0 items-center justify-between gap-2 border-t border-[var(--hud)]/20 bg-[#06121d]/90 px-3 py-2 text-xs text-[#d5e5ee] md:hidden">
+                <span>{progress.completedPage(page.id) ? (isArabic ? 'مكتملة' : 'Page complete') : (isArabic ? 'اجمع الأدلة المطلوبة لفتح الصفحة التالية' : 'Collect required evidence to unlock the next page')}</span>
+              </div>
             </div>
 
             <aside aria-label="Investigation tracking" className="dossier-scroll hidden w-64 shrink-0 overflow-y-auto xl:block">
@@ -203,6 +209,13 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
         )}
       </div>
 
+      {opened && (
+        <div className="mx-auto flex w-full max-w-[1240px] shrink-0 flex-wrap items-center justify-center gap-2 px-3 py-1 text-center text-[11px] text-[#b9d1db]">
+          {progress.completedPage(page.id) ? <span className="text-[#8de2c9]">{isArabic ? 'اكتملت الصفحة — تم فتح التالية' : 'Page completed — next page unlocked'}</span> :
+            hasRequired ? <span>{isArabic ? 'الأدلة المتبقية' : 'Remaining evidence'}: {missing.length} / {progress.requirementsFor(page.id).length}</span> :
+            <button type="button" onClick={() => progress.review(page.id)} className="rounded-full border border-[var(--hud)]/50 px-3 py-1 text-[var(--hud)] hover:bg-[var(--hud)]/10">{isArabic ? 'تأكيد قراءة الصفحة' : 'Mark page reviewed'}</button>}
+        </div>
+      )}
       {opened && (
         <nav aria-label="Page navigation" className="flex shrink-0 items-center justify-between gap-3 px-3 pb-3 sm:px-5">
           <button
@@ -221,9 +234,10 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
                   <button
                     type="button"
                     onClick={() => goTo(i)}
+                    disabled={!progress.isUnlocked(i)}
                     aria-label={`Go to ${p.tab}`}
                     aria-current={i === pageIndex ? 'page' : undefined}
-                    className={`block size-2 rounded-full transition-colors ${i === pageIndex ? 'bg-[var(--hud)] shadow-[0_0_8px_var(--hud)]' : pageState(p.id) === 'unread' ? 'border border-[#8fb4c6]/60' : 'bg-[#8fb4c6]/70'}`}
+                    className={`block size-2 rounded-full transition-colors ${!progress.isUnlocked(i) ? 'opacity-30' : ''} ${i === pageIndex ? 'bg-[var(--hud)] shadow-[0_0_8px_var(--hud)]' : pageState(p.id) === 'unread' ? 'border border-[#8fb4c6]/60' : 'bg-[#8fb4c6]/70'}`}
                   />
                 </li>
               ))}
@@ -232,7 +246,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
           <button
             type="button"
             onClick={() => goTo(pageIndex + 1)}
-            disabled={pageIndex === file.pages.length - 1}
+            disabled={pageIndex === file.pages.length - 1 || !progress.isUnlocked(pageIndex + 1)}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--hud)]/60 bg-[#040e18]/90 px-4 py-1.5 text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--hud)] transition-colors hover:bg-[var(--hud)]/10 focus-visible:outline-2 focus-visible:outline-[var(--hud)] disabled:opacity-35"
           >
             <span className="max-sm:sr-only">Next</span> <ArrowRight aria-hidden className="size-4" />
