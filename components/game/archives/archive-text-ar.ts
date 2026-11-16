@@ -231,6 +231,26 @@ const translations: Record<string, string> = {
   'Apollo 12 landed near the earlier Surveyor 3 spacecraft; astronauts inspected it and retrieved hardware for examination on Earth.':'هبطت أبولو 12 قرب سيرفيور 3 السابقة؛ فحصها رواد الفضاء واستعادوا معدات لدراستها على الأرض.',
   'Hourly observations from the Apollo 12 ALSEP Solar Wind Spectrometer. This evidence refers to the measured dataset, not a synthetic signal.':'ملاحظات ساعية من مطياف الرياح الشمسية الخاص بأبولو 12. يشير هذا الدليل إلى قياسات أصلية لا إلى إشارة مصطنعة.',
 
+  'PSE station S11 · July 21, 1969':'محطة الرصد الزلزالي S11 · 21 يوليو 1969',
+  'User-supplied NASA PDS-derived game-ready excerpt: three channels, 404,020 rows per channel, approximately 6.625 Hz sampling. A separate one-minute aggregate and downsampled excerpt are available in the source package. They are raw instrument counts, not calibrated ground velocity or verified moonquake events.':'عينة جاهزة للاستخدام مستمدة من ناسا PDS ومقدمة من الفريق: ثلاث قنوات، بكل منها 404020 سجلًا، ومعدل أخذ عينات يقارب 6.625 هرتز. تتضمن الحزمة ملخصًا لكل دقيقة وعينة مخففة. هذه أعداد أجهزة خام وليست سرعة أرضية معايرة أو أحداث زلزالية قمرية مؤكدة.',
+  'Only a portion of one day of observations. Missing -1 samples are excluded from derived statistics; no event classification or physical-unit calibration.':'تغطي البيانات جزءًا من يوم رصد واحد. استُبعدت عينات -1 المفقودة من الإحصاءات المشتقة، ولا يوجد تصنيف للأحداث أو معايرة بوحدات فيزيائية.',
+  'A surface communications antenna photographed on the Moon. The original capture ID and Apollo mission attribution have not yet been independently verified.':'صورة لهوائي اتصالات على سطح القمر. لم يُتحقق بصورة مستقلة بعد من رقم التقاط الصورة أو نسبتها لمهمة أبولو بعينها.',
+  'Historical lunar surface photograph showing a crew member beside the Surveyor 3 spacecraft. The image is part of the Apollo 12 mission archive.':'صورة تاريخية على سطح القمر يظهر فيها أحد أفراد الطاقم بجانب سيرفيور 3. الصورة جزء من أرشيف أبولو 12.',
+  'Lunar orbital imagery included in the supplied Apollo 12 source package. Specific mapped features should be interpreted against its original NASA image record.':'صور مدارية للقمر ضمن الحزمة المقدمة لأبولو 12. ينبغي تفسير المعالم الظاهرة بالرجوع إلى سجل صورة ناسا الأصلي.',
+  'Apollo 12 crew member examining the Surveyor 3 lander; original image supplied in Surveyor 3 package.':'أحد أفراد أبولو 12 يفحص مركبة سيرفيور 3؛ وقدمت الصورة الأصلية ضمن حزمة سيرفيور 3.',
+  'Apollo 12 view of the robotic Surveyor 3 spacecraft on the Moon.':'منظر من أبولو 12 لمركبة سيرفيور 3 الروبوتية على القمر.',
+  'Apollo 12 SWS one-hour dataset':'بيانات مطياف الرياح الشمسية لأبولو 12 بدقة ساعة واحدة',
+  'Tabular solar wind spectrometer data supplied with a PDS XML label. Raw table is available in the user package; column semantics and units must be read from its XML label before numerical plotting.':'بيانات جدولية لمطياف الرياح الشمسية مع وصف PDS XML. الجدول الخام موجود في الحزمة المقدمة؛ ويجب قراءة تعريفات الأعمدة ووحداتها قبل عرض الرسوم الرقمية.',
+  'No fabricated solar wind graph: original measurements are not deployed as chart-ready data yet.':'لا يوجد رسم مصطنع للرياح الشمسية؛ لم تُهيأ القياسات الأصلية بعد كبيانات جاهزة للرسم.',
+  'David Scott at the Lunar Roving Vehicle during Apollo 15 surface operations.':'ديفيد سكوت بجانب المركبة القمرية الجوالة خلال عمليات أبولو 15 على السطح.',
+  'Apollo 15 astronaut and Lunar Roving Vehicle near the lunar module.':'رائد فضاء من أبولو 15 والمركبة الجوالة قرب الوحدة القمرية.',
+  'Apollo 15 HFE probe 1':'مسبار التدفق الحراري الأول لأبولو 15',
+  'Original PDS table and XML label in the supplied archive; measurements require parsing label-defined units and missing values before use in a chart.':'جدول PDS أصلي وملف XML في الأرشيف المرفق؛ تتطلب القياسات قراءة الوحدات والقيم المفقودة المحددة في الوصف قبل رسمها.',
+  'No numerical measurements have been rendered here until the XML schema has been validated.':'لم تُعرض قياسات رقمية هنا حتى يتم التحقق من مخطط XML.',
+  'Apollo 15 HFE probe 2':'مسبار التدفق الحراري الثاني لأبولو 15',
+  'Second independent heat-flow probe table and XML label in the supplied archive.':'جدول مستقل ثانٍ لمسبار تدفق الحرارة مع ملف وصف XML ضمن الأرشيف المرفق.',
+  'Probe 2 values must not be mixed with Probe 1; physical units and record validity require PDS label parsing.':'يجب عدم خلط قيم المسبار الثاني بالمسبار الأول؛ يتطلب تحديد الوحدات الفيزيائية وصحة السجلات قراءة وصف PDS.',
+
 }
 
 export const translateArchiveText = (value: string, language: Language): string =>
