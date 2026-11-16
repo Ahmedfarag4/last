@@ -64,6 +64,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
 
   const ctx: BlockContext = {
     file: displayFile,
+    arabic: settings.language === 'ar',
     collected,
     onCollect: (id) => {
       play('click')
@@ -104,12 +105,12 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
           className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--hud)]/40 bg-[#040e18]/90 px-3.5 py-1.5 text-[13px] font-bold uppercase tracking-[0.16em] transition-colors hover:border-[var(--hud)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--hud)]"
         >
           <ArrowLeft aria-hidden className="size-4" />
-          <span className="max-sm:sr-only">Exit investigation</span>
+          <span className="max-sm:sr-only">{isArabic ? 'الخروج من التحقيق' : 'Exit investigation'}</span>
         </button>
 
         <div className="mx-auto flex w-full max-w-[360px] flex-col gap-1">
           <div className="flex items-baseline justify-between text-[12px] font-semibold uppercase tracking-[0.2em]">
-            <span className="text-[#8fb4c6]">Investigation progress</span>
+            <span className="text-[#8fb4c6]">{isArabic ? 'تقدم التحقيق' : 'Investigation progress'}</span>
             <span className="tabular-nums text-[var(--hud)]">{percent}%</span>
           </div>
           <div
@@ -131,7 +132,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
               onClick={() => { play('back'); progress.close() }}
               className="hidden items-center gap-1.5 rounded-full border border-[var(--hud)]/30 bg-[#040e18]/90 px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.16em] text-[#b5cbd8] hover:text-white focus-visible:outline-2 focus-visible:outline-[var(--hud)] sm:inline-flex"
             >
-              <BookMarked aria-hidden className="size-3.5" /> Close file
+              <BookMarked aria-hidden className="size-3.5" /> {isArabic ? 'إغلاق الملف' : 'Close file'}
             </button>
           )}
           <button
@@ -230,7 +231,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
             disabled={pageIndex === 0}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--hud)]/40 bg-[#040e18]/90 px-4 py-1.5 text-[13px] font-bold uppercase tracking-[0.16em] transition-colors hover:border-[var(--hud)] focus-visible:outline-2 focus-visible:outline-[var(--hud)] disabled:opacity-35"
           >
-            <ArrowLeft aria-hidden className="size-4" /> <span className="max-sm:sr-only">Previous</span>
+            <ArrowLeft aria-hidden className="size-4" /> <span className="max-sm:sr-only">{isArabic ? 'السابق' : 'Previous'}</span>
           </button>
           <div className="flex flex-col items-center gap-1">
             <p aria-live="polite" className="text-[12px] font-semibold uppercase tabular-nums tracking-[0.22em] text-[#b5cbd8]">{pageLabel}</p>
@@ -255,7 +256,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
             disabled={pageIndex === file.pages.length - 1 || !progress.isUnlocked(pageIndex + 1)}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--hud)]/60 bg-[#040e18]/90 px-4 py-1.5 text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--hud)] transition-colors hover:bg-[var(--hud)]/10 focus-visible:outline-2 focus-visible:outline-[var(--hud)] disabled:opacity-35"
           >
-            <span className="max-sm:sr-only">Next</span> <ArrowRight aria-hidden className="size-4" />
+            <span className="max-sm:sr-only">{isArabic ? 'التالي' : 'Next'}</span> <ArrowRight aria-hidden className="size-4" />
           </button>
         </nav>
       )}
