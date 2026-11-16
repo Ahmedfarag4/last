@@ -170,6 +170,33 @@ const ar: Record<string, string> = {
   'NASA DOCUMENTED HISTORY · THE LAST SIGNAL / OPPORTUNITY':'سجلات ناسا الموثقة · The Last Signal / أوبورتيونيتي',
   'Close signal investigation':'إغلاق تحقيق الإشارات',
 
+  'Holographic evidence reconstruction':'إعادة بناء الأدلة الهولوغرافية',
+  'DUST OPACITY':'عتامة الغبار','SUNLIGHT':'ضوء الشمس','SOLAR POWER':'الطاقة الشمسية',
+  'Atmospheric haze thickens':'تزداد كثافة الغبار الجوي',
+  'Surface illumination falls':'ينخفض الضوء على السطح',
+  'Array energy flow weakens':'يضعف تدفق الطاقة من الألواح',
+  'That system is not synchronized yet. Recheck the available evidence and try again.':'هذا النظام غير متزامن بعد. راجع الأدلة المتاحة وحاول مجددًا.',
+  'MER-B / OPPORTUNITY / CASE RECONSTRUCTION':'MER-B / أوبورتيونيتي / إعادة بناء القضية',
+  'ANIMATIONS SKIPPED':'تم تجاوز الحركات','SKIP ANIMATIONS':'تخطي الحركات',
+  'SKIP ON':'تخطي مفعل','SKIP FX':'تخطي التأثيرات',
+  'Interactive Mars reconstruction':'إعادة بناء تفاعلية للمريخ',
+  'Conceptual Mars atmosphere and surface reconstruction':'تصور توضيحي لغلاف المريخ الجوي وسطحه',
+  'MARS / ATMOSPHERE':'المريخ / الغلاف الجوي',
+  'SOLAR ARRAY / CONCEPT':'ألواح شمسية / تصور',
+  'LINK':'ربط',
+  'RECONSTRUCTION MODE':'وضع إعادة البناء',
+  'CONCEPTUAL / NOT DIRECT TELEMETRY':'تصور توضيحي / ليس قياسات مباشرة',
+  'File Evidence 01, The Darkening Sky':'حفظ الدليل 01، السماء المظلمة',
+  'EVIDENCE 01':'الدليل 01',
+  'SELECT CORE TO FILE':'اضغط لحفظ الدليل',
+  'FORMING EVIDENCE CORE':'جاري تكوين الدليل',
+  'SYSTEMS CONVERGED / CORE READY TO FILE':'اكتمل الترابط / الدليل جاهز للحفظ',
+  'ENERGY PATHS CONVERGING / EVIDENCE FORMING':'مسارات الطاقة تترابط / الدليل يتكوّن',
+  'VISUAL MODEL ONLY · NO SOL 5111 TAU READING':'نموذج مرئي فقط · لا توجد قراءة مباشرة في اليوم 5111',
+  'Evidence 01 is already stored. This replay will not remove it.':'الدليل 01 محفوظ بالفعل. إعادة اللعب لن تحذفه.',
+  'connected as link':'متصل كرابط',
+  'not yet connected':'لم يتصل بعد',
+
 }
 
 export const translateOpportunityText = (value: string) => ar[value] ?? value
