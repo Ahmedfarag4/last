@@ -214,6 +214,23 @@ const translations: Record<string, string> = {
   'Apollo 15 lunar rover':'المركبة القمرية لأبولو 15','Loading the rover':'تجهيز المركبة الجوالة',
   'Apollo 15 expanded lunar surface exploration with the first Lunar Roving Vehicle and deployed experiments for examining the lunar environment and interior.':'وسعت أبولو 15 الاستكشاف القمري باستخدام أول مركبة جوالة قمرية ونشرت تجارب لدراسة بيئة القمر وباطنه.',
 
+  'MISSION INVESTIGATION / HISTORICAL EVIDENCE':'تحقيق المهمة / الأدلة التاريخية',
+  'EVIDENCE BOARD':'لوحة الأدلة',
+  'Review NASA evidence and place each record into a mission folder. Move records freely; there is no penalty or quiz.':'راجع أدلة ناسا وضع كل سجل في مجلد المهمة المناسبة. يمكنك نقل السجلات بحرية بلا عقوبة أو اختبار.',
+  'Evidence pending source review':'الأدلة بانتظار مراجعة المصدر',
+  'Store in mission folder':'احفظ داخل مجلد المهمة',
+  'Unfiled':'غير مصنف',
+  'Filed in matching mission':'محفوظ في المهمة المطابقة',
+  'Folder placements are saved locally in this browser. Correct placement increases the displayed mission progress; misplaced records remain saved and can be moved. Apollo rescue gameplay is not yet implemented, so this board does not unlock a nonfunctional action.':'تُحفظ أماكن الأدلة محليًا داخل المتصفح. يزيد التصنيف الصحيح من تقدم المهمة، بينما تبقى السجلات الأخرى محفوظة وقابلة للنقل. لم يُنفذ طور إنقاذ أبولو بعد، لذا لن تفتح اللوحة زرًا غير فعّال.',
+  'Eagle science equipment':'المعدات العلمية للوحدة إيجل',
+  'Passive seismic experiment':'تجربة الرصد الزلزالي السلبي',
+  'Surveyor 3 recovery':'استرجاع معدات سيرفيور 3',
+  'Solar wind observations':'ملاحظات الرياح الشمسية',
+  'Apollo 11 photographs document equipment removed from the lunar module for surface experiments.':'توثق صور أبولو 11 المعدات التي أُخرجت من الوحدة القمرية لإجراء تجارب السطح.',
+  'The Apollo 11 surface package included an early passive seismic experiment. The photograph records deployment, not a measured seismic event.':'تضمنت أجهزة أبولو 11 تجربة مبكرة للرصد الزلزالي السلبي. توثق الصورة نشر الجهاز وليس حدثًا زلزاليًا مقاسًا.',
+  'Apollo 12 landed near the earlier Surveyor 3 spacecraft; astronauts inspected it and retrieved hardware for examination on Earth.':'هبطت أبولو 12 قرب سيرفيور 3 السابقة؛ فحصها رواد الفضاء واستعادوا معدات لدراستها على الأرض.',
+  'Hourly observations from the Apollo 12 ALSEP Solar Wind Spectrometer. This evidence refers to the measured dataset, not a synthetic signal.':'ملاحظات ساعية من مطياف الرياح الشمسية الخاص بأبولو 12. يشير هذا الدليل إلى قياسات أصلية لا إلى إشارة مصطنعة.',
+
 }
 
 export const translateArchiveText = (value: string, language: Language): string =>
