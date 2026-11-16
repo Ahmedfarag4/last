@@ -20,6 +20,7 @@ import { BackChip, SourceTag } from './archive-ui'
 import { OPPORTUNITY_TAU_FINAL } from './opportunity-tau-data'
 import { ApolloArchiveSection } from './apollo-archive-section'
 import { InsightArchiveSection } from './insight-archive-section'
+import { translateArchiveText } from './archive-text-ar'
 
 export type SectionId = 'media' | 'signals' | 'notes' | 'traverse'
 
@@ -38,7 +39,8 @@ type ScientificArchiveProps = {
 }
 
 export function ScientificArchive({ section, onSection, onBack, missionId = 'opportunity' }: ScientificArchiveProps) {
-  const { play } = useGameSettings()
+  const { play, settings } = useGameSettings()
+  const tr = (value: string) => translateArchiveText(value, settings.language)
   const headingRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => headingRef.current?.focus(), [section])
 
@@ -48,24 +50,24 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
 
   return (
     <section
-      aria-labelledby="sci-title"
+      aria-labelledby="sci-title" lang={settings.language} dir={settings.language === 'ar' ? 'rtl' : 'ltr'}
       className="arc-panel-in arc-glass relative mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden"
       style={{ '--tone': '#49d7ff' } as React.CSSProperties}
     >
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-hud/20 px-5 py-3 sm:px-7">
-        <BackChip label={section ? 'Archive index' : 'Dossier'} onClick={() => (section ? onSection(null) : onBack())} />
+        <BackChip label={section ? tr('Archive index') : tr('Dossier')} onClick={() => (section ? onSection(null) : onBack())} />
         <h2
           id="sci-title"
           ref={headingRef}
           tabIndex={-1}
           className="text-[10px] font-semibold tracking-[0.32em] text-hud uppercase outline-none"
         >
-          {missionTitle} · {current ? current.label : 'Scientific archive'}
+          {missionTitle} · {current ? tr(current.label) : tr('Scientific archive')}
         </h2>
       </header>
 
       {section && (
-        <nav aria-label="Archive sections" className="arc-scroll flex gap-2 overflow-x-auto border-b border-hud/10 px-5 py-2.5 sm:px-7">
+        <nav aria-label={tr('Archive sections')} className="arc-scroll flex gap-2 overflow-x-auto border-b border-hud/10 px-5 py-2.5 sm:px-7">
           {SECTIONS.map((s) => (
             <button
               key={s.id}
@@ -83,7 +85,7 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
               )}
             >
               <s.icon aria-hidden className="size-3.5" />
-              {s.label}
+              {tr(s.label)}
             </button>
           ))}
         </nav>
@@ -101,13 +103,13 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
                     play('archives')
                     onSection(s.id)
                   }}
-                  className="group relative flex h-full min-h-32 w-full flex-col justify-between overflow-hidden rounded-2xl border border-hud/25 bg-midnight/50 p-5 text-left transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-0.5 hover:border-hud/70 hover:shadow-[0_0_30px_rgba(73,215,255,0.22)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
+                  className="group relative flex h-full min-h-32 w-full flex-col justify-between overflow-hidden rounded-2xl border border-hud/25 bg-midnight/50 p-5 text-start transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-0.5 hover:border-hud/70 hover:shadow-[0_0_30px_rgba(73,215,255,0.22)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
                 >
                   <span aria-hidden className="absolute -right-10 -top-10 size-36 rounded-full bg-hud/10 blur-2xl transition-opacity duration-500 group-hover:bg-hud/20" />
                   <s.icon aria-hidden className="size-6 text-hud" />
                   <span className="mt-6">
                     <span className="block font-display text-lg tracking-[0.08em] text-frost">{s.label}</span>
-                    <span className="mt-1 block text-xs tracking-[0.12em] text-frost/60">{s.desc}</span>
+                    <span className="mt-1 block text-xs tracking-[0.12em] text-frost/60">{tr(s.desc)}</span>
                   </span>
                 </button>
               </li>
@@ -134,21 +136,21 @@ export function ScientificArchive({ section, onSection, onBack, missionId = 'opp
         ) : null}
         {section === 'media' && (
           <div className="mt-6 rounded-2xl border border-hud/25 bg-midnight/50 p-4 sm:p-5">
-            <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-ember">MISSION VIDEO · EXTERNAL</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-ember">{tr('MISSION VIDEO · EXTERNAL')}</p>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="font-display text-lg tracking-wider text-frost">
-                  {missionId === 'opportunity' ? 'Opportunity Summary' : missionId === 'insight' ? 'InSight Objective' : 'Apollo Animation Video'}
+                  {tr(missionId === 'opportunity' ? 'Opportunity Summary' : missionId === 'insight' ? 'InSight Objective' : 'Apollo Animation Video')}
                 </h3>
                 <p className="mt-1 text-xs leading-6 text-frost/60">
-                  {missionId === 'opportunity' ? 'Illustrated mission recap' : missionId === 'insight' ? 'An introduction to the mission objectives' : 'Animated overview of the Apollo mission'}
-                  {' · User-provided YouTube video'}
+                  {tr(missionId === 'opportunity' ? 'Illustrated mission recap' : missionId === 'insight' ? 'An introduction to the mission objectives' : 'Animated overview of the Apollo mission')}
+                  {tr(' · User-provided YouTube video')}
                 </p>
               </div>
               <a href={missionId === 'opportunity' ? 'https://youtu.be/8tKtXzLnPfU' : missionId === 'insight' ? 'https://youtu.be/5jtln32v6Is' : 'https://youtu.be/h_xs6OBiqQ4'}
                 target="_blank" rel="noopener noreferrer"
                 className="inline-flex shrink-0 items-center rounded-full border border-hud/50 px-4 py-2 text-xs font-semibold tracking-wider text-hud transition-colors hover:border-hud hover:bg-hud/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud">
-                Watch Video ↗
+                {tr('Watch Video ↗')}
               </a>
             </div>
           </div>
@@ -176,6 +178,8 @@ const CONTENT_SLOTS: Record<FutureMission, Record<SectionId, { heading: string; 
 }
 
 function PendingArchiveSection({ missionId, section }: { missionId: FutureMission; section: SectionId }) {
+  const { settings } = useGameSettings()
+  const tr = (value: string) => translateArchiveText(value, settings.language)
   const [apolloMission, setApolloMission] = useState<'Apollo 11' | 'Apollo 12' | 'Apollo 15'>('Apollo 11')
   const slot = CONTENT_SLOTS[missionId][section]
   return (
@@ -193,15 +197,15 @@ function PendingArchiveSection({ missionId, section }: { missionId: FutureMissio
       <div className="relative flex min-h-52 flex-col justify-center overflow-hidden rounded-2xl border border-hud/25 bg-midnight/60 p-6 sm:p-9">
         <span aria-hidden className="pointer-events-none absolute -right-12 -top-16 size-64 rounded-full border border-hud/15 shadow-[0_0_100px_#49d7ff20]" />
         <p className="font-mono text-[10px] tracking-[.24em] text-ember">{missionId === 'apollo' ? apolloMission.toUpperCase() : 'INSIGHT'} / ARCHIVE VAULT</p>
-        <h3 className="mt-3 font-display text-2xl tracking-[.08em] text-frost">{slot.heading}</h3>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-frost/70">{slot.body}</p>
-        <p className="mt-5 w-fit rounded-full border border-ember/40 bg-ember/5 px-4 py-2 font-mono text-[10px] tracking-[.2em] text-ember">CONTENT AWAITING IMPORT</p>
+        <h3 className="mt-3 font-display text-2xl tracking-[.08em] text-frost">{tr(slot.heading)}</h3>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-frost/70">{tr(slot.body)}</p>
+        <p className="mt-5 w-fit rounded-full border border-ember/40 bg-ember/5 px-4 py-2 font-mono text-[10px] tracking-[.2em] text-ember">{settings.language === 'ar' ? 'بانتظار إضافة المحتوى' : 'CONTENT AWAITING IMPORT'}</p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {slot.fields.map(field => (
           <div key={field} className="flex min-h-24 items-center justify-between gap-3 rounded-xl border border-hud/15 bg-midnight/40 p-4">
-            <span className="text-sm text-frost/75">{field}</span>
-            <span className="shrink-0 rounded-full border border-hud/20 px-2 py-1 font-mono text-[9px] text-hud/70">PENDING</span>
+            <span className="text-sm text-frost/75">{tr(field)}</span>
+            <span className="shrink-0 rounded-full border border-hud/20 px-2 py-1 font-mono text-[9px] text-hud/70">{settings.language === 'ar' ? 'قيد الانتظار' : 'PENDING'}</span>
           </div>
         ))}
       </div>
@@ -218,33 +222,35 @@ function Unavailable({ children }: { children: React.ReactNode }) {
 const OPPORTUNITY_MEDIA_NOTE = 'Original NASA/JPL mission imagery · 3 Pancam and 2 Navcam images. Titles and captions describe the original image records.'
 
 function MediaSection({ items = MEDIA, note = OPPORTUNITY_MEDIA_NOTE }: { items?: MediaItem[]; note?: string }) {
+  const { settings } = useGameSettings()
+  const tr = (value: string) => translateArchiveText(value, settings.language)
   const [index, setIndex] = useState(0)
   const item = items[index]
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <figure className="flex flex-col gap-3">
         <div key={item.src} className="arc-swap relative aspect-video overflow-hidden rounded-2xl border border-hud/25 bg-midnight/70">
-          <Image src={item.src} alt={item.caption} fill sizes="(min-width: 1024px) 700px, 90vw" className={item.displayFit === 'contain' ? 'object-contain' : 'object-cover'} />
+          <Image src={item.src} alt={tr(item.caption)} fill sizes="(min-width: 1024px) 700px, 90vw" className={item.displayFit === 'contain' ? 'object-contain' : 'object-cover'} />
         </div>
         <figcaption className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold tracking-[0.06em] text-frost">{item.title}</span>
+            <span className="font-semibold tracking-[0.06em] text-frost">{tr(item.title)}</span>
             <SourceTag kind="history" />
             <span className="rounded-full border border-hud/30 px-2 py-0.5 text-[10px] tracking-widest text-hud">{item.camera}</span>
           </div>
-          <span className="text-sm text-frost/70">{item.caption}</span>
+          <span className="text-sm text-frost/70">{tr(item.caption)}</span>
           <span className="text-xs text-frost/45">{item.credit}</span>
-          <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">View original NASA source</a>
+          <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">{tr('View original NASA source')}</a>
         </figcaption>
       </figure>
       <div className="flex flex-col gap-3">
-        <ul className="grid grid-cols-3 gap-2 lg:grid-cols-1" aria-label="Media items">
+        <ul className="grid grid-cols-3 gap-2 lg:grid-cols-1" aria-label={settings.language === 'ar' ? 'عناصر الوسائط' : 'Media items'}>
           {items.map((m, i) => (
             <li key={m.src}>
               <button
                 type="button"
                 aria-pressed={i === index}
-                aria-label={m.title}
+                aria-label={tr(m.title)}
                 onClick={() => setIndex(i)}
                 className={cn(
                   'relative block aspect-video w-full overflow-hidden rounded-xl border transition-[border-color,opacity] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud',
@@ -256,18 +262,20 @@ function MediaSection({ items = MEDIA, note = OPPORTUNITY_MEDIA_NOTE }: { items?
             </li>
           ))}
         </ul>
-        <p className="text-xs leading-relaxed text-frost/55">{note}</p>
+        <p className="text-xs leading-relaxed text-frost/55">{tr(note)}</p>
       </div>
     </div>
   )
 }
 
 function SignalSection() {
+  const { settings } = useGameSettings()
+  const tr = (value: string) => translateArchiveText(value, settings.language)
   const [id, setId] = useState(SIGNAL_LOGS[0].id)
   const log = SIGNAL_LOGS.find((l) => l.id === id) ?? SIGNAL_LOGS[0]
   return (
     <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-      <ol className="relative flex flex-col gap-1 border-l border-hud/25 pl-4" aria-label="Signal records">
+      <ol className="relative flex flex-col gap-1 border-l border-hud/25 pl-4" aria-label={settings.language === 'ar' ? 'سجلات الإشارات' : 'Signal records'}>
         {SIGNAL_LOGS.map((l) => (
           <li key={l.id}>
             <button
@@ -288,7 +296,7 @@ function SignalSection() {
                 )}
               />
               <span className="block font-mono text-[10px] tracking-[0.18em] text-frost/50">{l.stamp}</span>
-              <span className="block text-sm font-semibold text-frost">{l.title}</span>
+              <span className="block text-sm font-semibold text-frost">{tr(l.title)}</span>
             </button>
           </li>
         ))}
@@ -298,8 +306,8 @@ function SignalSection() {
           <span className="font-mono text-xs tracking-[0.18em] text-hud">{log.stamp}</span>
           <SourceTag kind={log.kind} />
         </div>
-        <h3 className="font-display text-xl tracking-[0.06em] text-frost">{log.title}</h3>
-        <p className="text-sm leading-relaxed text-frost/80">{log.body}</p>
+        <h3 className="font-display text-xl tracking-[0.06em] text-frost">{tr(log.title)}</h3>
+        <p className="text-sm leading-relaxed text-frost/80">{tr(log.body)}</p>
         {log.sourceUrl && (
           <a
             href={log.sourceUrl}
@@ -307,7 +315,7 @@ function SignalSection() {
             rel="noopener noreferrer"
             className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost focus-visible:outline-2 focus-visible:outline-hud"
           >
-            View official source: {log.sourceLabel ?? 'NASA/JPL'}
+            {settings.language === 'ar' ? 'عرض المصدر الرسمي:' : 'View official source:'} {log.sourceLabel ?? 'NASA/JPL'}
           </a>
         )}
         <div aria-hidden className="mt-auto flex h-10 items-end gap-[3px] pt-4">
@@ -320,7 +328,7 @@ function SignalSection() {
           ))}
         </div>
         <p className="text-[11px] text-frost/45">
-          Waveform is decorative. Original transmission data and audio are not included.
+          {settings.language === 'ar' ? 'الموجة الصوتية عنصر زخرفي؛ لا تتضمن هذه الواجهة الصوت أو بيانات الإرسال الأصلية.' : 'Waveform is decorative. Original transmission data and audio are not included.'}
         </p>
       </article>
     </div>
@@ -328,11 +336,13 @@ function SignalSection() {
 }
 
 function NotesSection() {
+  const { settings } = useGameSettings()
+  const tr = (value: string) => translateArchiveText(value, settings.language)
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Key observation</h3>
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">{tr("Key observation")}</h3>
           <SourceTag kind="history" />
         </div>
         <p className="max-w-3xl text-pretty text-sm leading-relaxed text-frost/80">
@@ -342,30 +352,30 @@ function NotesSection() {
         </p>
       </section>
       <section className="flex flex-col gap-3">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Instrument suite</h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">{tr("Instrument suite")}</h3>
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {OPPORTUNITY_INSTRUMENTS.map((i) => (
             <li key={i.name} className="rounded-xl border border-hud/15 bg-midnight/50 p-4">
               <p className="font-semibold text-frost">{i.name}</p>
-              <p className="mt-1 text-xs leading-relaxed text-frost/65">{i.detail}</p>
+              <p className="mt-1 text-xs leading-relaxed text-frost/65">{tr(i.detail)}</p>
             </li>
           ))}
         </ul>
       </section>
       <section className="flex flex-col gap-3">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Research goals</h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">{tr("Research goals")}</h3>
         <ul className="grid gap-2 sm:grid-cols-2">
           {OPPORTUNITY_OBJECTIVES.map((o) => (
             <li key={o} className="flex gap-3 text-sm text-frost/80">
               <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-hud" />
-              {o}
+              {tr(o)}
             </li>
           ))}
         </ul>
       </section>
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Final Storm · Atmospheric Opacity (880 nm)</h3>
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">{tr("Final Storm · Atmospheric Opacity (880 nm)")}</h3>
           <SourceTag kind="history" />
         </div>
         <p className="max-w-3xl text-xs leading-relaxed text-frost/65">
@@ -374,15 +384,15 @@ function NotesSection() {
           This series ends at Sol 5105, so it does not measure the final Sol 5111 dust level.
         </p>
         <TauChart />
-        <a href="/data/opportunity/scientific/atmospheric-opacity/1tau880_5106_20181207a.tab" download className="w-fit text-xs text-hud underline underline-offset-4">Download original NASA PDS measurements (.tab)</a>
+        <a href="/data/opportunity/scientific/atmospheric-opacity/1tau880_5106_20181207a.tab" download className="w-fit text-xs text-hud underline underline-offset-4">{tr("Download original NASA PDS measurements (.tab)")}</a>
       </section>
       <section className="flex flex-col gap-3">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">Solar Energy and Dust Storm</h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.3em] text-hud">{tr("Solar Energy and Dust Storm")}</h3>
         <div className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-hud/25 bg-midnight/50">
           <Image src="/data/opportunity/scientific/power/Opportunity_Power_vs_Tau_2018.jpg" alt="NASA graphic comparing Opportunity's available solar energy with rising atmospheric opacity during the 2018 dust storm" fill sizes="(min-width: 1024px) 760px, 90vw" className="object-contain" />
         </div>
         <p className="text-xs leading-relaxed text-frost/65">NASA's published graphic reports approximately 21 watt-hours of available energy as dust opacity rose dramatically near the final communication. This is a published graphic, not raw battery telemetry.</p>
-        <a href="https://science.nasa.gov/resource/on-mars-light-is-energy/" target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4">NASA image source</a>
+        <a href="https://science.nasa.gov/resource/on-mars-light-is-energy/" target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4">{tr("NASA image source")}</a>
       </section>
       <Unavailable>Raw rover power telemetry and full instrument spectra are not included in this archive.</Unavailable>
     </div>
@@ -397,6 +407,8 @@ const NASA_TRAVERSE_SOURCE =
   'https://www.jpl.nasa.gov/images/pia23178-opportunitys-final-traverse-map/'
 
 function TraverseSection() {
+  const { settings } = useGameSettings()
+  const tr = (value: string) => translateArchiveText(value, settings.language)
   const [active, setActive] = useState(0)
   const [mapError, setMapError] = useState(false)
   const stop = TRAVERSE[active]
@@ -416,8 +428,8 @@ function TraverseSection() {
             />
           ) : (
             <div className="flex min-h-60 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-frost/75">
-              NASA map image could not be loaded.
-              <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="text-hud underline underline-offset-4">Open NASA's official traverse map</a>
+              {settings.language === 'ar' ? 'تعذر تحميل خريطة ناسا.' : 'NASA map image could not be loaded.'}
+              <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="text-hud underline underline-offset-4">{settings.language === 'ar' ? 'عرض خريطة ناسا الرسمية' : "Open NASA's official traverse map"}</a>
             </div>
           )}
           <figcaption className="border-t border-hud/15 px-3 py-2 text-xs leading-relaxed text-frost/65">
@@ -428,7 +440,7 @@ function TraverseSection() {
           The yellow route is from NASA's mapped orbital imagery. The station list is a separate historical index, not geolocated clickable markers.
         </p>
         <a href={NASA_TRAVERSE_SOURCE} target="_blank" rel="noopener noreferrer" className="w-fit text-xs text-hud underline underline-offset-4 hover:text-frost">
-          View official NASA image and description
+          {settings.language === 'ar' ? 'عرض صورة ناسا الرسمية ووصفها' : 'View official NASA image and description'}
         </a>
       </div>
       <div className="flex flex-col gap-4">
@@ -437,17 +449,17 @@ function TraverseSection() {
             <span className="font-mono text-xs tracking-[0.18em] text-ember">{stop.year}</span>
             <SourceTag kind="history" />
           </div>
-          <h3 className="mt-2 font-display text-xl tracking-[0.06em] text-frost">{stop.site}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-frost/80">{stop.note}</p>
+          <h3 className="mt-2 font-display text-xl tracking-[0.06em] text-frost">{tr(stop.site)}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-frost/80">{tr(stop.note)}</p>
         </article>
         <dl className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-hud/15 bg-midnight/40 p-3">
-            <dt className="text-[9px] uppercase tracking-[0.24em] text-hud/75">Total distance</dt>
+            <dt className="text-[9px] uppercase tracking-[0.24em] text-hud/75">{settings.language === 'ar' ? 'المسافة الكلية' : 'Total distance'}</dt>
             <dd className="mt-1 text-sm font-semibold text-frost">{TRAVERSE_DISTANCE}</dd>
           </div>
           <div className="rounded-xl border border-hud/15 bg-midnight/40 p-3">
-            <dt className="text-[9px] uppercase tracking-[0.24em] text-hud/75">Region</dt>
-            <dd className="mt-1 text-sm font-semibold text-frost">Meridiani Planum</dd>
+            <dt className="text-[9px] uppercase tracking-[0.24em] text-hud/75">{settings.language === 'ar' ? 'المنطقة' : 'Region'}</dt>
+            <dd className="mt-1 text-sm font-semibold text-frost">{tr('Meridiani Planum')}</dd>
           </div>
         </dl>
         <ol className="flex flex-col gap-1">
@@ -462,7 +474,7 @@ function TraverseSection() {
                   i === active ? 'bg-hud/10 text-frost' : 'text-frost/60 hover:text-frost',
                 )}
               >
-                <span>{t.site}</span>
+                <span>{tr(t.site)}</span>
                 <span className="font-mono text-frost/45">{t.year}</span>
               </button>
             </li>
