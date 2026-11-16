@@ -161,7 +161,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
           <>
             <div className="flex min-h-0 w-full max-w-[1240px] flex-1 gap-0 max-md:flex-col">
               <div className="z-10 shrink-0 md:pt-10">
-                <DossierTabs pages={file.pages} current={pageIndex} pageState={pageState} onSelect={goTo} side="left" isUnlocked={progress.isUnlocked} />
+                <DossierTabs pages={displayFile.pages} current={pageIndex} pageState={pageState} onSelect={goTo} side="left" isUnlocked={progress.isUnlocked} />
               </div>
 
               <article
@@ -209,7 +209,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
               </div>
             </div>
 
-            <aside aria-label="Investigation tracking" className="dossier-scroll hidden w-64 shrink-0 overflow-y-auto xl:block">
+            <aside aria-label={isArabic ? 'متابعة التحقيق' : 'Investigation tracking'} className="dossier-scroll hidden w-64 shrink-0 overflow-y-auto xl:block">
               {panel}
             </aside>
           </>
@@ -224,7 +224,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
         </div>
       )}
       {opened && (
-        <nav aria-label="Page navigation" className="flex shrink-0 items-center justify-between gap-3 px-3 pb-3 sm:px-5">
+        <nav aria-label={isArabic ? 'التنقل بين الصفحات' : 'Page navigation'} className="flex shrink-0 items-center justify-between gap-3 px-3 pb-3 sm:px-5">
           <button
             type="button"
             onClick={() => goTo(pageIndex - 1)}
@@ -242,7 +242,7 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
                     type="button"
                     onClick={() => goTo(i)}
                     disabled={!progress.isUnlocked(i)}
-                    aria-label={`Go to ${p.tab}`}
+                    aria-label={isArabic ? `الانتقال إلى ${p.tab}` : `Go to ${p.tab}`}
                     aria-current={i === pageIndex ? 'page' : undefined}
                     className={`block size-2 rounded-full transition-colors ${!progress.isUnlocked(i) ? 'opacity-30' : ''} ${i === pageIndex ? 'bg-[var(--hud)] shadow-[0_0_8px_var(--hud)]' : pageState(p.id) === 'unread' ? 'border border-[#8fb4c6]/60' : 'bg-[#8fb4c6]/70'}`}
                   />
