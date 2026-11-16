@@ -58,7 +58,7 @@ export function MissionCinematics({ onBack, onExit, arabic }: { onBack: () => vo
             {arabic ? 'ستظهر هنا فيديوهات مراحل المهمة بعد إضافة ملفات الفريق. لم تُضف أي فيديوهات غير موجودة.' : 'Team-produced mission videos will appear here when their files are added. No unavailable videos are displayed.'}
           </div>
         )}
-        <button type="button" onClick={onExit} className="self-start rounded-full border border-cyan-400/50 px-5 py-2 text-sm text-cyan-200 hover:bg-cyan-400/10">{arabic ? 'العودة للقائمة' : 'Return to menu'}</button>
+        <button type="button" onClick={onExit} className="self-start rounded-full border border-cyan-400/50 px-5 py-2 text-sm text-cyan-200 hover:bg-cyan-400/10">{arabic ? 'الخروج من التحقيق' : 'Exit investigation'}</button>
       </div>
     </section>
   )
