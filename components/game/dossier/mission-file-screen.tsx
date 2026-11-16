@@ -24,6 +24,12 @@ export function MissionFileScreen({ file, analyses, onBack }: { file: MissionFil
   const [analysis, setAnalysis] = useState<string | null>(null)
   const [drawer, setDrawer] = useState(false)
   const [showCinematics, setShowCinematics] = useState(false)
+  const completionState = useRef<boolean | null>(null)
+  useEffect(() => {
+    if (!progress.hydrated) return
+    if (completionState.current === false && progress.missionComplete) setShowCinematics(true)
+    completionState.current = progress.missionComplete
+  }, [progress.hydrated, progress.missionComplete])
   const pageRef = useRef<HTMLDivElement>(null)
   const pageIndex = Math.min(save.page, progress.unlockedCount - 1)
   const page = displayFile.pages[pageIndex]
