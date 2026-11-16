@@ -19,6 +19,12 @@ const MISSION_DESCRIPTIONS: Record<MissionId, string> = {
   apollo: 'Follow the first human footsteps on the Moon.',
 }
 
+const MISSION_DESCRIPTIONS_AR: Record<MissionId, string> = {
+  opportunity: 'استكشف الأيام الأخيرة للمركبة على المريخ خلال العاصفة الترابية الكبرى.',
+  insight: 'تعرف على زلازل المريخ والأسرار الموجودة تحت سطحه.',
+  apollo: 'تتبع أول خطوات البشر على سطح القمر.',
+}
+
 const ORDER: MissionId[] = ['insight', 'opportunity', 'apollo']
 
 export function MissionSelection({ onBack, onStartOpportunity }: MissionSelectionProps) {
@@ -83,13 +89,13 @@ export function MissionSelection({ onBack, onStartOpportunity }: MissionSelectio
                   <div className="flex items-start justify-between gap-2">
                     <span className="rounded-full border border-white/20 bg-[#041120]/75 px-3 py-1 font-mono text-[10px] tracking-[.15em]">{mission.index}</span>
                     <span className={`rounded-full border px-3 py-1 text-[9px] font-bold tracking-[.15em] ${playable ? 'border-[#f2b35d]/65 bg-[#f2b35d]/15 text-[#ffd399]' : 'border-white/25 bg-[#06101d]/75 text-[#bed0df]'}`}>
-                      {playable ? 'AVAILABLE' : 'COMING SOON'}
+                      {playable ? (isArabic ? 'متاحة' : 'AVAILABLE') : (isArabic ? 'قريبًا' : 'COMING SOON')}
                     </span>
                   </div>
                   <div>
                     <p className="text-[10px] uppercase tracking-[.25em] text-[#86dfff]">{mission.site} · {mission.body}</p>
                     <h2 className="mt-1 font-display text-[clamp(19px,2.3vw,30px)] tracking-[.07em]">{mission.id === 'apollo' ? 'APOLLO 11' : mission.name.toUpperCase()}</h2>
-                    <p className="mt-2 max-w-sm text-xs leading-5 text-[#d5e5f2]/85">{MISSION_DESCRIPTIONS[mission.id]}</p>
+                    <p className="mt-2 max-w-sm text-xs leading-5 text-[#d5e5f2]/85">{isArabic ? MISSION_DESCRIPTIONS_AR[mission.id] : MISSION_DESCRIPTIONS[mission.id]}</p>
                     {playable ? (
                       <div className="mt-4 flex flex-col gap-2">
                         {saved && (
@@ -116,7 +122,7 @@ export function MissionSelection({ onBack, onStartOpportunity }: MissionSelectio
                         )}
                       </div>
                     ) : (
-                      <div className="mt-4 flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/15 bg-[#04101b]/70 px-4 py-2 text-xs font-semibold tracking-[.13em] text-[#b8cadb]/65" aria-label={`${mission.name} coming soon`}>
+                      <div className="mt-4 flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/15 bg-[#04101b]/70 px-4 py-2 text-xs font-semibold tracking-[.13em] text-[#b8cadb]/65" aria-label={isArabic ? `${mission.name} غير متاحة بعد` : `${mission.name} coming soon`}>
                         <LockKeyhole aria-hidden className="size-4" />
                         {isArabic ? 'قريبًا' : 'NOT YET PLAYABLE'}
                       </div>
