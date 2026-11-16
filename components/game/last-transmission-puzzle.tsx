@@ -122,14 +122,14 @@ export function LastTransmissionPuzzle({ onClose }: { onClose: () => void }) {
                     <span className="w-6 shrink-0 font-mono text-amber-200">{i+1}</span>
                     <button type="button" onClick={() => setSelectedLog(id)} className="min-w-0 flex-1 text-start focus-visible:outline-2 focus-visible:outline-cyan-300">
                       <span className="block font-mono text-[10px] text-cyan-200">{entry.stamp}</span>
-                      <span className="block text-xs font-semibold sm:text-sm">{entry.title}</span>
+                      <span className="block text-xs font-semibold sm:text-sm"{tr(entry.title)}</span>
                     </button>
                     <button type="button" disabled={i===0} onClick={()=>move(i,-1)} aria-label={(ar ? 'تحريك ' : 'Move ') + tr(entry.title) + (ar ? ' إلى الأعلى' : ' earlier')} className="rounded-lg border border-white/20 p-2 disabled:opacity-25"><ArrowUp size={16}/></button>
                     <button type="button" disabled={i===sequence.length-1} onClick={()=>move(i,1)} aria-label={(ar ? 'تحريك ' : 'Move ') + tr(entry.title) + (ar ? ' إلى الأسفل' : ' later')} className="rounded-lg border border-white/20 p-2 disabled:opacity-25"><ArrowDown size={16}/></button>
                   </li>
                 })}
               </ol>
-              {feedback && <p role="status" className="mt-3 text-xs text-amber-200">{feedback}</p>}
+              {feedback && <p role="status" className="mt-3 text-xs text-amber-200"{tr(feedback)}</p>}
               <div className="mt-5 flex flex-wrap gap-3">
                 <button type="button" onClick={()=>setPhase('identify')} className="rounded-full border border-white/30 px-4 py-3 text-xs"><ArrowLeft size={13} className="mr-2 inline"/>{tr("REVIEW")}</button>
                 <button type="button" onClick={verify} className="rounded-full bg-cyan-300 px-5 py-3 text-xs font-bold tracking-wider text-slate-950">{tr("VERIFY CHRONOLOGY")}</button>
@@ -160,7 +160,7 @@ export function LastTransmissionPuzzle({ onClose }: { onClose: () => void }) {
                 <button type="button" onClick={onClose} className="rounded-full bg-cyan-300 px-6 py-3 text-xs font-bold text-slate-950">{tr("RETURN TO MISSION FILE")}</button>
               </div>
             ) : (
-              <button type="button" onClick={file} className="mt-6 flex items-center gap-2 rounded-full bg-amber-300 px-6 py-3 text-xs font-bold tracking-wider text-slate-950"><FileCheck2 size={18}/> CAPTURE EVIDENCE 02</button>
+              <button type="button" onClick={file} className="mt-6 flex items-center gap-2 rounded-full bg-amber-300 px-6 py-3 text-xs font-bold tracking-wider text-slate-950"><FileCheck2 size={18}/>{tr('CAPTURE EVIDENCE 02')}</button>
             )}
           </div>
         )}
