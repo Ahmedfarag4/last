@@ -1,9 +1,12 @@
 'use client'
 
 import Image from 'next/image'
+import { useState } from 'react'
 import { ArrowLeft, ArrowRight, LockKeyhole, RadioTower } from 'lucide-react'
 import { MISSIONS, type MissionId } from './archives/archive-data'
 import { useGameSettings } from './settings-provider'
+import { useDossierProgress, startNewInvestigation } from './dossier/progress'
+import { OPPORTUNITY_FILE } from './dossier/missions/opportunity'
 
 type MissionSelectionProps = {
   onBack: () => void
@@ -22,6 +25,10 @@ export function MissionSelection({ onBack, onStartOpportunity }: MissionSelectio
   const { play, settings } = useGameSettings()
   const missions = ORDER.map((id) => MISSIONS.find((mission) => mission.id === id)!)
   const isArabic = settings.language === 'ar'
+  const [confirming, setConfirming] = useState(false)
+  const progress = useDossierProgress(OPPORTUNITY_FILE)
+  const saved = progress.hydrated && (progress.save.visited.length > 0 || progress.save.collected.length > 0 || progress.totals.collected > 0)
+  const startFresh = () => { startNewInvestigation(OPPORTUNITY_FILE); setConfirming(false); play('start'); onStartOpportunity() }
 
   return (
     <section
@@ -84,15 +91,30 @@ export function MissionSelection({ onBack, onStartOpportunity }: MissionSelectio
                     <h2 className="mt-1 font-display text-[clamp(19px,2.3vw,30px)] tracking-[.07em]">{mission.id === 'apollo' ? 'APOLLO 11' : mission.name.toUpperCase()}</h2>
                     <p className="mt-2 max-w-sm text-xs leading-5 text-[#d5e5f2]/85">{MISSION_DESCRIPTIONS[mission.id]}</p>
                     {playable ? (
-                      <button
-                        type="button"
-                        onClick={() => { play('start'); onStartOpportunity() }}
-                        className="mt-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-[#f2b35d] bg-[#f2b35d]/20 px-4 py-2 text-xs font-bold tracking-[.16em] text-[#ffe1ae] transition hover:bg-[#f2b35d]/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2b35d]"
-                      >
-                        <RadioTower aria-hidden className="size-4" />
-                        {isArabic ? 'ابدأ التحقيق' : 'BEGIN INVESTIGATION'}
-                        <ArrowRight aria-hidden className="size-4" />
-                      </button>
+                      <div className="mt-4 flex flex-col gap-2">
+                        {saved && (
+                          <button type="button" onClick={() => { play('start'); onStartOpportunity() }}
+                            className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-[#f2b35d] bg-[#f2b35d]/20 px-4 py-2 text-xs font-bold tracking-[.16em] text-[#ffe1ae] transition hover:bg-[#f2b35d]/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2b35d]">
+                            <RadioTower aria-hidden className="size-4" />
+                            {isArabic ? 'متابعة اللعبة' : 'CONTINUE GAME'}
+                            <ArrowRight aria-hidden className="size-4" />
+                          </button>
+                        )}
+                        <button type="button" onClick={() => saved ? setConfirming(true) : startFresh()}
+                          className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-[#49d7ff]/55 bg-[#061728]/90 px-4 py-2 text-xs font-bold tracking-[.16em] text-[#a4ebff] transition hover:border-[#49d7ff] hover:bg-[#49d7ff]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#49d7ff]">
+                          {isArabic ? 'بدء لعبة جديدة' : 'START NEW GAME'}
+                          <ArrowRight aria-hidden className="size-4" />
+                        </button>
+                        {confirming && (
+                          <div role="alertdialog" aria-modal="true" aria-label={isArabic ? 'تأكيد بدء لعبة جديدة' : 'Confirm new game'} className="rounded-xl border border-[#f2b35d]/60 bg-[#06101b]/95 p-3 text-center">
+                            <p className="text-xs leading-5 text-[#f8e7c8]">{isArabic ? 'سيتم حذف تقدم التحقيق والأدلة المحفوظة لهذه المهمة فقط. لن تتأثر الأرشيفات والمانجا والإعدادات.' : 'Restart Opportunity? This removes its investigation progress and puzzle evidence only. Archives, manga, and settings are preserved.'}</p>
+                            <div className="mt-3 flex justify-center gap-2">
+                              <button type="button" onClick={startFresh} className="rounded-full border border-[#f2b35d] px-3 py-1.5 text-xs text-[#ffe1ae]">{isArabic ? 'تأكيد' : 'CONFIRM'}</button>
+                              <button type="button" onClick={() => setConfirming(false)} className="rounded-full border border-[#49d7ff]/50 px-3 py-1.5 text-xs text-[#c2eaf8]">{isArabic ? 'إلغاء' : 'CANCEL'}</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <div className="mt-4 flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/15 bg-[#04101b]/70 px-4 py-2 text-xs font-semibold tracking-[.13em] text-[#b8cadb]/65" aria-label={`${mission.name} coming soon`}>
                         <LockKeyhole aria-hidden className="size-4" />
