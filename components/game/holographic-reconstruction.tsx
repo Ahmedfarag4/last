@@ -162,7 +162,7 @@ export function HolographicReconstruction({ onFile, alreadyCollected, onReturn }
                 <span className="holo-node-title">{tr(item.title)}</span>
                 <span className="holo-node-caption">{tr(item.caption)}</span>
               </span>
-              {linked && <span className="holo-node-link">LINK 0{linkedAt + 1}</span>}
+              {linked && <span className="holo-node-link">{tr('LINK')} 0{linkedAt + 1}</span>}
             </button>
           )
         })}
