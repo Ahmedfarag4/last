@@ -168,7 +168,7 @@ export function useDossierProgress(file: MissionFile) {
         startNewInvestigation(file)
       },
     }),
-    [file],
+    [file, unlockedCount],
   )
 
   return { hydrated, save, collected, visited, reviewed, pageState, requirementsFor, completedPage, completedPages, unlockedCount, isUnlocked, missionComplete, totals, percent, ...actions }
