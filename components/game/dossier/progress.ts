@@ -120,8 +120,8 @@ export function useDossierProgress(file: MissionFile) {
   }, [file])
   const completedPage = useCallback((id: string) => {
     const required = requirementsFor(id)
-    return required.every(item => collected.has(item)) && (required.length > 0 || reviewed.has(id))
-  }, [requirementsFor, collected, reviewed])
+    return visited.has(id) && required.every(item => collected.has(item)) && (required.length > 0 || reviewed.has(id))
+  }, [requirementsFor, collected, reviewed, visited])
   const unlockedCount = (() => {
     let count = 1
     for (let i = 0; i < file.pages.length - 1; i++) {
