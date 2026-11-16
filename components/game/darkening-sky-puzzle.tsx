@@ -112,7 +112,7 @@ export function DarkeningSkyPuzzle({ onClose }: { onClose: () => void }) {
             <h2 className="mt-2 text-2xl font-semibold tracking-[.08em] sm:text-4xl">{tr("THE DARKENING SKY")}</h2>
             <p className="mt-2 max-w-2xl text-sm text-slate-400">{tr("Reconstruct the last measured changes in Mars atmospheric opacity. Separate direct measurements from later published mission context.")}</p>
           </div>
-          <button type="button" onClick={onClose} className="flex items-center gap-2 rounded-full border border-cyan-300/40 px-4 py-2 text-xs hover:bg-cyan-300/10"><X size={16}/> RETURN TO FILE</button>
+          <button type="button" onClick={onClose} className="flex items-center gap-2 rounded-full border border-cyan-300/40 px-4 py-2 text-xs hover:bg-cyan-300/10"><X size={16}/>{tr('RETURN TO FILE')}</button>
         </header>
         <nav className={(stage === 3 ? 'hidden ' : '') + 'mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4'} aria-label="Investigation progress">
           {TASKS.map((task, index) => (
