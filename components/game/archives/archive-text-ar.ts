@@ -123,7 +123,6 @@ const translations: Record<string, string> = {
   'InSight was stationary after landing on 26 November 2018. It deployed instruments around the lander but never drove across Mars. This section records its landing-site environment and instrument operations, not a rover traverse.':'ظلت إنسايت ثابتة بعد هبوطها في 26 نوفمبر 2018. نشرت الأجهزة حولها لكنها لم تتحرك على سطح المريخ. يوثق هذا القسم بيئة الهبوط وعمليات الأجهزة، وليس مسار مركبة جوالة.',
   'NASA mission overview':'نظرة ناسا العامة على المهمة',
   'Public NASA mission facts are separated from PDS measurements that have not yet been uploaded. No simulated scientific readings are displayed.':'تُفصل الحقائق المنشورة من ناسا عن قياسات PDS غير المرفوعة بعد. لا تُعرض قراءات علمية مصطنعة.',
-  'Launch':'الإطلاق','Landing':'الهبوط',
   'Seismometer deployment':'نشر مقياس الزلازل',
   'Final selfie':'الصورة الذاتية الأخيرة',
   'Last contact':'آخر اتصال',
